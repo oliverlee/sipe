@@ -1,0 +1,27 @@
+1b)
+The variables on the x-axis is time delay tau, which is the time delay
+between the two signals. The y-axis is the covariance between the time shifted
+signals u, y.
+
+For C_uy, u is the output, y is the output. For C_yu, y is the output, u is the
+input. Since the two cross-covariances simply have the input and output
+switched, the two cross-covariances are mirror about tau = 0. This can be
+expressed as C_uy(tau) = C_yu(-tau).
+TODO: show short proof
+
+1c)
+C_uu(tau) = 0 for all tau != 0.
+C_uu(0) = 0
+Since signal u is random noise.
+
+C_nu(tau) = 0 for all tau since u and n are independent, random signals.
+
+1d)
+As lag increases, the estimate suffers from large variances because the value
+is computed with fewer data points. As the delay tau becomes large, the leading
+1/(N-tau) factor becomes large. To avoid this, a biased estimator can be used,
+which does not use tau in the scaling factor.
+
+1e)
+
+
