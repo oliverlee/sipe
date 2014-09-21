@@ -8,6 +8,8 @@ input. Since the two cross-covariances simply have the input and output
 switched, the two cross-covariances are mirror about tau = 0. This can be
 expressed as C_uy(tau) = C_yu(-tau).
 TODO: show short proof
+note: from book C_yx(tau) = phi_xy(tau) - mu_x*mu_y
+
 
 1c)
 C_uu(tau) = 0 for all tau != 0.
