@@ -27,7 +27,7 @@ end
 
 bias = length(y) * ones(size(phi));
 if strcmp(scaleopt, 'unbiased')
-    bias = bias - abs(lags);
+    bias = bias - abs(reshape(lags, size(phi)));
 end
 c = phi ./ bias;
 
