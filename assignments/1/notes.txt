@@ -26,4 +26,6 @@ which does not use tau in the scaling factor.
 
 1e)
 
+2a) The magnitude of Y is mirrored about the nyquist frequency. (meaning of coefficients)?
 
+2b) 

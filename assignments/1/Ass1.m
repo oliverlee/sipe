@@ -30,9 +30,13 @@ t   = (0 : N - 1) * dt;         % [s] Time vector
 
 % Plot input and output signals.
 figure
-subplot(211); plot(t, u); xlabel('t [s]','Fontsize',14); ylabel('u [-]','Fontsize',14); title('Input','Fontsize',18)
+subplot(211); plot(t, u);
+xlabel('t [s]','Fontsize',14); ylabel('u [-]','Fontsize',14);
+title('Input','Fontsize',18)
 set(gca,'FontSize',12)
-subplot(212); plot(t, y); xlabel('t [s]','Fontsize',14); ylabel('y [-]','Fontsize',14); title('Output','Fontsize',18)
+subplot(212); plot(t, y);
+xlabel('t [s]','Fontsize',14); ylabel('y [-]','Fontsize',14);
+title('Output','Fontsize',18)
 set(gca,'FontSize',12)
 
 
@@ -47,25 +51,175 @@ tau         = lags * dt; % Fill in the dots  [lags should be in seconds]
 % Plot the covariances in one figure using subplot
 figure('Name','Question 1a')
 subplot(2,2,1)
-    plot(tau, Cuu); 
+    plot(tau, Cuu);
     xlabel('tau [s]'); ylabel('C_{uu}')
 subplot(2,2,2)
-    plot(tau, Cuy); 
+    plot(tau, Cuy);
     xlabel('tau  [s]'); ylabel('C_{uy}')
 subplot(2,2,3)
-    plot(tau, Cyu); 
+    plot(tau, Cyu);
     xlabel('tau [s]'); ylabel('C_{yu}')
 subplot(2,2,4)
-    plot(tau, Cyy); 
+    plot(tau, Cyy);
     xlabel('tau [s]'); ylabel('C_{yy}')
 
- %% Question 1d
- 
- Cyu_unbiased = xcov(y, u, 'unbiased');
- figure('Name', 'Question 1d')
-    plot(tau, Cyu, 'b', tau, Cyu_unbiased, 'r')
+%% Question 1d
+
+Cyu_unbiased = xcov(y, u, 'unbiased');
+figure('Name', 'Question 1d')
+   plot(tau, Cyu, 'b', tau, Cyu_unbiased, 'r')
+   legend('biased', 'unbiased')
+   xlabel('tau [s]'); ylabel('C_{yu}')
+
+ %% Question 1f
+
+ Kuu = Cuu / sqrt(var(u)*var(u));
+ Kyu = Cyu / sqrt(var(u)*var(y));
+
+figure('Name','Question 1f')
+subplot(2,1,1)
+    plot(tau, Kuu);
+    xlabel('tau [s]'); ylabel('K_{uu}')
+subplot(2,1,2)
+    plot(tau, Kyu);
+    xlabel('tau  [s]'); ylabel('K_{yu}')
+
+[Kuu_max, Kuu_argmax] = max(Kuu, [], 1);
+[Kyu_max, Kyu_argmax] = max(Kyu, [], 1);
+Kuu_argmax_tau = tau(Kuu_argmax)
+Kyu_argmax_tau = tau(Kyu_argmax)
+
+%% Question 1g
+
+% figure('Name','Question 1g,(biased)')
+% subplot(4,1,1)
+%     plot(tau, xcov(u, u, 'biased'), 'b',  tau, crosscov(u, u, 'biased'), 'g'); 
+%     xlabel('tau [s]'); ylabel('C_{uu}')
+% subplot(4,1,2)
+%     plot(tau, xcov(u, y, 'biased'), 'b', tau, crosscov(u, y, 'biased'), 'g'); 
+%     xlabel('tau [s]'); ylabel('C_{uy}')
+%  subplot(4,1,3)
+%     plot(tau, xcov(y, u, 'biased'), 'b', tau, crosscov(y, u, 'biased'), 'g'); 
+%     xlabel('tau [s]'); ylabel('C_{yu}')    
+% subplot(4,1,4)
+%     plot(tau, xcov(y, y, 'biased'), 'b', tau, crosscov(y, y, 'biased'), 'g'); 
+%     xlabel('tau [s]'); ylabel('C_{yy}')
+    
+e_uu = xcov(u, u, 'biased') - crosscov(u, u, 'biased');
+e_uy = xcov(u, y, 'biased') - crosscov(u, y, 'biased');
+e_yu = xcov(y, u, 'biased') - crosscov(y, u, 'biased');
+e_yy = xcov(y, y, 'biased') - crosscov(y, y, 'biased');
+dot(e_uu, e_uu)
+dot(e_uy, e_uy)
+dot(e_yu, e_yu)
+dot(e_yy, e_yy)
+
+e_uu = xcov(u, u, 'unbiased') - crosscov(u, u, 'unbiased');
+e_uy = xcov(u, y, 'unbiased') - crosscov(u, y, 'unbiased');
+e_yu = xcov(y, u, 'unbiased') - crosscov(y, u, 'unbiased');
+e_yy = xcov(y, y, 'unbiased') - crosscov(y, y, 'unbiased');
+dot(e_uu, e_uu)
+dot(e_uy, e_uy)
+dot(e_yu, e_yu)
+dot(e_yy, e_yy)
+
+%% Question 1h
+H = tf(1, [0.01, 0.03, 1]);
+[y_impulse, t_impulse] = impulse(H, t);
+figure('Name','Question 1h')
+    plot(tau, Cyu, 'b',  t_impulse, y_impulse, 'g'); 
+    xlabel('tau [s]'); ylabel('C_{uu}, impulse response')
+    legend('C_{yu}', 'impulse response of H')
+
+%% Question 1i
+sim('Ass1_System', 100)    % Note that observation stop time and sample frequency are set in the model.
+N   = length(u);                % [-] # samples (also T /dt)
+t   = (0 : N - 1) * dt;         % [s] Time vector
+
+[Cyu100, lags100] = xcov(y, u, 'biased');
+figure('Name','Question 1h')
+    plot(lags100*dt, Cyu100); 
+    xlabel('tau [s]'); ylabel('C_{yu100}')
+
+%% Question 2a
+clear all
+close all
+clc
+
+fs = 500;
+dt = 1/fs;
+T = 5;
+t = 0:dt:T-dt;
+f_sig = 8; % Hz
+
+u = 2*sin(2*pi*f_sig*t) + normrnd(0, 1, size(t));
+
+[B, A] = butter(2, 20/(fs/2));
+y = filter(B, A, u);
+h = plot(t, u, 'b', t, y, 'r');
+    set(h(1),'linewidth',1);
+    set(h(2),'linewidth',4);
+Y = fft(y);
+f = t/T*fs;
+figure('Name', 'Question 2a')
+subplot(2, 1, 1)
+    plot(f, abs(Y))
+    xlabel('frequency (Hz)'); ylabel('|Y(f)|');
+subplot(2, 1, 2)
+    plot(f, phase(Y))
+    xlabel('frequency (Hz)'); ylabel('phase(Y(f)) [degrees]');
+
+%% Question 2b
+clear all
+close all
+clc
+
+T   = 5;                % [s] Observation time
+fs  = 100;              % [Hz] Samping frequency
+dt  = 1/fs;             % [s] Sample time
+sim('Ass1_System',T)    % Note that observation stop time and sample frequency are set in the model.
+whos
+
+% Observation time T = N * dt. The last sample of the measured signals
+% needs to be removed in order to make the observation time exactly 5
+% seconds.
+N = length(u);                % [-] # samples (also T /dt)
+t = (0 : N - 1) * dt;         % [s] Time vector
+
+U = fft(u);
+Y = fft(y);
+f = t/T*fs;
+Suu = U.*conj(U)/length(u);
+Syu = Y.*conj(U)/length(u);
+figure('Name', 'Question 2b');
+subplot(2, 1, 1)
+    loglog(f, abs(Suu))
+    xlabel('frequency (Hz)'); ylabel('|Suu(f)|');
+subplot(2, 1, 2)
+    loglog(f, abs(Syu))
+    xlabel('frequency (Hz)'); ylabel('|Syu(f)|');
+        
+%% Question 2c
+[Cuu, lags] = xcov(u, u, 'biased');
+Suu_bias = ifftshift(fft(Cuu));
+Syu_bias = ifftshift(fft(xcov(y, u, 'biased')));
+Suu_unb = ifftshift(fft(xcov(u, u, 'unbiased')));
+Syu_unb = ifftshift(fft(xcov(y, u, 'unbiased')));
+f = (0:2*(N - 1))/T;
+figure('Name', 'Question 2c')
+subplot(2, 1, 1)
+    loglog(f, abs(Suu_bias), 'b', f, abs(Suu_unb), 'g')
     legend('biased', 'unbiased')
-    xlabel('tau [s]'); ylabel('C_{yu}')
+    xlabel('frequency (Hz)'); ylabel('|Suu(f)|');
+subplot(2, 1, 2)
+    loglog(f, abs(Syu_bias), 'b', f, abs(Syu_unb), 'g')
+    legend('biased', 'unbiased')
+    xlabel('frequency (Hz)'); ylabel('|Syu(f)|');
+    
+figure()
+size(Suu)
+
+loglog(t/T*fs, abs(Suu), 'b', f, abs(Suu_bias), 'g')
     
 %% Question 3: Time Domain Models
 clear all
@@ -78,7 +232,7 @@ fs  = 100;              % [Hz] Samping frequency
 dt  = 1/fs;             % [s]
 N   = fs*T;             % [-] Number of samples
 tv  = (0:N-1).'/fs;     % Time vector
-fv  = [0:N-1]/N*fs;     % Frequency vector
+fv  = (0:N-1)/N*fs;     % Frequency vector
 
 % Simulate model
 set_param('Ass1_System/Noise n','Variance','0.05');
@@ -86,20 +240,42 @@ options=simset('OutputPoints','specified'); % only produce output for the time v
 load_system('Ass1_System')
 sim('Ass1_System',tv,options)
 
+%% Question 3a
 % Generate iddata structure
 dat = iddata(y, u, dt);
 set(dat, 'timeunit', 's', 'inputname', 'u', 'outputname', 'y');
-plot(dat)
+figure(); plot(dat)
 
+na = 12;
+nb = 12;
+nk = 0;
+sys = arx(dat, [na, nb, nk]);
+n_half = length(fv)/2;
+if n_half == ceil(n_half)
+    fv_half = fv(1:n_half + 1);
+else
+    fv_half = fv(1:ceil(n_half));
+end
+H = squeeze(freqresp(sys, fv_half, 'Hz'));
+H_mdl = squeeze(freqresp(tf(1, [0.01, 0.03, 1]), fv_half, 'Hz'));
+figure('Name', 'Question 3a')
+subplot(2, 1, 1)
+    plot(fv_half, abs(H), 'b', fv_half, abs(H_mdl), 'r--')
+    xlabel('frequency (Hz)'); ylabel('|Y(f)|');
+subplot(2, 1, 2)
+    plot(fv_half, phase(H), 'b', fv_half, phase(H_mdl), 'r--')
+    xlabel('frequency (Hz)'); ylabel('phase(Y(f)) [degrees]');
+    
 
-
+%%
 %Plot
 figure('Name','Question 3')
+
 subplot(211)
-loglog(fv, ...
+loglog(fv, 0)
 legend({'ARX20','ARX3', 'OE3','True'})
 ylabel('Gain...')
 
 subplot(212)
-semilogx(fv, ...
+semilogx(fv, 0)
 ylabel('Phase...')

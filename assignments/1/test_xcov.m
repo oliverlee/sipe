@@ -1,6 +1,6 @@
 %% test out crosscov and xcov
 
-n = randn(100000, 1);
+n = randn(1000000, 1);
 disp(sprintf('size of input is %d', length(n)));
 
 tic
