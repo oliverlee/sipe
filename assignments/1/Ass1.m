@@ -201,10 +201,10 @@ subplot(2, 1, 2)
         
 %% Question 2c
 [Cuu, lags] = xcov(u, u, 'biased');
-Suu_bias = ifftshift(fft(Cuu));
-Syu_bias = ifftshift(fft(xcov(y, u, 'biased')));
-Suu_unb = ifftshift(fft(xcov(u, u, 'unbiased')));
-Syu_unb = ifftshift(fft(xcov(y, u, 'unbiased')));
+Suu_bias = fft(Cuu);
+Syu_bias = fft(xcov(y, u, 'biased'));
+Suu_unb = fft(xcov(u, u, 'unbiased'));
+Syu_unb = fft(xcov(y, u, 'unbiased'));
 f = (0:2*(N - 1))/T;
 figure('Name', 'Question 2c')
 subplot(2, 1, 1)
@@ -216,9 +216,9 @@ subplot(2, 1, 2)
     legend('biased', 'unbiased')
     xlabel('frequency (Hz)'); ylabel('|Syu(f)|');
     
+% not sure about this
 figure()
 size(Suu)
-
 loglog(t/T*fs, abs(Suu), 'b', f, abs(Suu_bias), 'g')
     
 %% Question 3: Time Domain Models
@@ -257,25 +257,54 @@ else
     fv_half = fv(1:ceil(n_half));
 end
 H = squeeze(freqresp(sys, fv_half, 'Hz'));
-H_mdl = squeeze(freqresp(tf(1, [0.01, 0.03, 1]), fv_half, 'Hz'));
+sys_true = tf(1, [0.01, 0.03, 1]);
+H_true = squeeze(freqresp(sys_true, fv_half, 'Hz'));
 figure('Name', 'Question 3a')
 subplot(2, 1, 1)
-    plot(fv_half, abs(H), 'b', fv_half, abs(H_mdl), 'r--')
+    plot(fv_half, abs(H), 'b', fv_half, abs(H_true), 'r--')
     xlabel('frequency (Hz)'); ylabel('|Y(f)|');
 subplot(2, 1, 2)
-    plot(fv_half, phase(H), 'b', fv_half, phase(H_mdl), 'r--')
+    plot(fv_half, phase(H), 'b', fv_half, phase(H_true), 'r--')
     xlabel('frequency (Hz)'); ylabel('phase(Y(f)) [degrees]');
     
 
-%%
-%Plot
-figure('Name','Question 3')
+%% Question 3c
 
-subplot(211)
-loglog(fv, 0)
-legend({'ARX20','ARX3', 'OE3','True'})
-ylabel('Gain...')
+sys_oe = oe(dat, [3, 3, 0]);
+sys_arx = arx(dat, [3, 3, 0]);
+% sys_arma = armax(dat, [3, 3, 0, 0]);
+sys_armax = armax(dat, [3, 3, 3, 0]);
+sys_bj = bj(dat, [3, 3, 3, 3, 0]);
+sys_true = tf(1, [0.01, 0.03, 1]);
 
-subplot(212)
-semilogx(fv, 0)
-ylabel('Phase...')
+% systems = {sys_oe, sys_arx, sys_arma, sys_armax, sys_bj, sys_true};
+% system_legend = {'OE', 'ARX', 'ARMA', 'ARMAX', 'BJ', 'True'};
+systems = {sys_true, sys_oe, sys_arx, sys_armax, sys_bj};
+system_legend = {'True', 'OE', 'ARX', 'ARMAX', 'BJ'};
+H = cell(size(systems));
+cmap = hsv(length(systems));
+fit = zeros(size(systems));
+
+for i = 1:length(systems)
+    H{i} = squeeze(freqresp(systems{i}, fv_half, 'Hz'));
+
+    figure(1)
+    subplot(211)
+    hold on; loglog(fv_half, abs(H{i}), 'color', cmap(i,:), 'linewidth', 2); hold off
+    xlabel('frequency (Hz)'); ylabel('|Y(f)|');
+    if i == length(systems)
+        legend(system_legend);
+        set(gca,'FontSize',40)
+    end
+
+    subplot(212)
+    hold on; semilogx(fv_half, phase(H{i}), 'color', cmap(i,:), 'linewidth', 2); hold off
+    xlabel('frequency (Hz)'); ylabel('phase(Y(f)) [degrees]');
+    if i == length(systems)
+        legend(system_legend);
+        set(gca,'FontSize',40);
+        set(gcf, 'Name','Question 3c');
+    end
+
+    [y, fit(i), x0] = compare(dat, systems{i});
+end
