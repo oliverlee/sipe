@@ -4,13 +4,9 @@
 \geometry{left = 1in, right = 1in, top = 1in, bottom = 1in}
 % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage[parfill]{parskip}
-\usepackage{graphicx}
-\usepackage{float}
-\usepackage{listings}
 \usepackage{courier}
 \usepackage{multirow}
 \usepackage{fancyhdr}
-
 \usepackage{float,amsmath,graphicx,color,framed,subfiles}
 \usepackage{amssymb,subcaption,textcomp,listings}
 \usepackage{booktabs,epstopdf,caption,units}
@@ -48,9 +44,8 @@ Assignment 1 - Introduction to System Identification}
 % 1a
 \subsection{}
 
-Cross-covariance of signals $u$, $y$ are plotted in fig \ref{fig:q1a}. Signals
+Cross-covariance of signals $u$, $y$ are plotted in figure \ref{fig:q1a}. Signals
 $u$, $y$ are observed for 5 seconds at a sampling frequency of 100 Hz.
-
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question1a.eps}
@@ -69,7 +64,6 @@ For $C_{uy}$, $u$ is the output, $y$ is the input. For $C_{yu}$, $y$ is the
 output, $u$ is the input. Since the two cross-covariances simply have the input
 and output switched, the two cross-covariances are mirrored about $\tau = 0$.
 This can be expressed as
-
 \begin{equation*}
     C_{uy}(\tau) = C_{yu}(-\tau)
 \end{equation*}
@@ -78,10 +72,9 @@ This can be expressed as
 \subsection{}
 Given that signal $u$ is random white noise and that each random variable is
 independent of all previous random variables, theoretically
-
 \begin{align*}
     C_{uu}(\tau) &= 0, \: \forall \: \tau \neq 0 \\
-    C_{uu}(0) &= 0
+    C_{uu}(0) &= \sigma_u^2
 \end{align*}
 
 For signals $n$, $u$ that are both white noise, but independent processes
@@ -110,7 +103,7 @@ The crosscov() function uses similar input and output variables as xcov() and
 the user should refer to that documentation for details on y, u, maxlag,
 scaleopt, c, and lags.
 
-Lines 4 - 15 handle input arguments. Lines 21 0 26 compute the
+Lines 4 - 15 handle input arguments. Lines 21 - 26 compute the
 cross-correlation in the frequency domain. Given that the cross spectrum is the
 Fourier transform of the autocorrelation and that the cross spectrum is product
 of the Fourier transforms of two signals, the implementation in MATLAB is
@@ -122,7 +115,6 @@ that it is either biased or unbiased.
 \subsection{}
 Calculating the argmax of the cross-correlation coefficients $K_{uu}(\tau)$,
 $K_{yu}(\tau)$ gives
-
 \begin{align*}
     argmax \: K_{uu}(\tau) &= 0 \\
     argmax \: K_{yu}(\tau) &= 0.1800
@@ -133,7 +125,6 @@ $K_{yu}(\tau)$ gives
 Calculating the sum of squares for the error for each covariance calculation
 shows an extremely small difference between the functions xcov() and
 crosscov()
-
 \begin{align*}
     SSE(u, u, biased) &= 3.7656 \times 10^{-31} \\
     SSE(u, y, biased) &= 7.7604 \times 10^{-32} \\
@@ -147,9 +138,8 @@ crosscov()
 
 % 1h TODO
 \subsection{}
-The system impulse response and $C_{yu}(\tau)$ are plotted in fig \ref{fig:q1h}.
+The system impulse response and $C_{yu}(\tau)$ are plotted in figure \ref{fig:q1h}.
 The difference is ???.
-
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question1h.eps}
@@ -162,9 +152,8 @@ The difference is ???.
 \subsection{}
 The cross-covariance of signals y, u for 100 seconds, $C_{yu}(\tau)$, has been
 plotted along with cross-covariance of the same signals for 5 seconds,
-$C_{yu}(\tau)$, and the system impulse response in fig \ref{fig:q1i}. The
+$C_{yu}(\tau)$, and the system impulse response in figure \ref{fig:q1i}. The
 difference is ???.
-
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question1i.eps}
@@ -178,11 +167,10 @@ difference is ???.
 
 % 2a
 \subsection{}
-The magnitude plot of $Y(f)$, shown in \ref{fig:q2a}, we see the gain of the
+The magnitude plot of $Y(f)$, shown in figure \ref{fig:q2a}, we see the gain of the
 signal $y$ for different frequencies. If the system is assumed to be linear and
 the input is a sinusoid, we can see the gain of the system for specific
 frequencies. Note, magnitude of $Y(f)$ is mirrored about the nyquist frequency.
-
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question2a.eps}
@@ -196,8 +184,7 @@ frequencies. Note, magnitude of $Y(f)$ is mirrored about the nyquist frequency.
 
 The spectral density plots obtained using the direct approach, transforming the
 signals into frequency domain and then deriving the spectral densities, are
-shown in \ref{fig:q2b}.
-
+shown in figure \ref{fig:q2b}.
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question2b.eps}
@@ -211,8 +198,7 @@ shown in \ref{fig:q2b}.
 
 The spectral density plots obtained using the indirect approach, deriving the
 covariance functions and then transforming to frequency domain, are shown in
-\ref{fig:q2c}.
-
+figure \ref{fig:q2c}.
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question2c.eps}
@@ -239,8 +225,7 @@ at all. The changes in slope of the phase plot shows that the ARX model has
 many more zeros and poles than the system. It's probably because the model
 being used is wrong. The Bode plot of both model and system are presented in
 figure \ref{fig:q3a}.
-
-\begin{figure}
+\begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question3a.eps}
     \end{center}
@@ -266,7 +251,6 @@ to lack of filtering of noise n.
 
 Using MATLAB function compare(), the NRMSE fitness values for the different
 model structures are
-
 \begin{center}
     \begin{tabular} {|r|r|r|r|r|r|}
         \hline
@@ -283,9 +267,7 @@ We see that the fitness values are roughly the same for OE, ARMAX, and BJ model
 structures as predicted. A Bode diagram of the OE model and the true system are
 presented in figure \ref{fig:q3c}. It is clear that the Bode magnitude and
 phase match closely up until the nyquist frequency.
-
-%\begin{figure}[H]
-\begin{figure}
+\begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question3c.eps}
     \end{center}
@@ -297,15 +279,12 @@ phase match closely up until the nyquist frequency.
 \subsection{}
 If it is assumed that model numbers are the same and the model structure is
 given:
-
-0) Start with model order = 0;
-
-1) Increment model order.
-
-2) Estimate model using input data and model order.
-
-3) Compare it to data.
-
+\begin{enumerate}
+    \item Start with model order = 0;
+    \item Increment model order.
+    \item Estimate model using input data and model order.
+    \item Compare it to data.
+\end{enumerate}
 If the fit value is within a specified margin of 100 or
 if the fit value stops increasing after a given amount of time, then stop as
 the model order has been found. Otherwise, go back to step 1.
