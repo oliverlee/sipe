@@ -1,0 +1,323 @@
+\documentclass[times,12pt,reqno]{amsart}
+% See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\geometry{left = 1in, right = 1in, top = 1in, bottom = 1in}
+% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{courier}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+
+\usepackage{float,amsmath,graphicx,color,framed,subfiles}
+\usepackage{amssymb,subcaption,textcomp,listings}
+\usepackage{booktabs,epstopdf,caption,units}
+\usepackage[table]{xcolor}
+
+\lstset{
+language=Matlab,
+basicstyle=\footnotesize\ttfamily,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+frame=single,
+tabsize=2,
+captionpos=b,
+breaklines=false,
+breakatwhitespace=false,
+numbers=left,
+numbersep=4pt,
+}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{Assignment 1 - Lee, Sharma}
+
+\title{WB2301-5 System Identification and Parameter Estimation \\
+Assignment 1 - Introduction to System Identification}
+\author{Oliver Lee\\Nikhil Sharma}
+\graphicspath{ {images/} }
+
+\begin{document}
+\maketitle
+
+\section{Question 1: Signal Analysis in the Time Domain}
+
+% 1a
+\subsection{}
+
+Cross-covariance of signals $u$, $y$ are plotted in fig \ref{fig:q1a}. Signals
+$u$, $y$ are observed for 5 seconds at a sampling frequency of 100 Hz.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1a.eps}
+    \end{center}
+    \caption{Cross-Covariances of signals $u$, $y$}
+    \label{fig:q1a}
+\end{figure}
+
+% 1b
+\subsection{}
+The variable on the x-axis is time delay $\tau$, which is the time shift
+between the two signals. The y-axis is the covariance between the time shifted
+signals $u$, $y$.
+
+For $C_{uy}$, $u$ is the output, $y$ is the input. For $C_{yu}$, $y$ is the
+output, $u$ is the input. Since the two cross-covariances simply have the input
+and output switched, the two cross-covariances are mirrored about $\tau = 0$.
+This can be expressed as
+
+\begin{equation*}
+    C_{uy}(\tau) = C_{yu}(-\tau)
+\end{equation*}
+
+% 1c
+\subsection{}
+Given that signal $u$ is random white noise and that each random variable is
+independent of all previous random variables, theoretically
+
+\begin{align*}
+    C_{uu}(\tau) &= 0, \: \forall \: \tau \neq 0 \\
+    C_{uu}(0) &= 0
+\end{align*}
+
+For signals $n$, $u$ that are both white noise, but independent processes
+\begin{align*}
+    C_{nu}(\tau) &= 0, \: \forall \: \tau
+\end{align*}
+
+% 1d
+\subsection{}
+As lag increases, the estimate suffers from large variances as the value
+is computed with fewer data points. As the lag becomes large, the leading
+$\frac{1}{N - \tau}$ factor becomes large. To avoid this, a biased estimator
+can be used, which does not use lag in the scaling factor.
+
+\newpage
+% 1e
+\subsection{}
+
+The following function implements the cross-covariance of two time signals
+using a frequency domain approach.
+
+\lstset{caption=Cross-Covariance Function}
+\lstinputlisting{../crosscov.m}
+
+The crosscov() function uses similar input and output variables as xcov() and
+the user should refer to that documentation for details on y, u, maxlag,
+scaleopt, c, and lags.
+
+Lines 4 - 15 handle input arguments. Lines 21 0 26 compute the
+cross-correlation in the frequency domain. Given that the cross spectrum is the
+Fourier transform of the autocorrelation and that the cross spectrum is product
+of the Fourier transforms of two signals, the implementation in MATLAB is
+straight foward. Note that the cross-covariance is calculated by removing the
+mean from each signal. Lines 28 - 32 will scale the cross-covariance terms such
+that it is either biased or unbiased.
+
+% 1f
+\subsection{}
+Calculating the argmax of the cross-correlation coefficients $K_{uu}(\tau)$,
+$K_{yu}(\tau)$ gives
+
+\begin{align*}
+    argmax \: K_{uu}(\tau) &= 0 \\
+    argmax \: K_{yu}(\tau) &= 0.1800
+\end{align*}
+
+% 1g
+\subsection{}
+Calculating the sum of squares for the error for each covariance calculation
+shows an extremely small difference between the functions xcov() and
+crosscov()
+
+\begin{align*}
+    SSE(u, u, biased) &= 3.7656 \times 10^{-31} \\
+    SSE(u, y, biased) &= 7.7604 \times 10^{-32} \\
+    SSE(y, u, biased) &= 6.0888 \times 10^{-32} \\
+    SSE(y, y, biased) &= 3.0425 \times 10^{-31} \\
+    SSE(u, u, unbiased) &= 1.1013 \times 10^{-28} \\
+    SSE(u, y, unbiased) &= 4.3742 \times 10^{-29} \\
+    SSE(y, u, unbiased) &= 2.7834 \times 10^{-29} \\
+    SSE(y, y, unbiased) &= 6.7404 \times 10^{-29}
+\end{align*}
+
+% 1h TODO
+\subsection{}
+The system impulse response and $C_{yu}(\tau)$ are plotted in fig \ref{fig:q1h}.
+The difference is ???.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1h.eps}
+    \end{center}
+    \caption{System impulse response and $C_{yu}(\tau)$}
+    \label{fig:q1h}
+\end{figure}
+
+% 1i TODO
+\subsection{}
+The cross-covariance of signals y, u for 100 seconds, $C_{yu}(\tau)$, has been
+plotted along with cross-covariance of the same signals for 5 seconds,
+$C_{yu}(\tau)$, and the system impulse response in fig \ref{fig:q1i}. The
+difference is ???.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1i.eps}
+    \end{center}
+    \caption{System impulse response, $C_{yu}(\tau)$, $C_{yu100}(\tau)$}
+    \label{fig:q1i}
+\end{figure}
+
+\newpage
+\section{Question 2: Fourier transform and spectral densities}
+
+% 2a
+\subsection{}
+The magnitude plot of $Y(f)$, shown in \ref{fig:q2a}, we see the gain of the
+signal $y$ for different frequencies. If the system is assumed to be linear and
+the input is a sinusoid, we can see the gain of the system for specific
+frequencies. Note, magnitude of $Y(f)$ is mirrored about the nyquist frequency.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{question2a.eps}
+    \end{center}
+    \caption{Magnitude and phase of Fourier transform of $y(t)$, $Y(f)$}
+    \label{fig:q2a}
+\end{figure}
+
+% 2b
+\subsection{}
+
+The spectral density plots obtained using the direct approach, transforming the
+signals into frequency domain and then deriving the spectral densities, are
+shown in \ref{fig:q2b}.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{question2b.eps}
+    \end{center}
+    \caption{Spectral densities $S_{uu}(f)$, $S_{yu}(f)$ (direct)}
+    \label{fig:q2b}
+\end{figure}
+
+% 2c
+\subsection{}
+
+The spectral density plots obtained using the indirect approach, deriving the
+covariance functions and then transforming to frequency domain, are shown in
+\ref{fig:q2c}.
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{question2c.eps}
+    \end{center}
+    \caption{Spectral densities $S_{uu}(f)$, $S_{yu}(f)$ (indirect)}
+    \label{fig:q2c}
+\end{figure}
+
+
+% 2d TODO
+\subsection{}
+
+Compare the results. The difference is ???
+
+\newpage
+\section{Question 3: Time Domain Models}
+
+% 3a
+\subsection{}
+The response of the ARX model looks completely different than the response of
+the system. The height of the peak around 1.5 Hz in the magnitude plot is not
+as sharp in the ARX model as that of the true system. The phase doesn't match
+at all. The changes in slope of the phase plot shows that the ARX model has
+many more zeros and poles than the system. It's probably because the model
+being used is wrong. The Bode plot of both model and system are presented in
+figure \ref{fig:q3a}.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question3a.eps}
+    \end{center}
+    \caption{Bode Diagram of system and ARX model}
+    \label{fig:q3a}
+\end{figure}
+
+% 3b
+\subsection{}
+Looking at the system, we see that we have a single input (white noise,
+signal u) which we treat as a deterministic input as well as noise n, a
+stochastic input. Immediately we can rule out models what do not incorporate
+both a deterministic and stochastic input: Finite Impulse Response (FIR),
+autoregressive (AR), and autoregressive moving average (ARMA). We are then left
+with 4 models: Output Error (OE), autoregressive exogenous input (ARX),
+autoregressive moving average exogenous input (ARMAX), and Box-Jenkins (BJ).
+While all can be used, as each is a more generalized version of the previous
+model, in the order presented, the simpliest one that can be applied is OE due
+to lack of filtering of noise n.
+
+% 3c
+\subsection{}
+
+Using MATLAB function compare(), the NRMSE fitness values for the different
+model structures are
+
+\begin{center}
+    \begin{tabular} {|r|r|r|r|r|r|}
+        \hline
+        \multicolumn{6}{|c|}{NRMSE fitness for System Models} \\
+        \hline
+        \nonumber & ${True}$ & ${OE}$ & ${ARX}$ & ${ARMAX}$ & ${BJ}$ \\
+        \hline
+        $fit$ & $53.6265$ & $53.6518$ & $2.4514$ & $53.6480$ & $53.6560$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+We see that the fitness values are roughly the same for OE, ARMAX, and BJ model
+structures as predicted. A Bode diagram of the OE model and the true system are
+presented in figure \ref{fig:q3c}. It is clear that the Bode magnitude and
+phase match closely up until the nyquist frequency.
+
+%\begin{figure}[H]
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question3c.eps}
+    \end{center}
+    \caption{Bode Diagram of system and OE model}
+    \label{fig:q3c}
+\end{figure}
+
+% 3d
+\subsection{}
+If it is assumed that model numbers are the same and the model structure is
+given:
+
+0) Start with model order = 0;
+
+1) Increment model order.
+
+2) Estimate model using input data and model order.
+
+3) Compare it to data.
+
+If the fit value is within a specified margin of 100 or
+if the fit value stops increasing after a given amount of time, then stop as
+the model order has been found. Otherwise, go back to step 1.
+
+If model orders are not the same ($ n_a \neq n_b $, etc.), and the model
+structure is unknown, I would use a Genetic Algorithm with the candidate
+solutions being composed of the model structures and model orders and the NRMSE
+as the fitness function that is used to evaluate the candidate solutions.
+During selction of subsequent generations, a small percentage (~10\%) of the
+most fit candidates would be selected for retention, and the rest of the
+candidates would be generated randomly or by generated from combining fit
+solutions from the previous generation. Termination conditions would be the
+same as above.
+
+\end{document}
