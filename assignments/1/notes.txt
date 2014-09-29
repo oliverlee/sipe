@@ -34,19 +34,22 @@ which does not use tau in the scaling factor.
 3a) It looks wrong. The peak around 1.5 Hz in the magnitude plot is not as
 sharp as the response from the true system. The phase doesn't match at all.
 It's probably because the model being used is wrong.
-3b) Looking at the system, we see that there is only a stochastic input: white
-noise. Since there is no deterministic input, we can rule out models Output
-Error (OE) and Finite Impulse Response (FIR). The models that may be used since
-a stochastic input is incorporated are: autoregressive (AR), autoregressive
-moving average (ARMA), autoregressive exogenous input (ARX), autoregressive
-moving average exogenous input (ARMAX), Box-Jenkins (BJ). From the Bode
-magnitude plot, it should be obvious that the system has zeros as we see an
-increase in slope (or I could have just looked at the transfer function in the
-simulink model I suppose). Thus the C(z**-1) term is nonzero and we can rule
-out models AR and ARX. To model this system, we can use ARMA or ARMAX or BJ as
-the last 2 are more generalized versions of ARMA.
-3c) It looks like the models OE, ARMAX, and BJ are fine. I guess I'm wrong
-about OE being ruled out.
+
+3b) Looking at the system, we see that we have a single input (white noise,
+signal u) which we treat as a deterministic input as well as noise n, a
+stochastic input. Immediately we can rule out models what do not incorporate
+both a deterministic and stochastic input: Finite Impulse Response (FIR),
+autoregressive (AR), and autoregressive moving average (ARMA). We are then left
+with 4 models: Output Error (OE), autoregressive exogenous input (ARX),
+autoregressive moving average exogenous input (ARMAX), and Box-Jenkins (BJ).
+While all can be used, as each is a more generalized version of the previous
+model, in the order presented, the simpliest one that can be applied is OE due
+to lack of filtering of noise n.
+
+3c) Models OE, ARMAX, and BJ are almost identical. Calculating NRMSE fitness
+values for the data and models, we find a fit of 53.6158, 53.6480, and 53.6560
+respectively, with the fitness for the true system being 53.6265.
+
 3d) If it is assumed that model numbers are the same and the model structure is given:
 0) Start with model order = 0;
 1) Increment model order.
