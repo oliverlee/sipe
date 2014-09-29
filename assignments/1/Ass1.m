@@ -29,11 +29,11 @@ t = (0 : N - 1) * dt;         % [s] Time vector
 
 % Plot input and output signals.
 figure
-subplot(211); plot(t, u);
+subplot(211); plot(t, u, 'linewidth', 2);
 xlabel('t [s]', 'Fontsize', 18); ylabel('u [-]', 'Fontsize', 18);
 title('Input', 'Fontsize', 20)
 set(gca,'FontSize',18)
-subplot(212); plot(t, y);
+subplot(212); plot(t, y, 'linewidth', 2);
 xlabel('t [s]', 'Fontsize', 18); ylabel('y [-]', 'Fontsize', 18);
 title('Output', 'Fontsize', 20)
 set(gca, 'FontSize', 18)
@@ -51,20 +51,20 @@ tau = lags * dt; % Fill in the dots  [lags should be in seconds]
 % Plot the covariances in one figure using subplot
 figure('Name','Question 1a')
 subplot(2,2,1)
-    plot(tau, Cuu);
-    xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{uu}', 'Fontsize', 18)
+    plot(tau, Cuu, 'linewidth', 2);
+    xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{uu}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 subplot(2,2,2)
-    plot(tau, Cuy);
+    plot(tau, Cuy, 'linewidth', 2);
     xlabel('tau  [s]', 'Fontsize', 18); ylabel('C_{uy}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 subplot(2,2,3)
-    plot(tau, Cyu);
-    xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{yu}', 'Fontsize', 18)
+    plot(tau, Cyu, 'linewidth', 2);
+    xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{yu}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 subplot(2,2,4)
-    plot(tau, Cyy);
-    xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{yy}', 'Fontsize', 18)
+    plot(tau, Cyy, 'linewidth', 2);
+    xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{yy}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 eps_save('question1a')
 
@@ -73,9 +73,9 @@ eps_save('question1a')
 
 Cyu_unbiased = xcov(y, u, 'unbiased');
 figure('Name', 'Question 1d')
-    plot(tau, Cyu, 'b', tau, Cyu_unbiased, 'r')
+    plot(tau, Cyu, 'b', tau, Cyu_unbiased, 'g', 'linewidth', 2)
     legend('biased', 'unbiased')
-    xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{yu}', 'Fontsize', 18)
+    xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{yu}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 eps_save('question1d')
 
@@ -86,11 +86,11 @@ eps_save('question1d')
 
 figure('Name','Question 1f')
 subplot(2,1,1)
-    plot(tau, Kuu);
-    xlabel('tau [s]', 'Fontsize', 18); ylabel('K_{uu}', 'Fontsize', 18)
+    plot(tau, Kuu, 'linewidth', 2);
+    xlabel('lag [s]', 'Fontsize', 18); ylabel('K_{uu}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 subplot(2,1,2)
-    plot(tau, Kyu);
+    plot(tau, Kyu, 'linewidth', 2);
     xlabel('tau  [s]', 'Fontsize', 18); ylabel('K_{yu}', 'Fontsize', 18)
     set(gca, 'FontSize', 18)
 eps_save('question1d')
@@ -105,16 +105,16 @@ Kyu_argmax_tau = tau(Kyu_argmax)
 % figure('Name','Question 1g,(biased)')
 % subplot(4,1,1)
 %     plot(tau, xcov(u, u, 'biased'), 'b',  tau, crosscov(u, u, 'biased'), 'g');
-%     xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{uu}', 'Fontsize', 18)
+%     xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{uu}', 'Fontsize', 18)
 % subplot(4,1,2)
 %     plot(tau, xcov(u, y, 'biased'), 'b', tau, crosscov(u, y, 'biased'), 'g');
-%     xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{uy}', 'Fontsize', 18)
+%     xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{uy}', 'Fontsize', 18)
 %  subplot(4,1,3)
 %     plot(tau, xcov(y, u, 'biased'), 'b', tau, crosscov(y, u, 'biased'), 'g');
-%     xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{yu}', 'Fontsize', 18)
+%     xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{yu}', 'Fontsize', 18)
 % subplot(4,1,4)
 %     plot(tau, xcov(y, y, 'biased'), 'b', tau, crosscov(y, y, 'biased'), 'g');
-%     xlabel('tau [s]', 'Fontsize', 18); ylabel('C_{yy}', 'Fontsize', 18)
+%     xlabel('lag [s]', 'Fontsize', 18); ylabel('C_{yy}', 'Fontsize', 18)
 e_uu = xcov(u, u, 'biased') - crosscov(u, u, 'biased');
 e_uy = xcov(u, y, 'biased') - crosscov(u, y, 'biased');
 e_yu = xcov(y, u, 'biased') - crosscov(y, u, 'biased');
@@ -137,10 +137,10 @@ dot(e_yy, e_yy)
 H = tf(1, [0.01, 0.03, 1]);
 [y_impulse, t_impulse] = impulse(H, t);
 figure('Name','Question 1h')
-    plot(tau, Cyu, 'b',  t_impulse, y_impulse, 'g');
-    xlabel('tau [s]', 'Fontsize', 18);
-    ylabel('C_{uu}, impulse response', 'Fontsize', 18)
-    legend('C_{yu}', 'impulse response of H')
+    plot(t_impulse, y_impulse, 'b', tau, Cyu, 'g', 'linewidth', 2);
+    xlabel('lag [s]', 'Fontsize', 18);
+    ylabel('impulse response, C_{yu}', 'Fontsize', 18)
+    legend('impulse response of H', 'C_{yu}')
     set(gca, 'FontSize', 18)
 eps_save('question1h')
 
@@ -151,9 +151,11 @@ t   = (0 : N - 1) * dt;         % [s] Time vector
 
 [Cyu100, lags100] = xcov(y, u, 'biased');
 figure('Name','Question 1i')
-    plot(lags100*dt, Cyu100);
-    xlabel('tau [s]', 'Fontsize', 18);
-    ylabel('C_{yu100}', 'Fontsize', 18)
+    plot(t_impulse, y_impulse, 'b', tau, Cyu, 'g',...
+        lags100*dt, Cyu100, 'r', 'linewidth', 2);
+    xlabel('lag [s]', 'Fontsize', 18);
+    ylabel('impulse response, C_{yu}, C_{yu100}', 'Fontsize', 18)
+    legend('impulse response of H', 'C_{yu}', 'C_{yu100}')
     set(gca, 'FontSize', 18)
 eps_save('question1i')
 
@@ -179,14 +181,14 @@ Y = fft(y);
 f = t/T*fs;
 figure('Name', 'Question 2a')
 subplot(2, 1, 1)
-    plot(f, abs(Y))
-    xlabel('frequency (Hz)', 'Fontsize', 18);
+    plot(f, abs(Y), 'linewidth', 2)
+    xlabel('frequency [Hz]', 'Fontsize', 18);
     ylabel('|Y(f)|', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 subplot(2, 1, 2)
-    plot(f, phase(Y))
-    xlabel('frequency (Hz)', 'Fontsize', 18);
-    ylabel('phase(Y(f)) [degrees]', 'Fontsize', 18);
+    plot(f, phase(Y), 'linewidth', 2)
+    xlabel('frequency [Hz]', 'Fontsize', 18);
+    ylabel('phase(Y(f)) [deg]', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 eps_save('question2a')
 
@@ -214,13 +216,13 @@ Suu = U.*conj(U)/length(u);
 Syu = Y.*conj(U)/length(u);
 figure('Name', 'Question 2b');
 subplot(2, 1, 1)
-    loglog(f, abs(Suu))
-    xlabel('frequency (Hz)', 'Fontsize', 18);
+    loglog(f, abs(Suu), 'linewidth', 2)
+    xlabel('frequency [Hz]', 'Fontsize', 18);
     ylabel('|Suu(f)|', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 subplot(2, 1, 2)
-    loglog(f, abs(Syu))
-    xlabel('frequency (Hz)', 'Fontsize', 18);
+    loglog(f, abs(Syu), 'linewidth', 2)
+    xlabel('frequency [Hz]', 'Fontsize', 18);
     ylabel('|Syu(f)|', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 eps_save('question2b')
@@ -234,15 +236,15 @@ Syu_unb = fft(xcov(y, u, 'unbiased'));
 f = (0:2*(N - 1))/T;
 figure('Name', 'Question 2c')
 subplot(2, 1, 1)
-    loglog(f, abs(Suu_bias), 'b', f, abs(Suu_unb), 'g')
+    loglog(f, abs(Suu_bias), 'b', f, abs(Suu_unb), 'g', 'linewidth', 2)
     legend('biased', 'unbiased')
-    xlabel('frequency (Hz)', 'Fontsize', 18);
+    xlabel('frequency [Hz]', 'Fontsize', 18);
     ylabel('|Suu(f)|', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 subplot(2, 1, 2)
-    loglog(f, abs(Syu_bias), 'b', f, abs(Syu_unb), 'g')
+    loglog(f, abs(Syu_bias), 'b', f, abs(Syu_unb), 'g', 'linewidth', 2)
     legend('biased', 'unbiased')
-    xlabel('frequency (Hz)', 'Fontsize', 18);
+    xlabel('frequency [Hz]', 'Fontsize', 18);
     ylabel('|Syu(f)|', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 eps_save('question2c')
@@ -292,24 +294,26 @@ H = squeeze(freqresp(sys, fv_half, 'Hz'));
 sys_true = tf(1, [0.01, 0.03, 1]);
 H_true = squeeze(freqresp(sys_true, fv_half, 'Hz'));
 figure('Name', 'Question 3a')
-system_legend = {'ARX', 'True'};
-cmap = hsv(length(system_legend));
+system_legend = {'True', 'ARX'};
+%cmap = hsv(length(system_legend));
 subplot(2, 1, 1)
     hold on
-    plot(fv_half, abs(H), 'color', cmap(1, :), 'linewidth', 2)
-    plot(fv_half, abs(H_true), 'color', cmap(2, :), 'linewidth', 2)
+    %plot(fv_half, abs(H_true), 'color', cmap(1, :), 'linewidth', 2)
+    %plot(fv_half, abs(H), 'color', cmap(2, :), 'linewidth', 2)
+    plot(fv_half, abs(H_true), 'color', 'b', 'linewidth', 2)
+    plot(fv_half, abs(H), 'color', 'g', 'linewidth', 2)
     hold off
-    xlabel('frequency (Hz)', 'Fontsize', 18);
-    ylabel('|Y(f)|', 'Fontsize', 18);
+    xlabel('frequency [Hz]', 'Fontsize', 18);
+    ylabel('gain', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 	legend(system_legend);
 subplot(2, 1, 2)
     hold on
-    plot(fv_half, phase(H), 'color', cmap(1, :), 'linewidth', 2)
-    plot(fv_half, phase(H_true), 'color', cmap(2, :), 'linewidth', 2)
+    plot(fv_half, phase(H_true), 'color', 'b', 'linewidth', 2)
+    plot(fv_half, phase(H), 'color', 'g', 'linewidth', 2)
     hold off
-    xlabel('frequency (Hz)', 'Fontsize', 18);
-    ylabel('phase(Y(f)) [degrees]', 'Fontsize', 18);
+    xlabel('frequency [Hz]', 'Fontsize', 18);
+    ylabel('phase [deg]', 'Fontsize', 18);
     set(gca, 'FontSize', 18)
 	legend(system_legend);
 eps_save('question3a')
@@ -325,10 +329,13 @@ sys_true = tf(1, [0.01, 0.03, 1]);
 
 % systems = {sys_oe, sys_arx, sys_arma, sys_armax, sys_bj, sys_true};
 % system_legend = {'OE', 'ARX', 'ARMA', 'ARMAX', 'BJ', 'True'};
-systems = {sys_true, sys_oe, sys_arx, sys_armax, sys_bj};
-system_legend = {'True', 'OE', 'ARX', 'ARMAX', 'BJ'};
+% systems = {sys_true, sys_oe, sys_arx, sys_armax, sys_bj};
+systems = {sys_true, sys_oe};
+% system_legend = {'True', 'OE', 'ARX', 'ARMAX', 'BJ'};
+system_legend = {'True', 'OE'};
 H = cell(size(systems));
-cmap = hsv(length(systems));
+%cmap = hsv(length(systems));
+cmap = {'b', 'g'};
 fit = zeros(size(systems));
 
 figure(1); clf
@@ -337,10 +344,10 @@ for i = 1:length(systems)
 
     subplot(211)
     hold on;
-    loglog(fv_half, abs(H{i}), 'color', cmap(i,:), 'linewidth', 2);
+    loglog(fv_half, abs(H{i}), cmap{i}, 'linewidth', 2);
     hold off
-    xlabel('frequency (Hz)', 'Fontsize', 18);
-    ylabel('|Y(f)|', 'Fontsize', 18);
+    xlabel('frequency [Hz]', 'Fontsize', 18);
+    ylabel('gain', 'Fontsize', 18);
     if i == length(systems)
         legend(system_legend);
         set(gca, 'FontSize', 18)
@@ -348,10 +355,10 @@ for i = 1:length(systems)
 
     subplot(212)
     hold on;
-    semilogx(fv_half, phase(H{i}), 'color', cmap(i,:), 'linewidth', 2);
+    semilogx(fv_half, phase(H{i}), cmap{i}, 'linewidth', 2);
     hold off
-    xlabel('frequency (Hz)', 'Fontsize', 18);
-    ylabel('phase(Y(f)) [degrees]', 'Fontsize', 18);
+    xlabel('frequency [Hz]', 'Fontsize', 18);
+    ylabel('phase [deg]', 'Fontsize', 18);
     if i == length(systems)
         legend(system_legend);
         set(gca, 'FontSize', 18);
