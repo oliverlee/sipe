@@ -115,31 +115,50 @@ that it is either biased or unbiased.
 \subsection{}
 Calculating the argmax of the cross-correlation coefficients $K_{uu}(\tau)$,
 $K_{yu}(\tau)$ gives
-\begin{align*}
-    argmax \: K_{uu}(\tau) &= 0 \\
-    argmax \: K_{yu}(\tau) &= 0.1800
-\end{align*}
+%\begin{align*}
+%    argmax \: K_{uu}(\tau) &= 0 s \\
+%    argmax \: K_{yu}(\tau) &= 0.1800 s
+%\end{align*}
+
+\begin{center}
+    \begin{tabular} {|r|r|}
+        \hline
+        $argmax \: K_{uu}$ & $0 s$ \\
+        $argmax \: K_{yu}$ & $0.1800 s$ \\
+        \hline
+    \end{tabular}
+\end{center}
 
 % 1g
 \subsection{}
 Calculating the sum of squares for the error for each covariance calculation
 shows an extremely small difference between the functions xcov() and
 crosscov()
-\begin{align*}
-    SSE(u, u, biased) &= 3.7656 \times 10^{-31} \\
-    SSE(u, y, biased) &= 7.7604 \times 10^{-32} \\
-    SSE(y, u, biased) &= 6.0888 \times 10^{-32} \\
-    SSE(y, y, biased) &= 3.0425 \times 10^{-31} \\
-    SSE(u, u, unbiased) &= 1.1013 \times 10^{-28} \\
-    SSE(u, y, unbiased) &= 4.3742 \times 10^{-29} \\
-    SSE(y, u, unbiased) &= 2.7834 \times 10^{-29} \\
-    SSE(y, y, unbiased) &= 6.7404 \times 10^{-29}
-\end{align*}
 
-% 1h TODO
+\begin{center}
+    \begin{tabular} {|r|r|r|}
+        \hline
+        \multicolumn{3}{|c|}{Sum of Squares Error} \\
+        \hline
+        \nonumber & ${biased}$ & ${unbiased}$ \\
+        \hline
+        $C_{uu}$ & $3.7656 \times 10^{-31}$ & $1.1013 \times 10^{-28}$ \\
+        $C_{uy}$ & $7.7604 \times 10^{-32}$ & $4.3742 \times 10^{-29}$ \\
+        $C_{yu}$ & $6.0888 \times 10^{-32}$ & $2.7834 \times 10^{-29}$ \\
+        $C_{yy}$ & $3.0425 \times 10^{-31}$ & $6.7404 \times 10^{-29}$ \\
+        \hline
+    \end{tabular}
+\end{center}
+
+% 1h
 \subsection{}
-The system impulse response and $C_{yu}(\tau)$ are plotted in figure \ref{fig:q1h}.
-The difference is ???.
+The system impulse response and $C_{yu}(\tau)$ are plotted in figure
+\ref{fig:q1h}. The impulse response of a system comprises of excitations of
+the system at all frequencies in equal amounts. This can be approximated with a
+white noise time signal as a white noise signal should have also have all
+frequency components in equal amounts. We should expect that the
+cross-covariance of the output $y$ with white noise to be proportional to the
+impulse response.
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question1h.eps}
@@ -148,12 +167,15 @@ The difference is ???.
     \label{fig:q1h}
 \end{figure}
 
-% 1i TODO
+% 1i
 \subsection{}
-The cross-covariance of signals y, u for 100 seconds, $C_{yu}(\tau)$, has been
-plotted along with cross-covariance of the same signals for 5 seconds,
-$C_{yu}(\tau)$, and the system impulse response in figure \ref{fig:q1i}. The
-difference is ???.
+The cross-covariance of signals $y$, $u$ for 100 seconds, $C_{yu}(\tau)$, has
+been plotted along with cross-covariance of the same signals for 5 seconds,
+$C_{yu}(\tau)$, and the system impulse response in figure \ref{fig:q1i}. Given
+that the signal $u$ is longer, it should be closer to theoretical white noise,
+that is, contain all frequency components at equal values. Thus, the
+cross-covariance of the longer signals, $C_{yu100}$, is a better approximation
+of the impulse response than $C_{yu}$.
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{question1i.eps}
@@ -208,10 +230,14 @@ figure \ref{fig:q2c}.
 \end{figure}
 
 
-% 2d TODO
+% 2d
 \subsection{}
 
-Compare the results. The difference is ???
+Using the direct and indirect approach result in differences in the calculation
+of spectral densities. Due to high amount of variance associated with large
+lags in the biased cross-covariances, windowing should be used before
+calculating the FFT. However, lack of windowing and biased calculations of the
+cross-covariances results in a higher effect of noise.
 
 \newpage
 \section{Question 3: Time Domain Models}
