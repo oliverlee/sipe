@@ -1,0 +1,139 @@
+\documentclass[11pt,a4paper]{article}
+% See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
+% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[parfill]{parskip}
+\usepackage{courier,multirow,fancyhdr}
+\usepackage{float,amsmath,graphicx,color,framed,subfiles}
+\usepackage{amssymb,subcaption,textcomp,listings}
+\usepackage{booktabs,epstopdf,caption,units}
+\usepackage[table]{xcolor}
+
+\lstset{
+language=Matlab,
+basicstyle=\footnotesize\ttfamily,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+frame=single,
+tabsize=2,
+captionpos=b,
+breaklines=false,
+breakatwhitespace=false,
+numbers=left,
+numbersep=4pt,
+}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\frenchspacing
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{Lee}
+\fancyhead[L]{Assignment 2}
+
+\title{WB2301-5 System Identification and Parameter Estimation \\
+Assignment 2 - Open and Closed Loop Identification}
+\author{Oliver Lee}
+\date{\today}
+\graphicspath{ {images/} }
+
+\begin{document}
+\maketitle
+
+\section{Fourier Transformation of Signals}
+
+% 1a
+\subsection{Symmetric and Anti-symmetric Properties of Fourier Coefficients}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1a.eps}
+    \end{center}
+    \caption{Frequency spectrum of $y(t)$}
+    \label{fig:1a}
+\end{figure}
+As all actual signals are of finite duration, there will always be Fourier
+components at all frequencies. When these signals are sampled, any frequency
+components above the Nyquist frequency (half the sampling frequency) will be
+aliased, that is, components from higher frequencies will be indistinguishable
+from components in lower frequencies.
+
+For a real signal $x_0, \ldots, x_{N-1}$, with $N$ being the number of samples
+of the signal, the discrete Fourier transform has the following property:
+\begin{equation*}
+    X_{N-k} = X_{-k} = X_{k}^{*}
+\end{equation*}
+where $X_{k}$ is the (complex) Fourier coefficient for frequency $k$ and
+$X_{k}^{*}$ is the complex conjugate of $X_k$. If we look at the magnitude and
+phase of $X_k$, we find that:
+\begin{align*}
+    \norm{X_{N-k}} = \norm{X_{k}^{*}} = \norm{X_{k}} \\
+    \angle X_{N-k} = \angle X_{k}^{*}  = -\angle X_{k}
+\end{align*}
+Thus the magnitude of $X$ is symmetric about the Nyquist frequency and the
+angle of $X$ is anti-symmetric about the Nyquist frequency. As a result, and as
+commonly seen, the Fourier transform of a real signal is only plotted for
+frequencies between 0 and the Nyquist frequency. The symmetric and
+anti-symmetric properties can be seen in the magnitude and phase plots of the
+Fourier transform of a signal $y(t)$ in figure \ref{fig:1a}.
+%$u(t) = 2*sin(2\pi ft) + n(0, 1)$ which is a sum
+%of a sinusoid with frequency of 3 Hz and amplitude 2 and white noise with mean
+%0 and variance 1 in figure \ref{fig:1a}.
+
+% 1b
+\subsection{Effect of Sample Frequency}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1b.eps}
+    \end{center}
+    \caption{Magnitude spectrum of signal $y(t)$ sampled at different rates}
+    \label{fig:1b}
+\end{figure}
+With higher sample frequency of a time signal, we have higher frequency
+components in the Fourier transform. Note however, that the highest frequency
+is not the sampling frequency, but the Nyquist frequency. Figure \ref{fig:1b}
+shows the Fourier transforms for the same signal sampled at 4 different
+frequencies. Each Fourier transform has been scaled by $1/N$, where $N$ is the
+length of the signal in samples, such that the frequency components have the
+same magnitudes across signals.
+
+As our input signal is the sum of a sinusoid with white noise, we expect the
+Fourier transform of the unfiltered signal to have a large component at \mbox{3
+Hz} due to the sinusoidal signal and smaller, equal components at all other
+frequencies due to noise. After a low-pass Butterworth filter is applied, the
+frequency components above the cutoff frequency are attenuated by \mbox{20
+dB/dec} per pole (or filter order). We can see in Figure \ref{fig:1b} that
+attenuation of the noise begins around \mbox{25 Hz}, the cutoff frequency of
+the applied filter, at a rate of \mbox{60 dB/dec} as the filter is third order.
+
+% 1c
+\subsection{Effect of Observation Time}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1c.eps}
+    \end{center}
+    \caption{Magnitude spectrum of signal $y(t)$ observed for different lengths
+    of time}
+    \label{fig:1c}
+\end{figure}
+A longer observation time $T$ of a time signal results in higher resolution in
+the Frequency domain. In figure \ref{fig:1c}, a signal is sampled twice, once
+for 10 seconds at \mbox{1000 Hz} and once for 5 seconds at \mbox{1000 Hz}, and
+the resulting Fourier transforms are plotted. Note, the Fourier transforms in
+figure \ref{fig:1c} have not been scaled by the length of the input signal or
+any other value so that the magnitudes of the Fourier coefficients can be
+compared in this case with equal sampling rate but differing observation time.
+
+As the sampling frequency is the same, both Fourier transforms have frequency
+components up to \mbox{1000 Hz}, but the signal with observation time $T = 10
+s$, $y_{1000}$, has a frequency resolution of \mbox{0.1 Hz} while the signal
+with observation time $T = 5 s$, $y_{1000, 5}$, has a frequency resolution of
+\mbox{0.2 Hz}. While the components cannot be seen every 0.1 and \mbox{0.2 Hz}
+in figure \ref{fig:1c}, the effect of a different frequency resolutions with a
+noisy signal are visible. Since noise is present at all frequencies in
+equivalent amounts, a lower sampling rate will result in larger frequency
+components due to noise as the each FFT bin encompasses a large range of
+frequencies. This can be seen by the higher noise floor in signal $y_{1000, 5}$
+over signal $y_{1000}$.
+
+\end{document}
