@@ -135,8 +135,8 @@ compared in this case with equal sampling rate but differing observation time.
 
 As the sampling frequency is the same, both Fourier transforms have frequency
 components up to \mbox{1000 Hz}, but the signal with observation time $T = 10
-s$, $y_{1000}$, has a frequency resolution of \mbox{0.1 Hz} while the signal
-with observation time $T = 5 s$, $y_{1000, 5}$, has a frequency resolution of
+\:s$, $y_{1000}$, has a frequency resolution of \mbox{0.1 Hz} while the signal
+with observation time $T = 5 \:s$, $y_{1000, 5}$, has a frequency resolution of
 \mbox{0.2 Hz}. While the components cannot be seen every 0.1 and \mbox{0.2 Hz}
 in figure \ref{fig:1c}, the effect of a different frequency resolutions with a
 noisy signal are visible. Since noise is present at all frequencies in
@@ -146,6 +146,7 @@ frequencies. This can be seen by the higher noise floor in signal $y_{1000, 5}$
 over signal $y_{1000}$.
 
 \section{Open Loop Identification}
+\label{sec:2}
 
 % 2a
 \subsection{Theoretical Input/Output Spectrum}
@@ -188,7 +189,6 @@ Thus we can find the estimate $\hat{H}(f)$ with the estimates of power spectra:
     \hat{H}(f) = \frac{\hat{S}_{yu}(f)}{\hat{S}_{uu}(f)}
     \label{eq:H_est}
 \end{equation}
-
 
 % 2c
 \subsection{Magnitude, phase, and coherence of estimate $\hat{H}$}
@@ -268,7 +268,6 @@ itself. Furthermore, all experiments have finite observation time. Increasing
 the variance of the input signal requires the observation time also be extended
 such that the estimated input power spectrum approaches a constant value.
 
-
 % 2g
 \subsection{High variance in additive output noise signal $n(t)$}
 While theoretically high variance in the additive ouput noise $n(t)$ should not
@@ -280,5 +279,161 @@ will increase the second term and increase error in the estimate $\hat{H}(f)$.
 This can be seen in figure \ref{fig:2f} where the noise variance has been
 increased by a factor of $100$ ($\sigma_n^2 = 10$) and an estimate $\hat{H}(f)$
 is obtained using Welch averaging with $N = 10$.
+
+\section{Closed Loop}
+
+% 3a
+\subsection{Open loop estimator}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question3a.eps}
+    \end{center}
+    \caption{Open-loop spectral estimation of H in closed loop system}
+    \label{fig:3a}
+\end{figure}
+The system response of $H(f)$ and coherence is shown in figure \ref{fig:3a}
+which is calculated using the open loop estimator as described with equation
+(\ref{eq:H_est}). With low noise variance, the internal signal $u(t)$ is
+approximately equal to reference signal $r(t)$ this closed loop system is
+approximately equivalent to the open loop system from section~\ref{sec:2}. As
+can be seen in the frequency reponse and coherence, the open loop estimator is
+a good estimator for this case.
+
+% 3b
+\subsection{Open loop estimator with large noise variance}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question3b.eps}
+    \end{center}
+    \caption{Open-loop spectral estimation of H in closed loop system with
+    large noise variance}
+    \label{fig:3b}
+\end{figure}
+Increasing the variance of $n(t)$ results in worse estimates using the open
+loop estimator (equation (\ref{eq:H_est})). However, we can show that the open
+loop estimator, $\frac{S_{yu}}{S_{uu}}$ estimates a different subsytem for the
+closed loop system. We can see from inspection that the expressions for of
+$Y(f)$ and $U(f)$ are:
+\begin{equation}
+    U(f) = R(f) - GY(f) \qquad Y(f) = N(f) + HU(f) \label{eq:start_eq}
+\end{equation}
+Rearranging equations (\ref{eq:start_eq}), we get $U(f)$ in terms of
+$R(f)$ and $N(f)$:
+\begin{align}
+    U &= R - G(N + HU) \notag \\
+    U &= R - GN - HGU \notag \\
+    (1 + HG)U &= R - GN \notag \\
+    U &= \frac{1}{1 + HG}R - \frac{G}{1 + HG}N \label{eq:u}
+\end{align}
+Note that the arguments have been omitted. The same can be done for $Y(f)$:
+\begin{align}
+    Y &= H(R - GY) + N \notag \\
+    Y &= HR - HGY + N \notag \\
+    (1 + HG)Y &= HR + N \notag \\
+    Y &= \frac{H}{1 + HG}R + \frac{1}{1 + HG}N  \label{eq:y}
+\end{align}
+We can then obtain an expression for $S_{uu}$ by multiplying equation
+(\ref{eq:u}) by $U^*$:
+\begin{align}
+    S_{uu} &= \frac{1}{M}UU^* =
+        \frac{1}{M}\left( \frac{1}{1 + HG}R - \frac{G}{1 + HG}N\right)
+        \left(\frac{1}{1 + HG}R^* - \frac{G}{1 + HG}N^*\right) \notag \\
+    &= \frac{1}{M(1+HG)^2}(RR^* - GRN^* - GNR^* + G^2NN^*) \notag \\
+    &= \frac{1}{(1+HG)^2}(S_{rr} - GS_{rn} - GS_{nr} + G^2S_{nn}) \notag \\
+    &= \frac{1}{(1+HG)^2}(S_{rr} + G^2S_{nn}) \label{eq:Suu}
+\end{align}
+Where $S_{rn} = 0$ and $S_{nr} = 0$ since signals $r(t)$ and $n(t)$ are random,
+independent signals and $M$ is the length of the signals. $S_{yu}$ can be
+obtained by multiplying equation
+(\ref{eq:y}) by $U^*$:
+\begin{align}
+    S_{yu} &= \frac{1}{M}YU^* =
+        \frac{1}{M}\left(\frac{H}{1 + HG}R + \frac{1}{1 + HG}N\right)
+        \left(\frac{1}{1 + HG}R^* - \frac{G}{1 + HG}N^*\right) \notag \\
+    &= \frac{1}{M(1+HG)^2}(HRR^* - HGRN^* + NR^* - GNN^*) \notag \\
+    &= \frac{1}{(1+HG)^2}(HS_{rr} - HGS_{rn} + S_{nr} - GS_{nn}) \notag \\
+    &= \frac{1}{(1+HG)^2}(HS_{rr} - GS_{nn}) \label{eq:Syu}
+\end{align}
+Combining equations (\ref{eq:Suu}) and (\ref{eq:Syu}) gives an expression for
+$\frac{S_{yu}}{S_{uu}}$, or the open loop estimate:
+\begin{equation}
+    \frac{S_{yu}}{S_{uu}} = \frac{HS_{rr} - GS_{nn}}{S_{rr} + G^2S_{nn}}
+    \label{eq:SyuSuu_cl}
+\end{equation}
+Since $r(t)$ and $n(t)$ are white noise, the power spectrum terms in equation
+(\ref{eq:SyuSuu_cl}) can be replaced with the noise variances:
+\begin{equation}
+    \frac{S_{yu}}{S_{uu}} = \frac{H\sigma_r^2 - G\sigma_n^2}
+    {\sigma_r^2 + G^2\sigma_n^2}
+    \label{eq:SyuSuu_cl_sigma}
+\end{equation}
+For $\sigma_r^2 >> \sigma_n^2$, equation (\ref{eq:SyuSuu_cl_sigma}) simplifies
+to the following:
+\begin{equation}
+    \frac{S_{yu}}{S_{uu}} = \frac{H\sigma_r^2} {\sigma_r^2} = H \label{eq:cl_H}
+\end{equation}
+For $\sigma_r^2 << \sigma_n^2$, equation (\ref{eq:SyuSuu_cl_sigma}) simplifies
+to:
+\begin{equation}
+    \frac{S_{yu}}{S_{uu}} = \frac{-G\sigma_n^2} {G^2\sigma_n^2} =
+    -\frac{G}{G^2} = -\frac{1}{G} \label{eq:cl_Ginv}
+\end{equation}
+Figure \ref{fig:3b} shows the frequency response of systems $H$ and $-G^{-1}$
+and the frequency response and coherence for open loop estimates with
+$\sigma_r^2 = 1$ and varying $\sigma_n^2$. We can see that for small
+$\sigma_n^2$, the open loop estimate is close approximation of $H$ and as
+$\sigma_n^2$ increases, the open loop estimate becomes a better approximation
+of $-G^{-1}$. Note that coherence is close to 1 if $\sigma_n^2 >> \sigma_r^2$
+or $\sigma_n^2 << \sigma_r^2$, which is when either the variance of $r(t)$ or
+$n(t)$ dominates resulting in a closed loop system that is approximately
+linear. This is supported by the expressions for the closed loop system
+estimate in equations (\ref{eq:cl_H}) and (\ref{eq:cl_Ginv}).
+
+% 3c
+\subsection{Spectral estimator for system H}
+Starting with equations (\ref{eq:u}) and (\ref{eq:y}), we can multiply by the
+complex conjugate of $R(f)$ to obtain the following cross spectra:
+\begin{align}
+    S_{ur} &= \frac{1}{M}UR^* \notag \\
+           &= \frac{1}{M}\left(\frac{1}{1 + HG}RR^* -
+                \frac{G}{1 + HG}NR^*\right) \notag \\
+           &= \frac{1}{1 + HG}S_{rr} \label{eq:Sur} \\
+    S_{yr} &= \frac{1}{M}YR^* \notag \\
+           &= \frac{1}{M}\left(\frac{H}{1 + HG}RR^* +
+                \frac{1}{1 + HG}NR^*\right) \notag \\
+           &= \frac{H}{1 + HG}S_{rr} \label{eq:Srr}
+\end{align}
+Note the cross spectrum terms associated with $r(t)$ and $n(t)$ are equal to
+zero. We can then find an expression that simplifies to $H(f)$:
+\begin{equation}
+    \frac{S_{yr}}{S_{ur}} =
+    \frac{\frac{H}{1 + HG}S_{rr}}{\frac{1}{1 + HG}S_{rr}} = H
+\end{equation}
+This gives the following closed loop estimate $\hat{H}(f)$:
+\begin{equation}
+    \hat{H}(f) =
+    \frac{\hat{S}_{yr}(f)}{\hat{S}_{ur}(f)} \label{eq:H_est_cl}
+\end{equation}
+
+
+% 3d
+\subsection{Verification of closed loop estimator}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question3d.eps}
+    \end{center}
+    \caption{Closed-loop spectral estimation of H}
+    \label{fig:3d}
+\end{figure}
+Using equation (\ref{eq:H_est_cl}) and setting the noise variance to
+$\sigma_n^2 = 2$, $\hat{H}(f)$ has been calculated and plotted in figure
+\ref{fig:3d}. The closed loop estimate is plotted against the open loop
+estimate, which has been recomputed with the same reference and noise signals.
+While both have similar magnitude estimates of the system, the phase estimate
+of the closed loop estimator is closer to the true system than that of the open
+loop estimator. The coherence of the closed loop estimator is lower than that
+of the open loop estimator due to high noise as $\sigma_n^2 > \sigma_r^2$. With
+higher power in $n(t)$, the open loop estimate more closely estimates
+$-G^{-1}(f)$ as shown in equation (\ref{eq:cl_Ginv}) instead of $H(f)$.
 
 \end{document}
