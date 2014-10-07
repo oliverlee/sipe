@@ -136,4 +136,101 @@ components due to noise as the each FFT bin encompasses a large range of
 frequencies. This can be seen by the higher noise floor in signal $y_{1000, 5}$
 over signal $y_{1000}$.
 
+\section{Open Loop Identification}
+
+% 2a
+\subsection{Theoretical Input/Output Spectrum}
+Given that input signal $u(t)$ is white noise, the theoretical input spectrum
+$U(f)$ is simply a constant power spectral density with value $\sigma_u^2$.
+Then the theoretical output spectrum $Y(f)$ is the system frequency reponse
+$H(f)$ scaled by $\sigma_u^2$. This can be seen by representing the output
+$y(t)$ as a the convolution of input $u(t)$ and impulse response function
+$h(t)$ and then transforming to the frequency domain:
+\begin{align*}
+    \mathcal{F}(y(t)) &= \mathcal{F}(\sum_{k=0}^{T-1} h(k)u(t - k)]) \\
+    Y(f) &= U(f) H(f) \\
+    Y(f) &= \sigma_u^2 H(f)
+\end{align*}
+
+% 2b
+\subsection{Estimation of system H}
+Starting with:
+\begin{equation*}
+    Y(f) = H(f)U(f) + N(f)
+\end{equation*}
+we can multiply by $U^*(f)$ to obtain the spectra:
+\begin{align*}
+    U^*(f)Y(f) &= U^*(f)H(f)U(f) + U^*(f)N(f) \\
+    S_{yu}(f) &= S_{uu}(f)H(f) + S_{nu}(f) \\
+    H(f) &= \frac{S_{yu}(f)}{S_{uu}(f)}  - \frac{S_{nu}(f)}{S_{uu}(f)}
+\end{align*}
+Knowing that cross spectrum of independent white noise signals is zero:
+\begin{align*}
+    0 &= \phi_{nu}(\tau) \\
+      &= \mathcal{F}(\phi_{nu}(\tau)) \\
+      &= S_{nu}(f)
+\end{align*}
+Thus we can find the estimate $\hat{H}(f)$ with the estimates of power spectra:
+\begin{equation*}
+    \hat{H}(f) = \frac{\hat{S}_{yu}(f)}{\hat{S}_{uu}(f)}
+\end{equation*}
+
+
+% 2c
+\subsection{Magnitude, phase, and coherence of estimate $\hat{H}$}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question2c.eps}
+    \end{center}
+    \caption{Open-loop spectral estimation of H}
+    \label{fig:2c}
+\end{figure}
+Figure \ref{fig:2c} displays the magnitude, phase, and coherence of $\hat{H}$. It
+is clear that there is a lot of error due to noise in all 3 plots.
+
+% 2d
+\subsection{Effects of Welch averging on estimate $\hat{H}$}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question2d.eps}
+    \end{center}
+    \caption{Open-loop spectral estimation of H with Welch averaging with
+    N number of segments}
+    \label{fig:2d}
+\end{figure}
+Figure \ref{fig:2d} shows the effect of Welch averaging with different numbers
+of segments. By splitting the time signal into multiple segments, computing the
+FFT of each segment, and then averaging the resulting the power spectra, the
+variance in the Fourier transform is reduced. At the expense of loss of
+resolution due to Fourier transforms with lower observation times, random error
+due to noise can be reduced.
+
+% 2e
+\subsection{Motivation for averaging methods}
+Welch averaging reduces noise in the estimated power spectrum at the expense of
+reduced frequency resolution.
+
+% 2f
+\subsection{High variance in input signal $u(t)$}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question2f.eps}
+    \end{center}
+    \caption{Open-loop spectral estimation of H with different noise variance}
+    \label{fig:2f}
+\end{figure}
+Refer to figure \ref{fig:2f}.
+Change the variance of the input signal $u(t)$ to a high value. Explain the
+effect on your estimates for the transfer function and coherence. What would be
+the theoretically ideal input power (in this case variance of input u) and why
+is it in most system identification experiments not achievable?
+
+
+% 2g
+\subsection{High variance in additive output noise signal $n(t)$}
+Refer to figure \ref{fig:2f}.
+Change the input variance back to 0.5. Now change the variance of the noise
+signal $n(t)$ within System H. Explain the effect on your estimates for the
+transfer function and coherence.
+
 \end{document}
