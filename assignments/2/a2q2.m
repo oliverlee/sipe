@@ -95,13 +95,13 @@ eps_save('question2d')
 rng(1234) % set seed for generation of white noise input
 u_f = normrnd(0, 100*u_var, size(t));
 rng(876348) % set seed for generation of additive output noise
-y_f = lsim(H, u, t) + normrnd(0, n_var, size(t));
+y_f = lsim(H, u_f, t) + normrnd(0, n_var, size(t));
 
 % set variance of additive output noise n(t) to a high value
 rng(1234) % set seed for generation of white noise input
 u_g = normrnd(0, u_var, size(t));
 rng(876348) % set seed for generation of additive output noise
-y_g = lsim(H, u, t) + normrnd(0, 100*n_var, size(t));
+y_g = lsim(H, u_g, t) + normrnd(0, 100*n_var, size(t));
 
 % what do we change the variance to in part 2g? should welch averaging be used
 % to calculate the frequency response H and coherence?
