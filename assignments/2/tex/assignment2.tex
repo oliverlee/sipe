@@ -4,11 +4,20 @@
 \geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
 % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage[parfill]{parskip}
+\usepackage[table]{xcolor}
 \usepackage{courier,multirow,fancyhdr}
-\usepackage{float,amsmath,graphicx,color,framed,subfiles}
+\usepackage{float,amsmath,graphicx,framed,subfiles}
 \usepackage{amssymb,subcaption,textcomp,listings}
 \usepackage{booktabs,epstopdf,caption,units}
-\usepackage[table]{xcolor}
+% hyperref should be loaded last
+\usepackage[
+    colorlinks=true,
+    pdfencoding=auto,
+    pdfauthor={Oliver Lee},
+    pdftitle={WB2301-5 System Identification and Parameter Estimation:
+    Assignment 2 - Open and Closed Loop Identification},
+    pdftex
+]{hyperref}
 
 \lstset{
 language=Matlab,
@@ -24,13 +33,16 @@ breakatwhitespace=false,
 numbers=left,
 numbersep=4pt,
 }
+
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
 \frenchspacing
 
 \pagestyle{fancy}
 \fancyhead{}
 \fancyhead[R]{Lee}
 \fancyhead[L]{Assignment 2}
+
 
 \title{WB2301-5 System Identification and Parameter Estimation \\
 Assignment 2 - Open and Closed Loop Identification}
