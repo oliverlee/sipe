@@ -53,5 +53,5 @@ subplot(3, 1, 3)
     hold off;
     xlabel('frequency [Hz]', 'Fontsize', 18);
     ylabel('magnitude(C_{yu}(f))', 'Fontsize', 18);
-    ylim([0 1.8]);
+    ylim([0 1.1]);
     xlim([0.01 fmax]);

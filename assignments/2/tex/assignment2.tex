@@ -203,12 +203,16 @@ of segments. By splitting the time signal into multiple segments, computing the
 FFT of each segment, and then averaging the resulting the power spectra, the
 variance in the Fourier transform is reduced. At the expense of loss of
 resolution due to Fourier transforms with lower observation times, random error
-due to noise can be reduced.
+due to noise can be reduced, and a better estimate for coherence can be
+obtained.
 
 % 2e
 \subsection{Motivation for averaging methods}
-Welch averaging reduces noise in the estimated power spectrum at the expense of
-reduced frequency resolution.
+Averaging reduces variance in the estimated power spectrum at the expense
+of reduced frequency resolution. Averaging also allows estimation of components
+at higher frequencies as it reduces the effect of noise. Futhermore, the
+coherence estimator is always biased and converges to the correct value with
+averaging. Without averaging, the coherence equals 1 due to its definition.
 
 % 2f
 \subsection{High variance in input signal $u(t)$}

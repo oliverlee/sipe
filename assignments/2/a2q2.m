@@ -53,9 +53,11 @@ U = fft(u);
 Y = fft(y);
 Suu = U.*conj(U)/length(u);
 Syu = Y.*conj(U)/length(u);
+Syy = Y.*conj(Y)/length(u);
 
 H_ol = Syu ./ Suu;
-C_ol = Syu ./ sqrt(Suu.*Syu);
+%C_ol = Syu ./ sqrt(Suu.*Syu);
+C_ol = abs(Syu).^2 ./ (Suu.*Syy);
 
 cmap = flipud(hsv(2));
 plotspectrum(f, H_true, f, H_ol, C_ol, cmap, {'True', 'Raw'});
@@ -66,14 +68,17 @@ segment = 1:10;
 wf = cell(1, length(segment));
 wSuu = cell(1, length(segment));
 wSyu = cell(1, length(segment));
+wSyy = cell(1, length(segment));
 wH_ol = cell(1, length(segment));
 wC_ol = cell(1, length(segment));
 for i = segment
     wf{i}= f(1:i:floor(end/i)*i);
     wSuu{i} = welchspectrum(u, u, i);
     wSyu{i} = welchspectrum(y, u, i);
+    wSyy{i} = welchspectrum(y, y, i);
     wH_ol{i} = wSyu{i} ./ wSuu{i};
-    wC_ol{i} = wSyu{i} ./ sqrt(wSuu{i}.*wSyu{i});
+    %wC_ol{i} = wSyu{i} ./ sqrt(wSuu{i}.*wSyy{i});
+    wC_ol{i} = abs(wSyu{i}).^2 ./ (wSuu{i}.*wSyy{i});
 end
 
 cmap = jet(length(segment) + 1);
@@ -103,10 +108,13 @@ y_g = lsim(H, u, t) + normrnd(0, 100*n_var, size(t));
 f_fg = {wf{end}, wf{end}};
 Suu_f = welchspectrum(u_f, u_f, 10);
 Syu_f = welchspectrum(y_f, u_f, 10);
+Syy_f = welchspectrum(y_f, y_f, 10);
 Suu_g = welchspectrum(u_g, u_g, 10);
 Syu_g = welchspectrum(y_g, u_g, 10);
+Syy_g = welchspectrum(y_g, y_g, 10);
 H_ol_fg = {Syu_f ./ Suu_f, Syu_g ./ Suu_g};
-C_ol_fg = {Syu_f ./ sqrt(Suu_f .* Syu_f), Syu_g ./ sqrt(Suu_g .* Syu_g)};
+C_ol_fg = {abs(Syu_f).^2 ./ (Suu_f .* Syy_f),...
+           abs(Syu_g).^2 ./ (Suu_g .* Syy_g)};
 
 cmap = flipud(hsv(3));
 legendstr = cell(1, 3);
