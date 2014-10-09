@@ -159,11 +159,12 @@ Starting with:
     Y(f) = H(f)U(f) + N(f)
 \end{equation*}
 we can multiply by $U^*(f)$ to obtain the spectra:
-\begin{align*}
-    U^*(f)Y(f) &= U^*(f)H(f)U(f) + U^*(f)N(f) \\
-    S_{yu}(f) &= S_{uu}(f)H(f) + S_{nu}(f) \\
+\begin{align}
+    U^*(f)Y(f) &= U^*(f)H(f)U(f) + U^*(f)N(f) \notag\\
+    S_{yu}(f) &= S_{uu}(f)H(f) + S_{nu}(f) \notag\\
     H(f) &= \frac{S_{yu}(f)}{S_{uu}(f)}  - \frac{S_{nu}(f)}{S_{uu}(f)}
-\end{align*}
+    \label{eq:H}
+\end{align}
 Knowing that cross spectrum of independent white noise signals is zero:
 \begin{align*}
     0 &= \phi_{nu}(\tau) \\
@@ -171,9 +172,10 @@ Knowing that cross spectrum of independent white noise signals is zero:
       &= S_{nu}(f)
 \end{align*}
 Thus we can find the estimate $\hat{H}(f)$ with the estimates of power spectra:
-\begin{equation*}
+\begin{equation}
     \hat{H}(f) = \frac{\hat{S}_{yu}(f)}{\hat{S}_{uu}(f)}
-\end{equation*}
+    \label{eq:H_est}
+\end{equation}
 
 
 % 2c
@@ -185,8 +187,9 @@ Thus we can find the estimate $\hat{H}(f)$ with the estimates of power spectra:
     \caption{Open-loop spectral estimation of H}
     \label{fig:2c}
 \end{figure}
-Figure \ref{fig:2c} displays the magnitude, phase, and coherence of $\hat{H}$. It
-is clear that there is a lot of error due to noise in all 3 plots.
+Figure \ref{fig:2c} displays the magnitude, phase, and coherence of $\hat{H}$.
+It is clear that noise is distorting the magnitude and phase spectral density
+plots. The coherence plot shows a constant value of 1 due to lack of averaging.
 
 % 2d
 \subsection{Effects of Welch averging on estimate $\hat{H}$}
@@ -195,7 +198,7 @@ is clear that there is a lot of error due to noise in all 3 plots.
         \includegraphics[width=\textwidth]{question2d.eps}
     \end{center}
     \caption{Open-loop spectral estimation of H with Welch averaging with
-    N number of segments}
+    varying number of segments}
     \label{fig:2d}
 \end{figure}
 Figure \ref{fig:2d} shows the effect of Welch averaging with different numbers
@@ -223,18 +226,45 @@ averaging. Without averaging, the coherence equals 1 due to its definition.
     \caption{Open-loop spectral estimation of H with different noise variance}
     \label{fig:2f}
 \end{figure}
-Refer to figure \ref{fig:2f}.
-Change the variance of the input signal $u(t)$ to a high value. Explain the
-effect on your estimates for the transfer function and coherence. What would be
-the theoretically ideal input power (in this case variance of input u) and why
-is it in most system identification experiments not achievable?
+By increasing the variance of the input signal $u(t)$ by a factor of $100$
+($\sigma_u^2 = 50$), we see in figure \ref{fig:2f} that the error between the
+estimated and true frequency response has been reduced. Comparing the coherence
+in figure \ref{fig:2f} to figure \ref{fig:2d} shows better coherence for
+variance $\sigma_u^2 = 50$ (estimates in figure \ref{fig:2f} use Welch
+averaging with $N = 10$). As seen in Eq. (\ref{eq:H}), $H$ is proportional to
+the difference in $S_{yu}$ and $S_{nu}$. While $S_{nu} = 0$ theoretically, this
+value will be non-zero for a single realization and we have the expression:
+\begin{align}
+    \hat{H}(f) &= \frac{\hat{S}_{yu}(f)}{\hat{S}_{uu}(f)}  -
+    \frac{\hat{S}_{nu}(f)}{\hat{S}_{uu}(f)} \notag\\
+    \hat{H}(f) &= \frac{\hat{H}(f)\hat{S}_{uu}(f)}{\hat{S}_{uu}(f)}  -
+    \frac{\hat{S}_{nu}(f)}{\hat{S}_{uu}(f)}
+    \label{eq:H_est_n}
+\end{align}
+here we have substituted Eq. (\ref{eq:H_est}). As $S_{uu} = \sigma_u^2$,
+increasing $\sigma_u^2$ will increase the contribution of the first term
+relative to the second term of Eq. (\ref{eq:H_est_n}), resulting in a reduction
+of error in $\hat{H}(f)$ due to additive output noise $n(t)$.
+
+While a theoretically ideal input power would be very large (or infinite), this
+is achiveable in system identification experiments. Due to physical
+limitations, extremely large power inputs cannot always be supplied, and can
+also drive a system outside its linear operating region or damage the system
+itself. Furthermore, all experiments have finite observation time. Increasing
+the variance of the input signal requires the observation time also be extended
+such that the estimated input power spectrum approaches a constant value.
 
 
 % 2g
 \subsection{High variance in additive output noise signal $n(t)$}
-Refer to figure \ref{fig:2f}.
-Change the input variance back to 0.5. Now change the variance of the noise
-signal $n(t)$ within System H. Explain the effect on your estimates for the
-transfer function and coherence.
+While theoretically high variance in the additive ouput noise $n(t)$ should not
+affect the frequency response $H(f)$ as the cross-spectrum $S_{nu} = 0$, this
+will not be the case for in data collected from experiments. By increasing the
+variance $\sigma_n^2$ of signal $n(t)$, the estimate of cross-spectrum
+$\hat{S}_{nu}$ is increased. Refering to Eq. (\ref{eq:H_est_n}), this will
+increase the second term and increase error in the estimate $\hat{H}(f)$. This
+can be seen in figure \ref{fig:2f} where the noise variance has been increased
+by a factor of $100$ ($\sigma_n^2 = 10$) and an estimate $\hat{H}(f)$ is
+obtained using Welch averaging with $N = 10$.
 
 \end{document}
