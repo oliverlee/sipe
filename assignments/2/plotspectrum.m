@@ -34,11 +34,19 @@ subplot(3, 1, 2)
              'color', cmap(end, :), 'linewidth', 2);
     hold on;
     for i = 1:N
-        semilogx(f_i{i}, 180/pi*phase(H_i{i}),...
+        angle0 = 180/pi*phase(H_i{i}(1));
+        if angle0 > 150
+            offset = -360
+        elseif angle0 < -150
+            offset = 360
+        else
+            offset = 0
+        end
+        semilogx(f_i{i}, 180/pi*phase(H_i{i}) + offset,...
                  'color', cmap(end - i, :), 'linewidth', 2);
     end
     hold off;
-    l = legend(legendstr, 'location', 'east');
+    l = legend(legendstr, 'location', 'west');
     set(l, 'FontSize', 18);
     ylabel('phase(H(f)) [deg]', 'Fontsize', 18);
     ylim([-180  180]);
