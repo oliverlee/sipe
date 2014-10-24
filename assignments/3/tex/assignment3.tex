@@ -1,0 +1,157 @@
+\documentclass[11pt,a4paper]{article}
+% See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
+% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[parfill]{parskip}
+\usepackage[table]{xcolor}
+\usepackage{courier,multirow,fancyhdr}
+\usepackage{float,amsmath,graphicx,framed,subfiles}
+\usepackage{amssymb,subcaption,textcomp,listings}
+\usepackage{booktabs,epstopdf,caption,units}
+% hyperref should be loaded last
+\usepackage[
+    colorlinks=true,
+    pdfencoding=auto,
+    pdfauthor={Oliver Lee},
+    pdftitle={WB2301-5 System Identification and Parameter Estimation:
+    Assignment 3 - Identification},
+    pdftex
+]{hyperref}
+
+\lstset{
+language=Matlab,
+basicstyle=\footnotesize\ttfamily,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+frame=single,
+tabsize=2,
+captionpos=b,
+breaklines=false,
+breakatwhitespace=false,
+numbers=left,
+numbersep=4pt,
+}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\frenchspacing
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{Lee}
+\fancyhead[L]{Assignment 3}
+
+
+\title{WB2301-5 System Identification and Parameter Estimation \\
+Assignment 3 - Identification}
+\author{Oliver Lee}
+\date{\today}
+\graphicspath{ {images/} }
+
+\begin{document}
+\maketitle
+
+\section{Time Domain Models in Closed Loop}
+
+% 1a
+\subsection{Derive Correct Model Structure}
+Given a general model structure of:
+\begin{equation}
+    y(t) = G(q)u(t) + H(q)e(t) \label{eq:gen_model}
+\end{equation}
+where $y(t)$ is the output signal, $u(t)$ is the input signal, $e(t)$ is noise,
+and $H(q)$ represents the noise dynamics and $G(q)$ represents the system
+dynamics. From the system, we can express $y(t)$ in terms of $n(t)$ and $u(t)$:
+\begin{equation}
+    y(t)= H(q)u(t) + n(t) \label{eq:y1}
+\end{equation}
+It can be shown that the expressions for $u(t)$ and $y(t)$ are
+given by the following expressions:
+\begin{align}
+    u(t) &= \frac{1}{1 + H(q)G(q)}r(t) -
+        \frac{G(q)}{1 + H(q)G(q)}n(t) \label{eq:u} \\
+    y(t) &= \frac{H(q)}{1 + H(q)G(q)}r(t) +
+        \frac{1}{1 + H(q)G(q)}n(t) \label{eq:y2}
+\end{align}
+
+\subsubsection{Two Stage Method}
+\label{sec:1a1}
+For the Two Stage Method, we need the determine models for a first stage from
+$r(t)$ to $u(t)$ and a second stage from $u^\prime(t)$ to $y(t)$. For stage 1,
+we start with equation (\ref{eq:u}) and split $H$ and $G$ into numerator and
+denominator terms:
+\begin{align}
+    u(t) &= \frac{1}{1 + \frac{H_nG_n}{H_dG_d}}r(t) +
+        \frac{-\frac{G_n}{G_d}}{1 + \frac{H_nG_n}{H_dG_d}}n(t) \notag \\
+    &= \frac{H_dG_d}{H_dG_d + H_nG_n}r(t) +
+        \frac{-H_dG_n}{H_dG_d + H_nG_n}n(t)  \label{eq:model11}
+\end{align}
+Note that the argument of the $G(q)$ and $H(q)$ systems is omitted. As the
+denominators of the transfer functions from $r(t)$ to $u(t)$ and from $n(t)$ to
+$u(t)$ are identical while the numerators differ, we can write an expression
+for this stage as:
+\begin{equation}
+    u(t) = \frac{B(q)}{A(q)}r(t) + \frac{C(q)}{A(q)}n(t) \label{eq:armax}
+\end{equation}
+which corresponds to an ARMAX model structure.
+
+For stage 2, if we assume `noise free' input $u^\prime(t)$ to $y(t)$, we have
+the equation:
+\begin{equation}
+    y(t) = \frac{H_n}{H_d}u^\prime(t) + n(t) \label{eq:model12}
+\end{equation}
+and can be rewritten as:
+\begin{equation}
+    u(t) = \frac{B(q)}{F(q)}r(t) + n(t) \label{eq:oe}
+\end{equation}
+which corresponds to an Output Error (OE) model struture.
+
+\subsubsection{Coprime Method}
+For the Coprime Method, we need the determine models for a first stage from
+$r(t)$ to $u(t)$ and a second stage from $r(t)$ to $y(t)$. For stage 1, we can
+examine equation (\ref{eq:u}) and we see that we have the same form as the
+first stage in the Two Stage method (\ref{eq:model11}), resulting in an ARMAX
+model structure
+
+For stage 2, we examine equation (\ref{eq:y2}) and we see that:
+\begin{align}
+    y(t) &= \frac{\frac{H_n}{H_d}}{1 + \frac{H_nG_n}{H_dG_d}}r(t) +
+        \frac{1}{1 + \frac{H_nG_n}{H_dG_d}}n(t) \notag \\
+    &= \frac{G_dH_n}{H_dG_d + H_nG_n}r(t) +
+        \frac{H_dG_d}{H_dG_d + H_nG_n}n(t)  \label{eq:model22}
+\end{align}
+this also matches the ARMAX model equation (\ref{eq:armax}).
+
+% 1b
+\subsection{Compare Estimated Frequency Response Functions}
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=\textwidth]{question1b.eps}
+    \end{center}
+    \caption{Frequency spectrum of $H(f)$, $\hat{H}(f)$}
+    \label{fig:1b}
+\end{figure}
+The FRF of system $H(f)$ is plotted in figure \ref{fig:1b}. The two stage
+estimate is determined by using the ARMAX model of the first stage to generate
+a new `noise free' signal $u^\prime(t)$. Signals $u^\prime(t)$ and $y(t)$ are
+then fit to an OE model which we take to be $\hat{H}_{2stage}(f)$. The coprime
+estimate is determined by first fitting ARMAX models for both stages of the
+system. We can represent the two ARMAX models as:
+\begin{equation*}
+    U/R = \frac{1}{1 + HG} \qquad Y/R = \frac{H}{1 + HG}
+\end{equation*}
+resulting in the estimate $\hat{H}_{coprime}(f) = \frac{Y/R}{U/R}$.
+FIXME: discuss goodness of estimates
+
+% 1c
+\subsection{Disadvantages of Time Domain Model Estimators}
+\subsubsection{Two Stage Method}
+FIXME: The two stage method only work for stable subsystems.
+
+\subsubsection{Coprime Method}
+FIXME: Denominator of the two estimates should be equal and cancel, but are
+never exactly equal for collected data and results in a higher order model.
+
+\end{document}
