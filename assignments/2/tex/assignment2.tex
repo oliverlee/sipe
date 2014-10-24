@@ -431,9 +431,11 @@ $\sigma_n^2 = 2$, $\hat{H}(f)$ has been calculated and plotted in figure
 estimate, which has been recomputed with the same reference and noise signals.
 While both have similar magnitude estimates of the system, the phase estimate
 of the closed loop estimator is closer to the true system than that of the open
-loop estimator. The coherence of the closed loop estimator is lower than that
-of the open loop estimator due to high noise as $\sigma_n^2 > \sigma_r^2$. With
-higher power in $n(t)$, the open loop estimate more closely estimates
-$-G^{-1}(f)$ as shown in equation (\ref{eq:cl_Ginv}) instead of $H(f)$.
-
+loop estimator. While coherence is plotted twice, for each estimator, these
+coherence estimates are identical. The coherence is defined as:
+\begin{equation*}
+    C_{yu}(f) = \frac{{|S_{yu}(f)|)}^2}{S_{uu}(f)S_{yy}(f)}
+\end{equation*}
+The cross spectral densities are independent of the choice of estimator as only
+the signals $u(t)$ and $y(t)$ are used in the calculation.
 \end{document}

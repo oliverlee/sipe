@@ -123,7 +123,7 @@ eps_save('question3b')
 
 %% 3d
 rng(1465) % set seed for generation of white noise input
-n = normrnd(0, 20, size(t));
+n = normrnd(0, 2, size(t));
 output = lsim(sys, [r, n], t);
 u = output(:, 1);
 y = output(:, 2);
@@ -136,10 +136,10 @@ Syr = welchspectrum(y, r, nsegment);
 Syy = welchspectrum(y, y, nsegment);
 
 H_cl = Syr ./ Sur;
-C_cl = abs(Syr).^2 ./ (Srr .* Syy);
+%C_cl = abs(Syr).^2 ./ (Srr .* Syy);
 
 H_i = {H_yu, H_cl};
-C_i = {C_yu, C_cl};
+C_i = {C_yu, C_yu};
 f_i = {f_out, f_out};
 
 plotspectrum(f, H_true, f_i, H_i, C_i, flipud(hsv(1 + length(f_i))),...
