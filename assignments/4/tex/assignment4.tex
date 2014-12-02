@@ -1,0 +1,158 @@
+\documentclass[11pt,a4paper]{article}
+% See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
+% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[parfill]{parskip}
+\usepackage[table]{xcolor}
+\usepackage{courier,multirow,fancyhdr}
+\usepackage{float,amsmath,graphicx,framed,subfiles}
+\usepackage{amssymb,subcaption,textcomp,listings}
+\usepackage{booktabs,epstopdf,caption,units}
+% hyperref should be loaded last
+\usepackage[
+    colorlinks=true,
+    pdfencoding=auto,
+    pdfauthor={Oliver Lee},
+    pdftitle={WB2301-5 System Identification and Parameter Estimation:
+    Assignment 4 - Optimization & Real Data Analysis},
+    pdftex
+]{hyperref}
+
+\lstset{
+language=Matlab,
+basicstyle=\footnotesize\ttfamily,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+frame=single,
+tabsize=2,
+captionpos=b,
+breaklines=false,
+breakatwhitespace=false,
+numbers=left,
+numbersep=4pt,
+}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\frenchspacing
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{Lee}
+\fancyhead[L]{Assignment 4}
+
+
+\title{WB2301-5 System Identification and Parameter Estimation \\
+Assignment 4 - Optimization \& Real Data Analysis}
+\author{Oliver Lee}
+\date{\today}
+\graphicspath{ {images/} }
+
+\begin{document}
+\maketitle
+
+\section{Optimization Techniques}
+
+% 1a
+\subsection{Optimization with Grid and Gradient Search}
+% Given a general model structure of:
+% \begin{equation}
+%     y(t) = G(q)u(t) + H(q)e(t) \label{eq:gen_model}
+% \end{equation}
+% where $y(t)$ is the output signal, $u(t)$ is the input signal, $e(t)$ is noise,
+% and $H(q)$ represents the noise dynamics and $G(q)$ represents the system
+% dynamics. From the system, we can express $y(t)$ in terms of $n(t)$ and $u(t)$:
+% \begin{equation}
+%     y(t)= H(q)u(t) + n(t) \label{eq:y1}
+% \end{equation}
+% It can be shown that the expressions for $u(t)$ and $y(t)$ are
+% given by the following expressions:
+% \begin{align}
+%     u(t) &= \frac{1}{1 + H(q)G(q)}r(t) -
+%         \frac{G(q)}{1 + H(q)G(q)}n(t) \label{eq:u} \\
+%     y(t) &= \frac{H(q)}{1 + H(q)G(q)}r(t) +
+%         \frac{1}{1 + H(q)G(q)}n(t) \label{eq:y2}
+% \end{align}
+
+% 1b
+% \subsection{Advantages and Disadvantages of Various Optimization Techniques}
+% \begin{figure}
+%     \begin{center}
+%         \includegraphics[width=\textwidth]{question1b.eps}
+%     \end{center}
+%     \caption{Frequency spectrum of $H(f)$, $\hat{H}(f)$}
+%     \label{fig:1b}
+% \end{figure}
+% The FRF of system $H(f)$ is plotted in figure \ref{fig:1b}. The two stage
+% estimate is determined by using the ARMAX model of the first stage to generate
+% a new `noise free' signal $u^\prime(t)$. Signals $u^\prime(t)$ and $y(t)$ are
+% then fit to an OE model which we take to be $\hat{H}_{2stage}(f)$. The coprime
+% estimate is determined by first fitting ARMAX models for both stages of the
+% system. We can represent the two ARMAX models as:
+% \begin{equation*}
+%     U/R = \frac{1}{1 + HG} \qquad Y/R = \frac{H}{1 + HG}
+% \end{equation*}
+% resulting in the estimate $\hat{H}_{coprime}(f) = \frac{Y/R}{U/R}$.
+
+% 1c
+\subsection{``Improvements'' for Grid Search}
+
+% 1d
+\subsection{Parameters of Genetic  Algorithms}
+
+% 1e
+\subsection{Combination of Grid and Gradient Search}
+% FIXME: How is a "function evaluation" defined? Is it a single evaluation
+% of the output? What about calculation of the Jacobian and Hessian?
+
+\section{Real Data Analysis}
+% FIXME: What movie? WriteExperiment.3GP is of low resolution and you can't see
+% the monitor.
+
+% 2a
+\subsection{Figure 1?}
+
+% 2b
+\subsection{Coherence of Whole Dataset}
+
+% 2c
+\subsection{Validity of LTI identification}
+
+% 2d
+\subsection{Dynamic Characteristics and Parameter Estimation}
+A mass-spring-damper system affects the frequency response most significantly
+near the natural frequency of the system $\omega_n$, which is given by:
+\begin{equation}
+    \omega_n = \sqrt{\frac{k}{m}}
+\end{equation}
+Note that the damping of the system does not affect the natural frequency of
+the system.
+
+% 2e
+\subsection{Estimation of Mass, Spring, Damper Parameters}
+
+% 2f
+\subsection{Parameter Estimation with Frequency and Coherence Weighting}
+
+% 2g
+\subsection{Derivation of Transfer Function with Velocity Feedback}
+
+% 2h
+\subsection{Parameter Estimation of Transfer Function with Velocity Feedback}
+
+% 2i
+\subsection{SEM of Estimated Parameters}
+
+% 2j
+\subsection{Parameters Dependent on Background Torque}
+
+% 2k
+\subsection{VAF of Segments}
+
+% 2l
+\subsection{Use of High-Pass Filters}
+
+
+\end{document}
