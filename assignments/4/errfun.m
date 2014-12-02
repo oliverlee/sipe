@@ -10,5 +10,4 @@ b = par(2);
 ymod = a*cos(b*t/2) + b*sin(a*t/5);
 
 % Define error: e
-e = (y - ymod)^2;
-
+e = sum((y - ymod).^2);
