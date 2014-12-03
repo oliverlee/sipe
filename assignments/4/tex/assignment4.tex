@@ -9,6 +9,7 @@
 \usepackage{float,amsmath,graphicx,framed,subfiles}
 \usepackage{amssymb,subcaption,textcomp,listings}
 \usepackage{booktabs,epstopdf,caption,units}
+\usepackage{tabularx}
 % hyperref should be loaded last
 \usepackage[
     colorlinks=true,
@@ -57,6 +58,37 @@ Assignment 4 - Optimization \& Real Data Analysis}
 
 % 1a
 \subsection{Optimization with Grid and Gradient Search}
+Using a model $ \hat{y}(t) $ assumed to be:
+\begin{equation*}
+    \hat{y}(t) = a\cos(\frac{bt}{2}) + b\sin(\frac{at}{2})
+\end{equation*}
+and parameters $ a,\: b \in [0, 10] $. To find the optimal values of $a$ and $b$,
+the error function $e$ to minimize is defined as:
+\begin{equation*}
+    e = (y(t) - \hat{y}(t))^T (y(t) - \hat{y}(t))
+\end{equation*}
+where $y(t),\: \hat{y}(t) \in \mathbb{R}^{n \times 1} $ and $n$ is the number
+of elements of the considered time vector.
+
+\autoref{fig:optsurf} shows the error calculation for parameters $a, b$ with a
+resolution of $0.1$ (a 2-d grid) as well as multiple pathways from the use of
+gradient search with different initial conditions. All initial conditions are
+chosen randomly, except for the given condition $a = 5, \: b = 5$. As can be
+seen, poor choices in initial conditions result in convergence at local minima
+not equal to the global minimum. In fact, for the given problem and the
+randomly chosen initial conditions, most do not converge at the global minimum.
+If the error function surface (or hypersurface for a general optimization
+problem) is not known a priori (i.e. grid search was not performed before use
+of gradient search), it is possible to execute a number of gradient searches
+which only return a local minimum without knowing that the global minimum
+exists elsewhere in the search space.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{optsurf.eps}
+    \caption{Error Function Surface with Gradient Search Pathways}
+    \label{fig:optsurf}
+\end{figure}
 % Given a general model structure of:
 % \begin{equation}
 %     y(t) = G(q)u(t) + H(q)e(t) \label{eq:gen_model}
@@ -77,24 +109,72 @@ Assignment 4 - Optimization \& Real Data Analysis}
 % \end{align}
 
 % 1b
-% \subsection{Advantages and Disadvantages of Various Optimization Techniques}
-% \begin{figure}
-%     \begin{center}
-%         \includegraphics[width=\textwidth]{question1b.eps}
-%     \end{center}
-%     \caption{Frequency spectrum of $H(f)$, $\hat{H}(f)$}
-%     \label{fig:1b}
-% \end{figure}
-% The FRF of system $H(f)$ is plotted in figure \ref{fig:1b}. The two stage
-% estimate is determined by using the ARMAX model of the first stage to generate
-% a new `noise free' signal $u^\prime(t)$. Signals $u^\prime(t)$ and $y(t)$ are
-% then fit to an OE model which we take to be $\hat{H}_{2stage}(f)$. The coprime
-% estimate is determined by first fitting ARMAX models for both stages of the
-% system. We can represent the two ARMAX models as:
-% \begin{equation*}
-%     U/R = \frac{1}{1 + HG} \qquad Y/R = \frac{H}{1 + HG}
-% \end{equation*}
-% resulting in the estimate $\hat{H}_{coprime}(f) = \frac{Y/R}{U/R}$.
+\subsection{Advantages and Disadvantages of Various Optimization Techniques}
+\begin{table}
+    \centering
+    \begin{tabular}{|r|r|r|r|r|}
+        \hline
+%        \multicolumn{5}{|c|}{Performance of Optimization Techniques} \\
+%        \hline
+        \nonumber & \shortstack[c]{estimated\\parameters (a, b)} &
+            \shortstack[c]{error\\residual} &
+            \shortstack[c]{number of\\iterations} &
+            \shortstack[c]{calculation\\time} \\
+        \hline
+        Grid Search & $ (5.8,\: 3.5) $ & $ 8.4835 $ & $ 10201 $ &
+            $ 0.9455 $ s \\
+        Gradient Search & $ (5.97,\: 3.53) $ & $ 5.3066 \times 10^{-17} $ &
+            $ 8 $ & $ 0.6253 $ s \\
+        Genetic Algorithm & $ (5.97,\: 3.53) $ & $ 2.2417 \times 10^{-7} $ &
+            $ 100 $ & $ 4.4695 $ s \\
+        \hline
+    \end{tabular}
+    \caption{Performance of Optimization Techniques}
+    \label{tab:optcomp}
+\end{table}
+In \autoref{tab:optcomp} gradient search uses an initial condition of $ (5,\:
+5) $. Performance of gradient search with different initial conditions will
+result in small variations of estimated parameters, error residual, number of
+iterations, and calculation time unless the initial condition is poorly choosen
+and the search finds a different local minimum. Perfomance in the genetic
+algorithm (GA) will also vary slightly in difference instances due to
+randomness associated with genetic operations although the perfomance values
+can be expected to be of the same order. Refer to \autoref{fig:optsurf} for
+examples of poorly chosen initial conditions resulting in a different local
+minimum with gradient search. \autoref{tab:optcomp} shows that grid search
+results in a large number of searches and does find the global minimum,
+although the precision of the estimated parameters is limited by the resolution
+of the grid used. Both gradient search and the genetic algorithm find the same
+minimum, with higher precision. Gradient search is able to do quickly, with
+fewest function iterations and lowest computation time. The GA is also able to
+find the global minimum is fewer function iterations than grid search (orders
+of magnitude lower) but total computation time is higher due to creation of
+candidate solutions and selection/genetic operations used in creating
+subsequent generations. Although the GA optimization takes longer in this
+problem, larger and more complex optimization problems may have jacobian and
+hessian matrices that are more expensive to compute (in time and memory) for
+gradient based methods and GA may faster in some cases.
+
+Advantages and disadvantages for the three optimization techniques can be
+summarized below:
+\begin{itemize}
+    \item Grid Search
+        \begin{itemize}
+            \item Will determine global minimum (with given grid resolution)
+            \item Astronomical number of function evalutaions (dependent on
+                grid resolution)
+        \end{itemize}
+    \item Gradient Search
+        \begin{itemize}
+            \item Very fast convergence near optimum
+            \item Dependent on initial conditions
+        \end{itemize}
+    \item Genetic Algorithm
+        \begin{itemize}
+            \item Does not need to compute function gradients
+            \item Slow convergence near optimum
+        \end{itemize}
+\end{itemize}
 
 % 1c
 \subsection{``Improvements'' for Grid Search}
