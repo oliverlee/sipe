@@ -33,7 +33,7 @@ e1 = zeros(length(ares),length(bres));
 for qq = 1:length(ares)
     for ss = 1:length(bres)
         par = [ares(qq) bres(ss)];
-        e1(qq,ss) = errfun(par);    !! Fill in your errfun (sum of squares)
+        e1(qq,ss) = errfun(par);
     end
 end
 
@@ -43,10 +43,10 @@ surfc(ares,bres,e1.'); hold on;
 xlabel('a'); ylabel('b'); zlabel('e')
 
 % Find Optimum (parest & error residual)
-amin = []; bmin = [];               !! Define the best solution (lowest error)
+[err1, index] = min(e1(:));
+[amin, bmin] = ind2sub(size(e1), index);
 parest1 = [amin bmin];
-err1 = [];                          !! Define lowest error
-clear tmp
+%clear tmp
 
 % Estimate & Plot yest
 [~,yest1] = errfun(parest1);
