@@ -10,6 +10,9 @@
 \usepackage{amssymb,subcaption,textcomp,listings}
 \usepackage{booktabs,epstopdf,caption,units}
 \usepackage{tabularx}
+\usepackage[framed,numbered]{matlab-prettifier}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 % hyperref should be loaded last
 \usepackage[
     colorlinks=true,
@@ -20,22 +23,13 @@
     pdftex
 ]{hyperref}
 
-\lstset{
-language=Matlab,
-basicstyle=\footnotesize\ttfamily,
-showspaces=false,
-showstringspaces=false,
-showtabs=false,
-frame=single,
-tabsize=2,
-captionpos=b,
-breaklines=false,
-breakatwhitespace=false,
-numbers=left,
-numbersep=4pt,
-}
-
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\mcode}[1]{
+    \lstinline[
+        style=Matlab-editor,
+        basicstyle=\mlttfamily,
+    ]{#1}
+}
 
 \frenchspacing
 
@@ -73,15 +67,16 @@ of elements of the considered time vector.
 \autoref{fig:optsurf} shows the error calculation for parameters $a, b$ with a
 resolution of $0.1$ (a 2-d grid) as well as multiple pathways from the use of
 gradient search with different initial conditions. All initial conditions are
-chosen randomly, except for the given condition $a = 5, \: b = 5$. As can be
-seen, poor choices in initial conditions result in convergence at local minima
-not equal to the global minimum. In fact, for the given problem and the
-randomly chosen initial conditions, most do not converge at the global minimum.
-If the error function surface (or hypersurface for a general optimization
-problem) is not known a priori (i.e. grid search was not performed before use
-of gradient search), it is possible to execute a number of gradient searches
-which only return a local minimum without knowing that the global minimum
-exists elsewhere in the search space.
+chosen randomly with a uniform distribution from the search space, except for
+the given condition $a = 5, \: b = 5$. As can be seen, poor choices in initial
+conditions result in convergence at local minima not equal to the global
+minimum. In fact, for the given problem and the randomly chosen initial
+conditions, most do not converge at the global minimum.  If the error function
+surface (or hypersurface for a general optimization problem) is not known a
+priori (i.e. grid search was not performed before use of gradient search), it
+is possible to execute a number of gradient searches which only return a local
+minimum without knowing that the global minimum exists elsewhere in the search
+space.
 
 \begin{figure}
     \centering
@@ -89,24 +84,6 @@ exists elsewhere in the search space.
     \caption{Error Function Surface with Gradient Search Pathways}
     \label{fig:optsurf}
 \end{figure}
-% Given a general model structure of:
-% \begin{equation}
-%     y(t) = G(q)u(t) + H(q)e(t) \label{eq:gen_model}
-% \end{equation}
-% where $y(t)$ is the output signal, $u(t)$ is the input signal, $e(t)$ is noise,
-% and $H(q)$ represents the noise dynamics and $G(q)$ represents the system
-% dynamics. From the system, we can express $y(t)$ in terms of $n(t)$ and $u(t)$:
-% \begin{equation}
-%     y(t)= H(q)u(t) + n(t) \label{eq:y1}
-% \end{equation}
-% It can be shown that the expressions for $u(t)$ and $y(t)$ are
-% given by the following expressions:
-% \begin{align}
-%     u(t) &= \frac{1}{1 + H(q)G(q)}r(t) -
-%         \frac{G(q)}{1 + H(q)G(q)}n(t) \label{eq:u} \\
-%     y(t) &= \frac{H(q)}{1 + H(q)G(q)}r(t) +
-%         \frac{1}{1 + H(q)G(q)}n(t) \label{eq:y2}
-% \end{align}
 
 % 1b
 \subsection{Advantages and Disadvantages of Various Optimization Techniques}
@@ -130,9 +107,9 @@ exists elsewhere in the search space.
         \hline
     \end{tabular}
     \caption{Performance of Optimization Techniques}
-    \label{tab:optcomp}
+    \label{tab:optperf}
 \end{table}
-In \autoref{tab:optcomp} gradient search uses an initial condition of $ (5,\:
+In \autoref{tab:optperf} gradient search uses an initial condition of $ (5,\:
 5) $. Performance of gradient search with different initial conditions will
 result in small variations of estimated parameters, error residual, number of
 iterations, and calculation time unless the initial condition is poorly choosen
@@ -141,7 +118,7 @@ algorithm (GA) will also vary slightly in difference instances due to
 randomness associated with genetic operations although the perfomance values
 can be expected to be of the same order. Refer to \autoref{fig:optsurf} for
 examples of poorly chosen initial conditions resulting in a different local
-minimum with gradient search. \autoref{tab:optcomp} shows that grid search
+minimum with gradient search. \autoref{tab:optperf} shows that grid search
 results in a large number of searches and does find the global minimum,
 although the precision of the estimated parameters is limited by the resolution
 of the grid used. Both gradient search and the genetic algorithm find the same
@@ -150,7 +127,11 @@ fewest function iterations and lowest computation time. The GA is also able to
 find the global minimum is fewer function iterations than grid search (orders
 of magnitude lower) but total computation time is higher due to creation of
 candidate solutions and selection/genetic operations used in creating
-subsequent generations. Although the GA optimization takes longer in this
+subsequent generations. Note that the number of iterations for GA is the number
+of generations; the number of function evaluations is equal to product of
+number of iterations and population size. For this problem, the population size
+is $50$ giving a total number of function evaluations of $5000$. Although the
+GA optimization takes longer in this
 problem, larger and more complex optimization problems may have jacobian and
 hessian matrices that are more expensive to compute (in time and memory) for
 gradient based methods and GA may faster in some cases.
@@ -178,14 +159,117 @@ summarized below:
 
 % 1c
 \subsection{``Improvements'' for Grid Search}
+The estimate for grid search can be improved by increasing the resolution of
+the search grid, that is, increasing the resolution for the candidate solutions
+of $a$ and $b$. While this is simple to implement, a 10x increase in resolution
+for both $a$ and $b$ increases the number of function evaluations by a factor
+of 100. This is expensive computationally, although grid search is easily
+parallized and may be a feasible solution if resources are available.
 
 % 1d
-\subsection{Parameters of Genetic  Algorithms}
+\subsection{Options of Genetic Algorithms}
+Genetic Algorithms have a number of options that affect performance of
+optimization.
+\begin{itemize}
+    \item\mcode{PopulationSize}- Size of the population. A population size
+        that is too large can result in slow convergence due to computational
+        cost associated with large amounts of data. A size that is too small
+        can also result in slow convergence due to limited search range as a
+        result of too few genetic samples. If elitist selection and converge is
+        poorly tuned, a small population size can also result in premature
+        convergence.
+    \item\mcode{EliteCount}- The positive integer specifying how many
+        individuals survive in the next generation. With zero parent solutions
+        surviving in subsequent generations, there may be a loss of good
+        solutions. With too many, the ability to search the rest of the
+        parameter space is reduced resulting more generations necessary for
+        convergence or convergence in a local minimum.
+    \item\mcode{CrossoverFraction}- The fraction of the population of
+        subsequent generations created by crossover of parent solutions from
+        the previous generation. A fraction that is too large can lead to
+        premature convergence; the amount of children selected from mutation
+        will not be large enough to explore other areas of the parameter space
+        before convergence in a local minimum due to crossover/elitist
+        selection. A fraction that is too small can lead to low genetic
+        variation, resulting to slow convergence as a result of high mutation
+        rate.
+    \item\mcode{PopInitRange}- The range of parameter values for the initial
+        population. A poorly formed initial range can result in an increase in
+        generations required for convergence as more time is necessary to span
+        the search space through crossover and mutation. If information
+        regarding areas where optimal solutions exist, the PopInitRange can be
+        formuated so that the initial population begins in those areas.
+    \item\mcode{Generations}- The maximum number of iterations before the
+        algorithm halts. If chosen too small, the algorithm may halt before
+        convergence.  The algorithm stops wonce convergence is reached, however
+        poor fomulation for convergence could lead to unnecessary and time
+        consuming iterations.
+\end{itemize}
 
 % 1e
 \subsection{Combination of Grid and Gradient Search}
-% FIXME: How is a "function evaluation" defined? Is it a single evaluation
-% of the output? What about calculation of the Jacobian and Hessian?
+Grid and gradient search can be combined to robustly by reducing the resolution
+of grid search and using each point as an initial condition for gradient
+search. As gradient search has fast convergence, the increase in function
+evaluations due to gradient search is smaller than the decrease in function
+evaluations due to the reduction in grid resolution. With the number of
+iterations of each gradient search on the order of 10 and the decrease of
+resolution by 10 for each $a$ and $b$, the number of function evaluations of
+the combined search is an order of magnitude smaller than grid search alone.
+
+Using the search function decribed in \autoref{lst:combsearch} to optimize
+parameters $a$ and $b$, we find the performance metrics as described in
+\autoref{tab:combperf}. The pathways of the gradient searches are shown in
+\autoref{fig:combsearch} using a resolution of $1$ for $a$ and $b$ for the grid
+resolution. While the global minimum is found, we can see visually that some of
+the pathways converge at local minima and not the global minimum and show the
+sensitivity of gradient search to the initial condition. While total
+computation time is quite large compared to both grid search and a single
+instance of gradient search (see \autoref{tab:optperf}), it is comparable to
+GA. Number of iterations is the sum of the gradient search iterations for all
+initial conditions and is equal to the total number of function evaluations. As
+expected, the number of iterations is an order of magnitude less than simple
+grid search. The parameter estimates match the values for gradient search (with
+a good initial condition) and GA.
+
+\newpage
+\lstset{
+    caption=Combined Grid and Gradient Search Function,
+    captionpos=b,
+    label={lst:combsearch},
+}
+\lstinputlisting[
+    style=Matlab-editor,
+    basicstyle=\footnotesize\mlttfamily,
+]{../combinedsearch.m}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|r|r|r|r|r|}
+        \hline
+%        \multicolumn{5}{|c|}{Performance of Optimization Techniques} \\
+%        \hline
+        \nonumber & \shortstack[c]{estimated\\parameters (a, b)} &
+            \shortstack[c]{error\\residual} &
+            \shortstack[c]{number of\\iterations} &
+            \shortstack[c]{calculation\\time} \\
+        \hline
+        Combined Search & $ (5.97,\: 3.53) $ & $ 1.8310 \times 10^{-28} $ &
+            $ 1948 $ & $ 4.2724 $ s \\
+        \hline
+    \end{tabular}
+    \caption{Performance of Combined Grid and Gradient Search}
+    \label{tab:combperf}
+\end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{combsearch.eps}
+    \caption{Gradient Search Pathways from Combined Search}
+    \label{fig:combsearch}
+\end{figure}
+
+
 
 \section{Real Data Analysis}
 % FIXME: What movie? WriteExperiment.3GP is of low resolution and you can't see
