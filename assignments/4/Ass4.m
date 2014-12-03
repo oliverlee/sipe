@@ -44,7 +44,9 @@ xlabel('a'); ylabel('b'); zlabel('e')
 
 % Find Optimum (parest & error residual)
 [err1, index] = min(e1(:));
-[amin, bmin] = ind2sub(size(e1), index);
+[i, j] = ind2sub(size(e1), index);
+amin = ares(i);
+bmin = ares(j);
 parest1 = [amin bmin];
 %clear tmp
 
