@@ -76,7 +76,7 @@ pathway.x = []; pathway.y = []; pathway.z = [];
 par0 = [5 5];
 
 % LSQnonlin
-[parest2,~,e2,~,~,~,J]=lsqnonlin(@errfun2,par0,lb,ub,options); !! Build your own errfun2
+[parest2,~,e2,~,~,~,J]=lsqnonlin(@errfun2,par0,lb,ub,options);
 err2 = e2*e2';  % sum of squares (=sum(e2.^2))
 
 % Plot Pathway
