@@ -40,7 +40,10 @@ end
 % Error plot (watch out use e transposed)
 errsurf = figure; clf;
 surfc(ares,bres,e1.'); hold on;
-xlabel('a'); ylabel('b'); zlabel('e')
+alpha(0.3);
+xlabel('a', 'fontsize', 16);
+ylabel('b', 'fontsize', 16);
+zlabel('e', 'fontsize', 16)
 
 % Find Optimum (parest & error residual)
 [err1, index] = min(e1(:));
@@ -82,10 +85,17 @@ par0 = [5 5];
 err2 = e2*e2';  % sum of squares (=sum(e2.^2))
 
 % Plot Pathway
+num_pathways = 10;
+cmap = hsv(num_pathways);
+h = zeros(1, num_pathways);
+
 figure(errsurf)
-plot3(pathway.x, pathway.y, pathway.z, 'g.-', 'linewidth', 2)
-plot3(pathway.x(1), pathway.y(1), pathway.z(1), 'g.', 'markersize', 25)
-plot3(pathway.x(end), pathway.y(end), pathway.z(end), 'g.', 'markersize', 50)
+h(1) = plot3(pathway.x, pathway.y, pathway.z,...
+    '.-', 'color', cmap(1, :), 'linewidth', 4)
+plot3(pathway.x(1), pathway.y(1), pathway.z(1),...
+    '.', 'color', cmap(1, :), 'markersize', 25)
+plot3(pathway.x(end), pathway.y(end), pathway.z(end),...
+    '.', 'color', cmap(1, :), 'markersize', 50)
 
 % Estimate & Plot yest
 [~,yest2] = errfun2(parest2);
@@ -96,6 +106,30 @@ legend('Measurements','Grid Search','Gradient Search')
 
 % Stop Time
 time2 = toc;
+
+% run gradient search with different initial conditions
+figure(errsurf);
+lgndstr = cell([1, num_pathways]);
+lgndstr{1} = sprintf('a = 5, b = 5');
+pari = rand([num_pathways - 1, 2])
+mid = (ub - lb)/2;
+pari = [pari(:, 1)*mid(1) + mid(1),...
+        pari(:, 2)*mid(2) + mid(2)];
+
+for i = 2:num_pathways
+    lgndstr{i} = sprintf('a = %g, b = %g', pari(i - 1, :));
+    pathway.x = []; pathway.y = []; pathway.z = [];
+    pest = lsqnonlin(@errfun2,pari(i - 1, :),lb,ub,options);
+    h(i) = plot3(pathway.x, pathway.y, pathway.z,...
+        '.-', 'color', cmap(i, :), 'linewidth', 4)
+    plot3(pathway.x(1), pathway.y(1), pathway.z(1),...
+        '.', 'color', cmap(i, :), 'markersize', 25)
+    plot3(pathway.x(end), pathway.y(end), pathway.z(end),...
+        '.', 'color', cmap(i, :), 'markersize', 50)
+end
+l = legend(h, lgndstr);
+set(l, 'fontsize', 14);
+eps_save('optsurf')
 
 %% Generic Search (3)
 
