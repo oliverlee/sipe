@@ -126,6 +126,7 @@ figure(2); eps_save('wristfrf')
 % for each segment
 figure(3); clf
 colset = cool(12);
+err = zeros(4, 2);
 
 for ii=1:4
     tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
@@ -175,6 +176,10 @@ for ii=1:4
     P2 = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
         mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     [~, Hid2] = errfunMBK(P2, mH, mfv, mCoh);
+
+    e1 = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    e2 = errfunMBK(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    err(ii, :) = [e1'*e1, e2'*e2];
 
     % Plot FRF
     figure(3)

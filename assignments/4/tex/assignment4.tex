@@ -356,7 +356,8 @@ for parameter estimation results in a better parameter estimates; the improved
 model has a better fit with the measured data. The frequency response of the
 model with improved estimates is displayed in \autoref{fig:mckfrf}. Comparison
 of the error residual between the models and measured data is presented in
-\autoref{tab:mckerr}.
+\autoref{tab:mckerr}, and uses the sum of squares of the unweighted error for
+perturbed frequencies to compare the fit of the two estimates.
 
 \begin{table}[hb]
     \centering
@@ -364,14 +365,11 @@ of the error residual between the models and measured data is presented in
         \hline
         \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
-        error residual &
-        $ 1.8310 \times 10^{-28} $ &
-        $ 1.8310 \times 10^{-28} $ &
-        $ 1.8310 \times 10^{-28} $ &
-        $ 1.8310 \times 10^{-28} $ \\
+        initial estimate & $139.3894$ & $289.1027$ & $218.3436$ & $284.6577$ \\
+        improved estimate & $3.9808$ & $3.2035$ & $2.7688$ & $2.4819$ \\
         \hline
     \end{tabular}
-    \caption{Error Residual of Parameter Estimates for Wrist Data}
+    \caption{Unweighted Error Residual of Parameter Estimates for Wrist Data}
     \label{tab:mckerr}
 \end{table}
 
