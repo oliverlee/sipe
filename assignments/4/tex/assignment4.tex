@@ -269,36 +269,111 @@ a good initial condition) and GA.
     \label{fig:combsearch}
 \end{figure}
 
-
-
 \section{Real Data Analysis}
-% FIXME: What movie? WriteExperiment.3GP is of low resolution and you can't see
-% the monitor.
 
 % 2a
-\subsection{Figure 1?}
+\subsection{Perturbation and System Response Data}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{wristdata.eps}
+    \caption{Angle Perturbation Input and Wrist Output Torque}
+    \label{fig:wristdata}
+\end{figure}
+As stated in the question description, experiments involving the human wrist
+use small angle perturbations about a neutral position and measure the wrist
+torque of a human subject. The input and output data are presented in
+\autoref{fig:wristdata}.
+
 
 % 2b
 \subsection{Coherence of Whole Dataset}
+Reasons that the coherence of the whole dataset decreases compared to
+individual segments are:
+\begin{itemize}
+    \item \textbf{Nonlinearity of the system} - The system is nonlinear. Since
+        each segment uses only small angle perturbations about a given point,
+        we can approximate behavior with a linear system for each segment. For
+        small enough changes about an operating point of a system, the first
+        order term of the Taylor expansion of the system will dominate. This
+        process is known as \textbf{linearization} and is commonly used to
+        analyze the behavior of a nonlinear system about a given point.
+        However, if we combine all segments and analyze the whole data,
+        coherence will decrease as each individual segment was about different
+        operating points and the data can be viewed as the combination of
+        different linear systems.
+    \item \textbf{Time variance of the system} - A human response can be viewed
+        as a time variant system as humans are subject to things such as
+        fatigue, boredom, etc, and cannot be expected to react in an identical
+        fashion to stimuli over the course of a long experiment. Thus if the
+        system varies over the course of the different segments, which result
+        in poor coherence.
+\end{itemize}
 
 % 2c
 \subsection{Validity of LTI identification}
+If there are indications that the system and nonlinear and time varying, than
+application of linear time invariant identification techniques will result in
+poor system identification.
 
 % 2d
 \subsection{Dynamic Characteristics and Parameter Estimation}
-A mass-spring-damper system affects the frequency response most significantly
-near the natural frequency of the system $\omega_n$, which is given by:
-\begin{equation}
-    \omega_n = \sqrt{\frac{k}{m}}
-\end{equation}
-Note that the damping of the system does not affect the natural frequency of
-the system.
+A mass, spring, damper system is represented by the second-order transfer
+function:
+\begin{equation*}
+    H(s) = \frac{1}{ms^2 + cs + k}
+\end{equation*}
+where $m$ is the mass, $c$ is the damping coefficient, and $k$ is the spring
+constant. At low frequencies, the $k$ term dominates the other terms in the
+denominator of the system transfer function, and the spring parameter can be
+estimated by comparing the frequency response to $1/k$. At high frequencies,
+the $ms^2$ term in the denominator dominates, and the magnitude of the
+frequency response can be used to estimate the mass. Frequencies in between the
+high and low ranges can be used to determine to the damping parameter $c$ after
+estimating $m$ and $k$.
 
 % 2e
 \subsection{Estimation of Mass, Spring, Damper Parameters}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{mckfrf.eps}
+    \caption{Frequency Response and Coherence for Wrist Data in Perturbed
+        Frequency Range}
+    \label{fig:mckfrf}
+\end{figure}
+The estimated mass, spring, and damper parameters do not match well in both the
+gain and phase plots in the perturbed frequency range ($2$ and $20$ Hz). Refer
+to \autoref{fig:mckfrf}. The solid lines display the frequency response of the
+measured data and dashed lines display the frequency response of the
+mass-spring-damper system using estimated parameters. Segments are shown in
+\autoref{fig:wristdata} by vertical bars and the different segments can be
+identified by the plotted color.
 
 % 2f
 \subsection{Parameter Estimation with Frequency and Coherence Weighting}
+Limiting to the error function to the range of perturbed frequencies ($2$ -
+$20$ Hz) and by using frequency and coherence weighing in the error function
+for parameter estimation results in a better parameter estimates; the improved
+model has a better fit with the measured data. The frequency response of the
+model with improved estimates is displayed in \autoref{fig:mckfrf}. Comparison
+of the error residual between the models and measured data is presented in
+\autoref{tab:mckerr}.
+
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{|r|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        error residual &
+        $ 1.8310 \times 10^{-28} $ &
+        $ 1.8310 \times 10^{-28} $ &
+        $ 1.8310 \times 10^{-28} $ &
+        $ 1.8310 \times 10^{-28} $ \\
+        \hline
+    \end{tabular}
+    \caption{Error Residual of Parameter Estimates for Wrist Data}
+    \label{tab:mckerr}
+\end{table}
 
 % 2g
 \subsection{Derivation of Transfer Function with Velocity Feedback}
