@@ -23,8 +23,11 @@ figure(1)
 set(gcf,'Name','Measured Signals')
 subplot(211)
 plot(t0,y0)
+ylabel('angle [rad]', 'fontsize', 18);
 subplot(212)
 plot(t0,u0)
+xlabel('time [s]', 'fontsize', 18);
+ylabel('torque [N-m]', 'fontsize', 18);
 % FRF's
 % FRF whole dataset
 U0=fft(detrend(u0));
@@ -50,14 +53,17 @@ subplot(321)
     loglog(fv0,abs(H0),'linewidth',1,'linestyle','--'); hold on;
     loglog(mfv0,abs(mH0),'r','linewidth',2);
     legend('H0','mH0');
-    ylabel('Gain'); xlim([1/T0 fs/2]);
+    ylabel('Gain', 'fontsize', 18); xlim([1/T0 fs/2]);
 subplot(323)
-    semilogx(fv0,unwrap(angle(H0))*180/pi,'linewidth',1,'linestyle','--'); hold on;
+    semilogx(fv0,unwrap(angle(H0))*180/pi,...
+        'linewidth',1,'linestyle','--'); hold on;
     semilogx(mfv0,unwrap(angle(mH0))*180/pi,'r','linewidth',2);
-    ylabel('Phase [deg]'); xlim([1/T0 fs/2]); ylim([-360 360]);
+    ylabel('Phase [deg]', 'fontsize', 18);
+    xlim([1/T0 fs/2]); ylim([-360 360]);
 subplot(325)
     semilogx(mfv0,mCoh0,'linewidth',2); hold on;
-    xlabel('Frequency [Hz]'); ylabel('Coherence');
+    xlabel('Frequency [Hz]', 'fontsize', 18);
+    ylabel('Coherence', 'fontsize', 18);
     xlim([1/T0 fs/2]); ylim([0 1.1]);
 
 % FRF per segment
@@ -91,16 +97,21 @@ for ii=1:4
     figure(2)
     set(gcf,'Name','FRFs')
     subplot(322)
-        loglog(fv,abs(H),'color',colset(ii,:),'linewidth',1,'linestyle','--'); hold on;
+        loglog(fv,abs(H),'color',colset(ii,:),'linewidth',1,'linestyle','--');
+        hold on;
         loglog(mfv,abs(mH),'color',colset(ii,:),'linewidth',2);
-        ylabel('Gain'); xlim([1/T0 fs/2]);
+        ylabel('Gain', 'fontsize', 18); xlim([1/T0 fs/2]);
     subplot(324)
-        semilogx(fv,unwrap(angle(H))*180/pi,'color',colset(ii,:),'linewidth',1,'linestyle','--'); hold on;
-        semilogx(mfv,unwrap(angle(mH))*180/pi,'color',colset(ii,:),'linewidth',2);
-        ylabel('Phase [deg]'); xlim([1/T0 fs/2]);
+        semilogx(fv,unwrap(angle(H))*180/pi,'color',colset(ii,:),...
+            'linewidth',1,'linestyle','--');
+        hold on;
+        semilogx(mfv,unwrap(angle(mH))*180/pi,'color',colset(ii,:),...
+            'linewidth',2);
+        ylabel('Phase [deg]', 'fontsize', 18); xlim([1/T0 fs/2]);
     subplot(326)
         semilogx(mfv,mCoh,'linewidth',2,'color',colset(ii,:)); hold on;
-        xlabel('Frequency [Hz]'); ylabel('Coherence');
+        xlabel('Frequency [Hz]', 'fontsize', 18);
+        ylabel('Coherence', 'fontsize', 18);
         xlim([1/T0 fs/2]); ylim([0 1.1]);
     figure(1)
     subplot(212)
@@ -108,13 +119,14 @@ for ii=1:4
         line([segments(ii,jj) segments(ii,jj)],[3 -3],'color',colset(ii,:))
     end
 end
+figure(1); eps_save('wristdata')
+figure(2); eps_save('wristfrf')
 
 %% PART B : Estimate MBK model
-clear all
-close all
-clc
-
 % for each segment
+figure(3); clf
+colset = cool(12);
+
 for ii=1:4
     tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
     t=matrix(1,tidx)';
@@ -140,38 +152,76 @@ for ii=1:4
     mCoh=abs(mSyu).^2./(mSuu.*mSyy);
 
     % LSQ-routine
-    p0=[0.002   0.1  5 ];
-    lb0=[0.001  0.01 1 ];
-    ub0=[0.005  1    20];
+    p0 = [0.002, 0.1, 5];
+    lb0 = [0.001, 0.01, 1];
+    ub0 = [0.005, 1, 20];
 
     %Estimate on these frequencies:
     estfreq=[1/T fs];
     estidx=find(mfv<estfreq(2)&mfv>estfreq(1));
+    est2idx = find(mfv < 20  & mfv > 2);
 
     options = optimset('lsqnonlin');
-    options = optimset(options, 'display', 'iter','TolX',1e-15,'diffminchange',1e-4,'maxfuneval',500,'TolFun',1e-12);
-    [P,~,R,~,~,~,J]= lsqnonlin(@errfunMBK, p0, lb0,ub0, options,mH(estidx),mfv(estidx),mCoh(estidx));
-    plsq(ii,:)=P;
-    SEM(ii,:)=full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
+    options = optimset(options, 'display', 'iter', 'TolX', 1e-15,...
+        'diffminchange', 1e-4, 'maxfuneval', 500, 'TolFun', 1e-12);
+    [P,~,R,~,~,~,J] = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
+        mH(estidx), mfv(estidx), mCoh(estidx));
+    plsq(ii,:) = P;
+    %SEM(ii,:) = full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
 
-    [E,Hid]=errfunMBK(plsq(ii,:),mH,mfv,mCoh);
+    [E,Hid] = errfunMBK(plsq(ii,:), mH, mfv, mCoh);
+
+    % compute improved parameter estimates
+    P2 = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
+        mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
+    [~, Hid2] = errfunMBK(P2, mH, mfv, mCoh);
 
     % Plot FRF
     figure(3)
     set(gcf,'Name','MBK Estimates')
     subplot(311)
-        loglog(mfv(estidx),abs(mH(estidx)),'color',colset(ii,:),'linewidth',2), hold on;
-        loglog(mfv(estidx),abs(Hid(estidx)),'color',colset(ii,:),'linewidth',2,'linestyle','--');
-        ylabel('Gain'); %xlim([1/T0 fs/2]);
+        loglog(mfv(est2idx),abs(mH(est2idx)),...
+            'color',colset((ii - 1)*3 + 1,:),...
+            'linewidth',2);
+        hold on;
+        loglog(mfv(est2idx),abs(Hid(est2idx)),...
+            'color',colset((ii - 1)*3 + 2,:),...
+            'linewidth',2,'linestyle','--');
+        loglog(mfv(est2idx),abs(Hid2(est2idx)),...
+            'color',colset((ii - 1)*3 + 3,:),...
+            'linewidth',6,'linestyle',':');
+        ylabel('Gain', 'fontsize', 18); xlim([1.5 35]);
     subplot(312)
-        semilogx(mfv(estidx),(angle(mH(estidx)))*180/pi,'color',colset(ii,:),'linewidth',2), hold on;
-        semilogx(mfv(estidx),(angle(Hid(estidx)))*180/pi,'color',colset(ii,:),'linewidth',2,'linestyle','--');
-        ylabel('Phase [deg]'); %xlim([1/T0 fs/2]);
+        semilogx(mfv(est2idx),(angle(mH(est2idx)))*180/pi,...
+            'color',colset((ii - 1)*3 + 1,:),...
+            'linewidth',2), hold on;
+        semilogx(mfv(est2idx),(angle(Hid(est2idx)))*180/pi,...
+            'color',colset((ii - 1)*3 + 2,:),...
+            'linewidth',2,'linestyle','--');
+        semilogx(mfv(est2idx),(angle(Hid2(est2idx)))*180/pi,...
+            'color',colset((ii - 1)*3 + 3,:),...
+            'linewidth',6,'linestyle',':');
+        ylabel('Phase [deg]', 'fontsize', 18); xlim([1.5 35]);
     subplot(313)
-        semilogx(mfv(estidx),mCoh(estidx),'linewidth',2,'color',colset(ii,:),'linestyle','--'); hold on;
-        xlabel('Frequency [Hz]'); ylabel('Coherence');
-        ylim([0 1.1]); %         xlim([1/T0 fs/2]);
+        semilogx(mfv(est2idx),mCoh(est2idx),'linewidth',2,...
+            'color',colset((ii - 1)*3 + 1,:)); hold on;
+        xlabel('Frequency [Hz]', 'fontsize', 18);
+        ylabel('Coherence', 'fontsize', 18);
+        ylim([0 1.1]); xlim([1.5 35]);
 end
+subplot(312)
+l = legend({...
+    'segment 1, measured', 'segment 1, estimate',...
+    'segment 1, improved estimate',...
+    'segment 2, measured', 'segment 2, estimate',...
+    'segment 2, improved estimate',...
+    'segment 3, measured', 'segment 3, estimate',...
+    'segment 3, improved estimate',...
+    'segment 4, measured', 'segment 4, estimate',...
+    'segment 4, improved estimate'})
+set(l, 'fontsize', 14);
+figure(3); eps_save('mckfrf');
+
 %% PART C:Initial values for Kv model
 %     p=[M B K Kv td w]
 %     p0=  [0.003 0.01    5   -0.1   0.04  30];
@@ -196,8 +246,10 @@ for ii=1:4
     set_param('modmbkkv/K', 'gain', num2str(K));
     set_param('modmbkkv/Kv', 'gain', num2str(Kv));
     set_param('modmbkkv/delay', 'delay', num2str(td));
-    set_param('modmbkkv/Hact', 'numerator', ['[ ' num2str(w.^2) ' ]']);
-    set_param('modmbkkv/Hact', 'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
+    set_param('modmbkkv/Hact', ...
+        'numerator', ['[ ' num2str(w.^2) ' ]']);
+    set_param('modmbkkv/Hact',...
+        'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
 
     [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
     figure(4)
@@ -226,7 +278,8 @@ for ii=1:4
     lb0=[0.001 0.001   1  -1e2    0.02  10];
     ub0=[0.005 1     100  -1e-2   0.08  50];
     options = optimset('lsqnonlin');
-    options = optimset(options, 'display', 'iter','TolX',1e-3,'diffminchange',1e-2,'maxfuneval',200,'TolFun',1e-6);
+    options = optimset(options, 'display', 'iter', 'TolX', 1e-3,...
+        'diffminchange', 1e-2, 'maxfuneval', 200, 'TolFun', 1e-6);
     [P,~,R,~,~,~,J]= lsqnonlin(@errfunMBKKvTD, p0, lb0,ub0, options,ut,yt,t);
     plsqTD(ii,:)=P;
     SEMTD(ii,:)=full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
@@ -243,8 +296,10 @@ for ii=1:4
     set_param('modmbkkv/K', 'gain', num2str(K));
     set_param('modmbkkv/Kv', 'gain', num2str(Kv));
     set_param('modmbkkv/delay', 'delay', num2str(td));
-    set_param('modmbkkv/Hact', 'numerator', ['[ ' num2str(w.^2) ' ]']);
-    set_param('modmbkkv/Hact', 'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
+    set_param('modmbkkv/Hact',...
+        'numerator', ['[ ' num2str(w.^2) ' ]']);
+    set_param('modmbkkv/Hact',...
+        'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
 
     [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
     figure(4)
