@@ -1,7 +1,7 @@
 \documentclass[11pt,a4paper]{article}
 % See geometry.pdf to learn the layout options. There are lots.
 \usepackage{geometry}
-\geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
+\geometry{left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm}
 % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage[parfill]{parskip}
 \usepackage[table]{xcolor}
@@ -9,7 +9,6 @@
 \usepackage{float,amsmath,graphicx,framed,subfiles}
 \usepackage{amssymb,subcaption,textcomp,listings}
 \usepackage{booktabs,epstopdf,caption,units}
-\usepackage{tabularx}
 \usepackage[framed,numbered]{matlab-prettifier}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -89,7 +88,7 @@ space.
 \subsection{Advantages and Disadvantages of Various Optimization Techniques}
 \begin{table}
     \centering
-    \begin{tabular}{|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|}
         \hline
 %        \multicolumn{5}{|c|}{Performance of Optimization Techniques} \\
 %        \hline
@@ -232,20 +231,9 @@ expected, the number of iterations is an order of magnitude less than simple
 grid search. The parameter estimates match the values for gradient search (with
 a good initial condition) and GA.
 
-\newpage
-\lstset{
-    caption=Combined Grid and Gradient Search Function,
-    captionpos=b,
-    label={lst:combsearch},
-}
-\lstinputlisting[
-    style=Matlab-editor,
-    basicstyle=\footnotesize\mlttfamily,
-]{../combinedsearch.m}
-
 \begin{table}
     \centering
-    \begin{tabular}{|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|}
         \hline
 %        \multicolumn{5}{|c|}{Performance of Optimization Techniques} \\
 %        \hline
@@ -268,6 +256,17 @@ a good initial condition) and GA.
     \caption{Gradient Search Pathways from Combined Search}
     \label{fig:combsearch}
 \end{figure}
+
+\newpage
+\lstset{
+    caption=Combined Grid and Gradient Search Function,
+    captionpos=b,
+    label={lst:combsearch},
+}
+\lstinputlisting[
+    style=Matlab-editor,
+    basicstyle=\footnotesize\mlttfamily,
+]{../combinedsearch.m}
 
 \section{Real Data Analysis}
 
@@ -341,12 +340,12 @@ estimating $M$ and $K$.
     \label{fig:mckfrf}
 \end{figure}
 The estimated mass, spring, and damper parameters do not match well in both the
-gain and phase plots in the perturbed frequency range ($2$ and $20$ Hz). Refer
-to \autoref{fig:mckfrf}. The dotted lines with markers display the frequency
-response of the measured data and dashed lines display the frequency response
-of the mass-spring-damper system using estimated parameters. Segments are shown
-in \autoref{fig:wristdata} by vertical bars and the different segments can be
-identified by the plotted color.
+gain and phase plots in the perturbed frequency range ($2$ and $20$ Hz) and are
+shown in \autoref{fig:mckfrf}. The dotted lines with markers display the
+frequency response of the measured data and dashed lines display the frequency
+response of the mass-spring-damper system using estimated parameters. Segments
+are shown in \autoref{fig:wristdata} by vertical bars and the different
+segments can be identified by the plotted color.
 
 % 2f
 \subsection{Parameter Estimation with Frequency and Coherence Weighting}
@@ -361,7 +360,7 @@ perturbed frequencies to compare the fit of the two estimates.
 
 \begin{table}[hb]
     \centering
-    \begin{tabular}{|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|}
         \hline
         \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
@@ -417,6 +416,41 @@ The resultant transfer function is:
 
 % 2h
 \subsection{Parameter Estimation of Transfer Function with Velocity Feedback}
+Plots of the improved 3 parameter estimate $(M, B, K)$ and 6 parameter estimate
+$(M, B, K, K_v, t_d, w)$ are shown in \autoref{fig:6parfrf}. The improved 3
+parameter estimate is plotted as a dashed line and the 6 parameter estimate
+which includes feedback gain $K_v$ and time delay $t_d$ of velocity feedback
+and cut-off frequency $w$ of the activation filter in addition to the $M$, $B$,
+$K$ parameters of the improved estimate.  Coherence is not shown as it is the
+same as \autoref{fig:mckfrf}. A table of the error residual between the models
+and measured data is presented in \autoref{tab:6parerr}, and again uses the sum
+of squares and of the unweighted error in the range of perturbed frequencies
+for calculation of the error residual.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{6parfrf.eps}
+    \caption{Frequency Response and Coherence for Wrist Data in Perturbed
+        Frequency Range for Different Parameter Vectors}
+    \label{fig:6parfrf}
+\end{figure}
+
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{|l|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        3 param. est. $(M, B, K)$ &
+            $3.9808$ & $3.2035$ & $2.7688$ & $2.4819$ \\
+        6 param. est. $(M, B, K, K_v, t_d, w)$ &
+            $0.1091$ & $0.1272$ & $0.1171$ & $0.0873$ \\
+        \hline
+    \end{tabular}
+    \caption{Unweighted Error Residual of Different Parameter Vector Estimates
+        for Wrist Data}
+    \label{tab:6parerr}
+\end{table}
 
 % 2i
 \subsection{SEM of Estimated Parameters}
