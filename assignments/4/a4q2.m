@@ -177,8 +177,8 @@ for ii=1:4
         mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     [~, Hid2] = errfunMBK(P2, mH, mfv, mCoh);
 
-    e1 = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx));
-    e2 = errfunMBK(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    e1 = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
+    e2 = errfunMBK(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     err(ii, :) = [e1'*e1, e2'*e2];
 
     % Plot FRF
@@ -271,7 +271,7 @@ for ii=1:4
         mH(est2idx), mfv(est2idx), mCoh(est2idx));
     plsq(ii,:) = P2;
 
-    [e1, Hid] = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    [e1, Hid] = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     [e2, Hid2] = errfunMBKKv(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx));
     err(ii, :) = [e1'*e1, e2'*e2];
 

@@ -355,8 +355,9 @@ for parameter estimation results in a better parameter estimates; the improved
 model has a better fit with the measured data. The frequency response of the
 model with improved estimates is displayed in \autoref{fig:mckfrf}. Comparison
 of the error residual between the models and measured data is presented in
-\autoref{tab:mckerr}, and uses the sum of squares of the unweighted error for
-perturbed frequencies to compare the fit of the two estimates.
+\autoref{tab:mckerr}, and uses the sum of squares of the frequency and
+coherence weighted error for perturbed frequencies to compare the fit of the
+two parameter estimates.
 
 \begin{table}[hb]
     \centering
@@ -364,8 +365,8 @@ perturbed frequencies to compare the fit of the two estimates.
         \hline
         \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
-        initial estimate & $139.3894$ & $289.1027$ & $218.3436$ & $284.6577$ \\
-        improved estimate & $3.9808$ & $3.2035$ & $2.7688$ & $2.4819$ \\
+        initial estimate & $15.6188$ & $34.1516$ & $22.9896$ & $28.6137$ \\
+        improved estimate & $0.4966$ & $0.4267$ & $0.3800$ & $0.3365$ \\
         \hline
     \end{tabular}
     \caption{Unweighted Error Residual of Parameter Estimates for Wrist Data}
@@ -424,8 +425,8 @@ and cut-off frequency $w$ of the activation filter in addition to the $M$, $B$,
 $K$ parameters of the improved estimate.  Coherence is not shown as it is the
 same as \autoref{fig:mckfrf}. A table of the error residual between the models
 and measured data is presented in \autoref{tab:6parerr}, and again uses the sum
-of squares and of the unweighted error in the range of perturbed frequencies
-for calculation of the error residual.
+of squares and of the frequency and coherence weighted error in the range of
+perturbed frequencies for calculation of the error residual.
 
 \begin{figure}
     \centering
@@ -442,7 +443,7 @@ for calculation of the error residual.
         \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
         3 param. est. $(M, B, K)$ &
-            $3.9808$ & $3.2035$ & $2.7688$ & $2.4819$ \\
+            $0.4966$ & $0.4267$ & $0.3800$ & $0.3365$ \\
         6 param. est. $(M, B, K, K_v, t_d, w)$ &
             $0.1091$ & $0.1272$ & $0.1171$ & $0.0873$ \\
         \hline
