@@ -359,7 +359,7 @@ of the error residual between the models and measured data is presented in
 coherence weighted error for perturbed frequencies to compare the fit of the
 two parameter estimates.
 
-\begin{table}[hb]
+\begin{table}
     \centering
     \begin{tabular}{|l|r|r|r|r|}
         \hline
@@ -389,9 +389,9 @@ $E_2(s)$:
     Y(s) = \frac{1}{Ms}E(s) \qquad E_1(s) = BY(s) + E_2(s) \qquad
     E_2(s) = K_v e^{-t_d s} H_{act} Y(s) + KX(s)
 \end{equation*}
-Although not specified explictly in \autoref{fig:clsys}, the delay block is
-given by transfer function $ e^{-t_d s} $, where $t_d$ is the specified delay.
-We can then write an expression for $E(s)$:
+Although not shown explictly in \autoref{fig:clsys}, the delay block is given
+by transfer function $ e^{-t_d s} $, where $t_d$ is the specified delay. We can
+then write an expression for $E(s)$:
 \begin{align*}
     E(s) &= T(s) - E_1(s) = T(s) - (BY(s) + E_2(s)) \\
          &= T(s) - (BY(s) + K_v e^{-t_d s} H_{act} Y(s) + KX(s)) \\
@@ -436,7 +436,7 @@ perturbed frequencies for calculation of the error residual.
     \label{fig:6parfrf}
 \end{figure}
 
-\begin{table}[hb]
+\begin{table}
     \centering
     \begin{tabular}{|l|r|r|r|r|}
         \hline
@@ -455,6 +455,37 @@ perturbed frequencies for calculation of the error residual.
 
 % 2i
 \subsection{SEM of Estimated Parameters}
+\textit{Look at the SEM values of your latest estimate. Which of the parameters
+    are estimated less accurately? Give a plot to support your result.}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|}
+        \hline
+        \nonumber & $M$ [kg] & $B$ [N\,s/m] & $K$ [N/m] & $K_v$ [rad/s] &
+            $t_d$ [s] & $w$ [rad/s] \\
+        \hline
+        segment 1 &
+            $0.0001$ & $0.0025$ & $0.0972$ & $0.0056$ & $0.0057$ & $4.6994$ \\
+        segment 2 &
+            $0.0001$ & $0.0025$ & $0.1192$ & $0.0089$ & $0.0059$ & $3.5391$ \\
+        segment 3 &
+            $0.0001$ & $0.0023$ & $0.1316$ & $0.0100$ & $0.0062$ & $4.0074$ \\
+        segment 4 &
+            $0.0000$ & $0.0019$ & $0.1171$ & $0.0110$ & $0.0037$ & $2.6950$ \\
+        \hline
+    \end{tabular}
+    \caption{SEM of Estimated Parameters from Wrist with Velocity Feedback
+        Model}
+    \label{tab:segsem}
+\end{table}
+
+A table with the Standard Error of Mean (SEM) of each estimated parameter using
+the model which includes velocity feedback is given in \autoref{tab:segsem}.
+Precision is given up to 4 places after the decimal in the SEM values. The
+activation filter cut-off frequency parameter $w$ is estimated least accurately
+in all 4 segments.
+
 
 % 2j
 \subsection{Parameters Dependent on Background Torque}

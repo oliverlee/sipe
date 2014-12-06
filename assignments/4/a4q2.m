@@ -168,14 +168,15 @@ for ii=1:4
     [P,~,R,~,~,~,J] = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
         mH(estidx), mfv(estidx), mCoh(estidx));
     plsq(ii,:) = P;
-    %SEM(ii,:) = full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
+    SEM(ii,:) = full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
 
     [E,Hid] = errfunMBK(plsq(ii,:), mH, mfv, mCoh);
 
     % compute improved parameter estimates
-    P2 = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
+    [P2,~,R,~,~,~,J] = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
         mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     [~, Hid2] = errfunMBK(P2, mH, mfv, mCoh);
+    SEM2(ii,:) = full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
 
     e1 = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     e2 = errfunMBK(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
@@ -267,9 +268,10 @@ for ii=1:4
         mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
 
     % compute improved parameter estimates
-    P2 = lsqnonlin(@errfunMBKKv, p02, lb02, ub02, options,...
+    [P2,~,R,~,~,~,J] = lsqnonlin(@errfunMBKKv, p02, lb02, ub02, options,...
         mH(est2idx), mfv(est2idx), mCoh(est2idx));
     plsq(ii,:) = P2;
+    SEM3(ii,:) = full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
 
     [e1, Hid] = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
     [e2, Hid2] = errfunMBKKv(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx));
