@@ -195,7 +195,7 @@ for ii=1:4
         loglog(mfv(est2idx),abs(Hid2(est2idx)),...
             'color',colset((ii - 1)*3 + 3,:),...
             'linewidth',2,'linestyle','-');
-        ylabel('Gain', 'fontsize', 18); xlim([1.5 35]);
+        ylabel('Gain', 'fontsize', 18); xlim([1.9 21]);
     subplot(312)
         semilogx(mfv(est2idx),(angle(mH(est2idx)))*180/pi,'x',...
             'color',colset((ii - 1)*3 + 1,:),...
@@ -206,14 +206,14 @@ for ii=1:4
         semilogx(mfv(est2idx),(angle(Hid2(est2idx)))*180/pi,...
             'color',colset((ii - 1)*3 + 3,:),...
             'linewidth',2,'linestyle','-');
-        ylabel('Phase [deg]', 'fontsize', 18); xlim([1.5 35]);
+        ylabel('Phase [deg]', 'fontsize', 18); xlim([1.9 21]);
     subplot(313)
         semilogx(mfv(est2idx),mCoh(est2idx),'x','linewidth',4,...
             'linestyle', ':',...
             'color',colset((ii - 1)*3 + 1,:)); hold on;
         xlabel('Frequency [Hz]', 'fontsize', 18);
         ylabel('Coherence', 'fontsize', 18);
-        ylim([0 1.1]); xlim([1.5 35]);
+        ylim([0 1.1]); xlim([1.9 21]);
 end
 subplot(312)
 l = legend({...
@@ -230,9 +230,94 @@ figure(3); eps_save('mckfrf');
 
 %% PART C:Initial values for Kv model
 %p =[M B K Kv td w]
-%p0 = [0.003, 0.01, 5, -0.1, 0.04, 30];
-%lb0 = [0.001, 0.001, 1, -1e2, 0.02, 10];
-%ub0 = [0.005, 1, 100, -1e-2, 0.08, 50];
+p02 = [0.003, 0.01, 5, -0.1, 0.04, 30];
+lb02 = [0.001, 0.001, 1, -1e2, 0.02, 10];
+ub02 = [0.005, 1, 100, -1e-2, 0.08, 50];
+
+figure(3); clf
+colset = cool(12);
+err = zeros(4, 2);
+
+for ii=1:4
+    tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
+    t=matrix(1,tidx)';
+    u=u0(tidx);
+    y=y0(tidx);
+    T=segments(ii,2)-segments(ii,1);
+    fv=(0:1/T:fs)';
+
+    U=fft(detrend(u));
+    Y=fft(detrend(y));
+
+    Suu=U.*conj(U);
+    Syy=Y.*conj(Y);
+    Syu=Y.*conj(U);
+
+    mSuu=freqAvg(Suu,nBands);
+    mSyu=freqAvg(Syu,nBands);
+    mSyy=freqAvg(Syy,nBands);
+    mfv=freqAvg(fv,nBands);
+
+    H=Syu./Suu;
+    mH=mSyu./mSuu;
+    mCoh=abs(mSyu).^2./(mSuu.*mSyy);
+
+    P = lsqnonlin(@errfunMBK, p0, lb0, ub0, options,...
+        mH(est2idx), mfv(est2idx), mCoh(est2idx), true);
+
+    % compute improved parameter estimates
+    P2 = lsqnonlin(@errfunMBKKv, p02, lb02, ub02, options,...
+        mH(est2idx), mfv(est2idx), mCoh(est2idx));
+
+    [e1, Hid] = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    [e2, Hid2] = errfunMBKKv(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    err(ii, :) = [e1'*e1, e2'*e2];
+
+    % Plot FRF
+    figure(3)
+    set(gcf,'Name','MBKKv Estimates')
+    subplot(211)
+        loglog(mfv(est2idx),abs(mH(est2idx)),'x',...
+            'color',colset((ii - 1)*3 + 1,:),...
+            'linewidth', 4, 'linestyle', ':');
+        hold on;
+        loglog(mfv(est2idx),abs(Hid),...
+            'color',colset((ii - 1)*3 + 2,:),...
+            'linewidth',2,'linestyle','--');
+        loglog(mfv(est2idx),abs(Hid2),...
+            'color',colset((ii - 1)*3 + 3,:),...
+            'linewidth',3,'linestyle','-');
+        ylabel('Gain', 'fontsize', 18); xlim([1.9 21]);
+    subplot(212)
+        semilogx(mfv(est2idx),(angle(mH(est2idx)))*180/pi,'x',...
+            'color',colset((ii - 1)*3 + 1,:),...
+            'linewidth',4, 'linestyle', ':'), hold on;
+        semilogx(mfv(est2idx),(angle(Hid))*180/pi,...
+            'color',colset((ii - 1)*3 + 2,:),...
+            'linewidth',3,'linestyle','--');
+        semilogx(mfv(est2idx),(angle(Hid2))*180/pi,...
+            'color',colset((ii - 1)*3 + 3,:),...
+            'linewidth',2,'linestyle','-');
+        ylabel('Phase [deg]', 'fontsize', 18); xlim([1.9 21]);
+        xlabel('Frequency [Hz]', 'fontsize', 18);
+end
+subplot(211)
+l = legend({...
+    'segment 1, measured',...
+    'segment 1, 3 param estimate',...
+    'segment 1, 6 param estimate',...
+    'segment 2, measured',...
+    'segment 2, 3 param estimate',...
+    'segment 2, 6 param estimate',...
+    'segment 3, measured',...
+    'segment 3, 3 param estimate',...
+    'segment 3, 6 param estimate',...
+    'segment 4, measured',...
+    'segment 4, 3 param estimate',...
+    'segment 4, 6 param estimate',...
+})
+set(l, 'fontsize', 14);
+figure(3); eps_save('6parfrf');
 
 %% PART D Determining the fit in the time domain.
 
