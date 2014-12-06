@@ -234,9 +234,10 @@ p02 = [0.003, 0.01, 5, -0.1, 0.04, 30];
 lb02 = [0.001, 0.001, 1, -1e2, 0.02, 10];
 ub02 = [0.005, 1, 100, -1e-2, 0.08, 50];
 
-figure(3); clf
+figure(5); clf
 colset = cool(12);
 err = zeros(4, 2);
+plsq = zeros(4, 6)
 
 for ii=1:4
     tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
@@ -268,13 +269,14 @@ for ii=1:4
     % compute improved parameter estimates
     P2 = lsqnonlin(@errfunMBKKv, p02, lb02, ub02, options,...
         mH(est2idx), mfv(est2idx), mCoh(est2idx));
+    plsq(ii,:) = P2;
 
     [e1, Hid] = errfunMBK(P, mH(est2idx), mfv(est2idx), mCoh(est2idx));
     [e2, Hid2] = errfunMBKKv(P2, mH(est2idx), mfv(est2idx), mCoh(est2idx));
     err(ii, :) = [e1'*e1, e2'*e2];
 
     % Plot FRF
-    figure(3)
+    figure(5)
     set(gcf,'Name','MBKKv Estimates')
     subplot(211)
         loglog(mfv(est2idx),abs(mH(est2idx)),'x',...
@@ -317,7 +319,7 @@ l = legend({...
     'segment 4, 6 param estimate',...
 })
 set(l, 'fontsize', 14);
-figure(3); eps_save('6parfrf');
+figure(5); eps_save('6parfrf');
 
 %% PART D Determining the fit in the time domain.
 
