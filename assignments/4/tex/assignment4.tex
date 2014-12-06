@@ -56,8 +56,8 @@ Using a model $ \hat{y}(t) $ assumed to be:
 \begin{equation*}
     \hat{y}(t) = a\cos(\frac{bt}{2}) + b\sin(\frac{at}{2})
 \end{equation*}
-and parameters $ a,\: b \in [0, 10] $. To find the optimal values of $a$ and $b$,
-the error function $e$ to minimize is defined as:
+and parameters $ a,\: b \in [0, 10] $. To find the optimal values of $a$ and
+$b$, the error function $e$ to minimize is defined as:
 \begin{equation*}
     e = (y(t) - \hat{y}(t))^T (y(t) - \hat{y}(t))
 \end{equation*}
@@ -320,16 +320,16 @@ poor system identification.
 A mass, spring, damper system is represented by the second-order transfer
 function:
 \begin{equation*}
-    H(s) = \frac{1}{ms^2 + cs + k}
+    H(s) = \frac{1}{Ms^2 + Bs + K}
 \end{equation*}
-where $m$ is the mass, $c$ is the damping coefficient, and $k$ is the spring
-constant. At low frequencies, the $k$ term dominates the other terms in the
+where $M$ is the mass, $B$ is the damping coefficient, and $K$ is the spring
+constant. At low frequencies, the $K$ term dominates the other terms in the
 denominator of the system transfer function, and the spring parameter can be
-estimated by comparing the frequency response to $1/k$. At high frequencies,
-the $ms^2$ term in the denominator dominates, and the magnitude of the
+estimated by comparing the frequency response to $1/K$. At high frequencies,
+the $Ms^2$ term in the denominator dominates, and the magnitude of the
 frequency response can be used to estimate the mass. Frequencies in between the
-high and low ranges can be used to determine to the damping parameter $c$ after
-estimating $m$ and $k$.
+high and low ranges can be used to determine to the damping parameter $B$ after
+estimating $M$ and $K$.
 
 % 2e
 \subsection{Estimation of Mass, Spring, Damper Parameters}
@@ -375,6 +375,45 @@ perturbed frequencies to compare the fit of the two estimates.
 
 % 2g
 \subsection{Derivation of Transfer Function with Velocity Feedback}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{clvelfb.png}
+    \caption{Human Wrist System with Velocity Feedback}
+    \label{fig:clsys}
+\end{figure}
+Using the block diagram of the system with velocity feedback, as shown in
+\autoref{fig:clsys}, we can derive the transfer function of the closed loop
+system. Starting with definitions of intermediate signals $Y(s)$, $E_1(s)$, and
+$E_2(s)$:
+\begin{equation*}
+    Y(s) = \frac{1}{Ms}E(s) \qquad E_1(s) = BY(s) + E_2(s) \qquad
+    E_2(s) = K_v e^{-t_d s} H_{act} Y(s) + KX(s)
+\end{equation*}
+Although not specified explictly in \autoref{fig:clsys}, the delay block is
+given by transfer function $ e^{-t_d s} $, where $t_d$ is the specified delay.
+We can then write an expression for $E(s)$:
+\begin{align*}
+    E(s) &= T(s) - E_1(s) = T(s) - (BY(s) + E_2(s)) \\
+         &= T(s) - (BY(s) + K_v e^{-t_d s} H_{act} Y(s) + KX(s)) \\
+         &= T(s) - (B + K_v e^{-t_d s} H_{act}) Y(s) - KX(s)
+\end{align*}
+Substituting the relation betwen $E(s)$ and $Y(s)$, we have:
+\begin{align*}
+    Ms Y(s) &= T(s) - (B + K_v e^{-t_d s} H_{act}) Y(s) - KX(s) \\
+    (Ms + B + K_v e^{-t_d s} H_{act}) Y(s) &= T(s) - KX(s)
+\end{align*}
+From the block diagram, we relate $Y(x)$ to $X(s)$ by:
+\begin{equation*}
+    X(s) = \frac{1}{s} Y(s)
+\end{equation*}
+Replacing $Y(s)$ in the expression of the closed loop system:
+\begin{equation*}
+    (Ms + B + K_v e^{-t_d s} H_{act}) s X(s) = T(s) - KX(s)
+\end{equation*}
+The resultant transfer function is:
+\begin{equation*}
+    \frac{X(s)}{T(s)} = \frac{1}{Ms^2 + (B + K_v e^{-t_d s} H_{act}) s  + K}
+\end{equation*}
 
 % 2h
 \subsection{Parameter Estimation of Transfer Function with Velocity Feedback}
