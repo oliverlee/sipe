@@ -526,6 +526,42 @@ $w$ is higher than for other estimated parameters.
 
 % 2k
 \subsection{VAF of Segments}
+The Variance Account For (VAF) for each segment is given in
+\autoref{tab:segvaf}. The measured and estimated rotation using a model with
+parameters from \autoref{tab:segparam} are displayed in \autoref{fig:segrot}.
+Zooming in on short time segments ($2$ seconds) in \autoref{fig:segrotzoom}
+shows a good fit on signal shape although the magnitude differs by a small
+amount, which matches with the calculated VAF values. Segments 1 and 2 appear
+to have a non-zero offset between the measured and estimated rotations.
+Measured input and output data was detrended before calculation of VAF and
+plotting.
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        VAF & $81.9681$ & $87.0021$ & $92.3029$ & $90.4893$ \\
+        \hline
+    \end{tabular}
+    \caption{VAF for Wrist with Velocity Feedback Model}
+    \label{tab:segvaf}
+\end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{segrot.eps}
+    \caption{Estimated and Measured Wrist Rotation}
+    \label{fig:segrot}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{segrotzoom.eps}
+    \caption{Zoomed Estimated and Measured Wrist Rotation}
+    \label{fig:segrotzoom}
+\end{figure}
+
 
 % 2l
 \subsection{Use of High-Pass Filters}

@@ -325,6 +325,8 @@ figure(5); eps_save('6parfrf');
 
 %% PART D Determining the fit in the time domain.
 
+figure(4); clf
+colset = cool(4);
 for ii=1:4
     tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
     t=matrix(1,tidx)';
@@ -348,12 +350,30 @@ for ii=1:4
 
     [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
     figure(4)
-    subplot(211)
-    plot(t,ut)
-    subplot(212)
-    plot(t,yt,t,ysim)
+    %subplot(211);
+    %plot(t,ut)
+    %subplot(212);
+    %plot(t,yt,t,ysim)
+    subplot(220 + ii);
+    plot(t, yt, 'color', colset(2, :), 'linewidth', 2); hold on
+    plot(t, ysim, 'color', colset(4, :), 'linewidth', 2, 'linestyle', '--');
+    hold off
+    ylabel('Angle [rad]', 'fontsize', 18);
+    xlabel('Time [s]', 'fontsize', 18);
+    l = legend({'measured', 'estimated'});
+    set(l, 'fontsize', 14);
+    title(sprintf('Segment %d', ii), 'fontsize', 18);
     VAF(yt,ysim)
 end
+eps_save('segrot')
+for ii = 1:4
+    tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
+    t=matrix(1,tidx)';
+    subplot(220 + ii);
+    xlim([t(1500), t(2500)]);
+end
+eps_save('segrotzoom')
+
 
 %% PART E: Estimating in the time-domain
 
