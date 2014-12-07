@@ -593,4 +593,79 @@ in \autoref{tab:segparamtd}.
     \label{tab:segparamtd}
 \end{table}
 
+% 2n
+\subsection{Comparison of Frequency and Time Domain Estimates}
+VAF and SEM using time domain optmization in \autoref{tab:segvaftdhp} and
+\autoref{tab:segsemtdhp}.
+
+%\begin{table}
+%    \centering
+%    \begin{tabular}{|l|r|r|r|r|r|r|}
+%        \hline
+%        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+%        \hline
+%        $M$ [kg] & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
+%        $B$ [N\,s/m] & $0.0508$ & $0.0489$ & $0.0595$ & $0.0583$ \\
+%        $K$ [N/m] & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
+%        $K_v$ [rad/s] & $-0.0355$ & $-0.0467$ & $-0.0477$ & $-0.0671$ \\
+%        $t_d$ [s] & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
+%        $w$ [rad/s] & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
+%        \hline
+%    \end{tabular}
+%    \caption{Estimated Parameters from Wrist with Velocity Feedback Model with
+%        Time Domain Optimization}
+%    \label{tab:segparamtd}
+%\end{table}
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        VAF & $93.9951$ & $95.4617$ & $94.8857$ & $97.4736$ \\
+        \hline
+    \end{tabular}
+    \caption{VAF for Wrist with Velocity Feedback Model for Time Domain
+        Optimization and High Pass Filtering}
+    \label{tab:segvaftdhp}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        $M$ [kg] & $0.0000$ & $0.0000$ & $0.0001$ & $0.0001$ \\
+        $B$ [N\,s/m] & $0.0005$ & $0.0005$ & $0.0006$ & $0.0007$ \\
+        $K$ [N/m] & $0.0123$ & $0.0110$ & $0.0165$ & $0.0188$ \\
+        $K_v$ [rad/s] & $0.0011$ & $0.0012$ & $0.0029$ & $0.0041$ \\
+        $t_d$ [s] & $0.0004$ & $0.0004$ & $0.0007$ & $0.0011$ \\
+        $w$ [rad/s] & $0.2817$ & $0.2771$ & $0.4552$ & $0.6427$ \\
+        \hline
+    \end{tabular}
+    \caption{SEM of Estimated Parameters from Wrist with Velocity Feedback
+        Model for Time Domain Estimation and High Pass Filtering}
+    \label{tab:segsemtdhp}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        $M$ [kg] & $0.0030$ & $0.0029$ & $0.0026$ & $0.0023$ \\
+        $B$ [N\,s/m] & $0.0371$ & $0.0408$ & $0.0595$ & $0.0670$ \\
+        $K$ [N/m] & $4.9675$ & $5.3029$ & $6.1462$ & $6.5311$ \\
+        $K_v$ [rad/s] & $-0.0782$ & $-0.0775$ & $-0.0659$ & $-0.0660$ \\
+        $t_d$ [s] & $0.0400$ & $0.0398$ & $0.0471$ & $0.0507$ \\
+        $w$ [rad/s] & $28.3671$ & $28.8176$ & $23.1918$ & $19.4152$ \\
+        \hline
+    \end{tabular}
+    \caption{Estimated Parameters from Wrist with Velocity Feedback Model for
+        Time Domain Estimation and High Pass Filtering}
+    \label{tab:segparamtdhp}
+\end{table}
+
 \end{document}
