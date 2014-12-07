@@ -568,5 +568,29 @@ We want to use high-pass filters to remove low frequency content. We expect
 human reflexes to by high frequency and changes due to fatigue or distraction
 to low frequency.
 
+% 2m
+\subsection{Estimation of Parameters in Time Domain}
+Simulating the model in the time domain and using the difference in the
+measured and estimated output as the error results in the estimated parameters
+in \autoref{tab:segparamtd}.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        $M$ [kg] & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
+        $B$ [N\,s/m] & $0.0508$ & $0.0489$ & $0.0595$ & $0.0583$ \\
+        $K$ [N/m] & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
+        $K_v$ [rad/s] & $-0.0355$ & $-0.0467$ & $-0.0477$ & $-0.0671$ \\
+        $t_d$ [s] & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
+        $w$ [rad/s] & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
+        \hline
+    \end{tabular}
+    \caption{Estimated Parameters from Wrist with Velocity Feedback Model with
+        Time Domain Optimization}
+    \label{tab:segparamtd}
+\end{table}
 
 \end{document}

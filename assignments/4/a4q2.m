@@ -376,11 +376,16 @@ eps_save('segrotzoom')
 
 
 %% PART E: Estimating in the time-domain
+figure(6); clf;
 
 % filter to get rid of the low frequent drift
-[bfil,afil]=butter(2,2/(.5*fs),'high');
-u0f=filtfilt(bfil,afil,u0);
-y0f=filtfilt(bfil,afil,y0);
+[bfil, afil] = butter(2,2/(.5*fs), 'high');
+u0f = filtfilt(bfil, afil, u0);
+y0f = filtfilt(bfil, afil, y0);
+
+p0 = [0.003, 0.01, 5, -0.1, 0.04, 30]; %
+lb0 = [0.001, 0.001, 1, -1e2, 0.02, 10];
+ub0 = [0.05, 1, 100, -1e-2, 0.08, 50];
 
 for ii=1:4
     tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
@@ -389,22 +394,20 @@ for ii=1:4
     yt=detrend(y0f(tidx));
 
     % LSQ-routine
-    p0= [0.003 0.01    5   -0.1   0.04  30]; %
-    lb0=[0.001 0.001   1  -1e2    0.02  10];
-    ub0=[0.005 1     100  -1e-2   0.08  50];
     options = optimset('lsqnonlin');
     options = optimset(options, 'display', 'iter', 'TolX', 1e-3,...
         'diffminchange', 1e-2, 'maxfuneval', 200, 'TolFun', 1e-6);
-    [P,~,R,~,~,~,J]= lsqnonlin(@errfunMBKKvTD, p0, lb0,ub0, options,ut,yt,t);
-    plsqTD(ii,:)=P;
-    SEMTD(ii,:)=full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
+    [P,~,R,~,~,~,J] = lsqnonlin(@errfunMBKKvTD, p0, lb0, ub0,...
+        options, ut, yt, t);
+    plsqTD(ii,:) = P;
+    SEMTD(ii,:) = full(sqrt(R'*R*(diag(inv(J'*J)))/length(R)))';
 
-    M=plsqTD(ii,1);
-    B=plsqTD(ii,2);
-    K=plsqTD(ii,3);
-    Kv=plsqTD(ii,4);
-    td=plsqTD(ii,5);
-    w=plsqTD(ii,6);
+    M = plsqTD(ii,1);
+    B = plsqTD(ii,2);
+    K = plsqTD(ii,3);
+    Kv = plsqTD(ii,4);
+    td = plsqTD(ii,5);
+    w = plsqTD(ii,6);
 
     set_param('modmbkkv/invM', 'gain', num2str(1/M));
     set_param('modmbkkv/B', 'gain', num2str(B));
@@ -417,10 +420,10 @@ for ii=1:4
         'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
 
     [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
-    figure(4)
+    figure(6)
     subplot(211)
-    plot(t,ut)
+    plot(t, ut)
     subplot(212)
-    plot(t,yt,t,ysim)
-    VAF(yt,ysim)
+    plot(t, yt, t, ysim)
+    VAF(yt, ysim)
 end
