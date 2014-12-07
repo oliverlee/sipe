@@ -462,17 +462,14 @@ perturbed frequencies for calculation of the error residual.
     \centering
     \begin{tabular}{|l|r|r|r|r|r|r|}
         \hline
-        \nonumber & $M$ [kg] & $B$ [N\,s/m] & $K$ [N/m] & $K_v$ [rad/s] &
-            $t_d$ [s] & $w$ [rad/s] \\
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
-        segment 1 &
-            $0.0001$ & $0.0025$ & $0.0972$ & $0.0056$ & $0.0057$ & $4.6994$ \\
-        segment 2 &
-            $0.0001$ & $0.0025$ & $0.1192$ & $0.0089$ & $0.0059$ & $3.5391$ \\
-        segment 3 &
-            $0.0001$ & $0.0023$ & $0.1316$ & $0.0100$ & $0.0062$ & $4.0074$ \\
-        segment 4 &
-            $0.0000$ & $0.0019$ & $0.1171$ & $0.0110$ & $0.0037$ & $2.6950$ \\
+        $M$ [kg] & $0.0001$ & $0.0001$ & $0.0001$ & $0.0000$ \\
+        $B$ [N\,s/m] & $0.0025$ & $0.0025$ & $0.0023$ & $0.0019$ \\
+        $K$ [N/m] & $0.0972$ & $0.1192$ & $0.1316$ & $0.1171$ \\
+        $K_v$ [rad/s] & $0.0056$ & $0.0089$ & $0.0100$ & $0.0110$ \\
+        $t_d$ [s] & $0.0057$ & $0.0059$ & $0.0062$ & $0.0037$ \\
+        $w$ [rad/s] & $4.6994$ & $3.5391$ & $4.0074$ & $2.6950$ \\
         \hline
     \end{tabular}
     \caption{SEM of Estimated Parameters from Wrist with Velocity Feedback
@@ -513,23 +510,19 @@ $w$ is higher than for other estimated parameters.
     \centering
     \begin{tabular}{|l|r|r|r|r|r|r|}
         \hline
-        \nonumber & $M$ [kg] & $B$ [N\,s/m] & $K$ [N/m] & $K_v$ [rad/s] &
-            $t_d$ [s] & $w$ [rad/s] \\
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
-        segment 1 &
-            $0.0027$ & $0.0508$ & $4.2514$ & $-0.0355$ & $0.0600$ & $35.8176$ \\
-        segment 2 &
-            $0.0027$ & $0.0489$ & $4.7312$ & $-0.0467$ & $0.0540$ & $27.4777$ \\
-        segment 3 &
-            $0.0026$ & $0.0595$ & $6.1855$ & $-0.0477$ & $0.0601$ & $28.0485$ \\
-        segment 4 &
-            $0.0026$ & $0.0583$ & $7.5809$ & $-0.0671$ & $0.0543$ & $25.6516$ \\
+        $M$ [kg] & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
+        $B$ [N\,s/m] & $0.0508$ & $0.0489$ & $0.0595$ & $0.0583$ \\
+        $K$ [N/m] & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
+        $K_v$ [rad/s] & $-0.0355$ & $-0.0467$ & $-0.0477$ & $-0.0671$ \\
+        $t_d$ [s] & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
+        $w$ [rad/s] & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
         \hline
     \end{tabular}
     \caption{Estimated Parameters from Wrist with Velocity Feedback Model}
     \label{tab:segparam}
 \end{table}
-
 
 % 2k
 \subsection{VAF of Segments}
