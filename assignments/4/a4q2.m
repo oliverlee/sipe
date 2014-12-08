@@ -323,6 +323,26 @@ l = legend({...
 set(l, 'fontsize', 14);
 figure(5); eps_save('6parfrf');
 
+%%
+figure(7); clf
+normsem = SEM3./abs(plsq);
+colset = cool(4);
+for ii = 1:4
+    plot(1:size(normsem, 2), normsem(ii, :), 's', 'markersize', 8,...
+        'color', colset(ii, :), 'linewidth', 8, 'linestyle', ':',...
+        'markerfacecolor', colset(ii, :));
+    hold on;
+end
+hold off;
+ax = gca;
+set(ax, 'XTick', [1, 2, 3, 4, 5, 6]);
+set(ax, 'XTickLabel', {'M', 'B', 'K', 'K_v', 't_d', 'w'});
+xlabel('Parameter', 'fontsize', 18);
+ylabel('Normalized SEM', 'fontsize', 18);
+l = legend({'segment 1', 'segment 2', 'segment 3', 'segment 4'});
+set(l, 'fontsize', 14);
+figure(7); eps_save('segnormsem');
+
 %% PART D Determining the fit in the time domain.
 
 figure(4); clf
@@ -377,6 +397,8 @@ eps_save('segrotzoom')
 
 %% PART E: Estimating in the time-domain
 figure(6); clf;
+vaf_td = zeros(4, 1);
+vaf_fd = zeros(4, 1);
 
 % filter to get rid of the low frequent drift
 [bfil, afil] = butter(2,2/(.5*fs), 'high');
@@ -425,5 +447,110 @@ for ii=1:4
     plot(t, ut)
     subplot(212)
     plot(t, yt, t, ysim)
-    VAF(yt, ysim)
+    vaf_td(ii) = VAF(yt, ysim)
+
+    M = plsq(ii,1);
+    B = plsq(ii,2);
+    K = plsq(ii,3);
+    Kv = plsq(ii,4);
+    td = plsq(ii,5);
+    w = plsq(ii,6);
+    set_param('modmbkkv/invM', 'gain', num2str(1/M));
+    set_param('modmbkkv/B', 'gain', num2str(B));
+    set_param('modmbkkv/K', 'gain', num2str(K));
+    set_param('modmbkkv/Kv', 'gain', num2str(Kv));
+    set_param('modmbkkv/delay', 'delay', num2str(td));
+    set_param('modmbkkv/Hact',...
+        'numerator', ['[ ' num2str(w.^2) ' ]']);
+    set_param('modmbkkv/Hact',...
+        'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
+    [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
+    vaf_fd(ii) = VAF(yt,ysim)
+end
+%%
+figure(8); clf
+normsemTD = SEMTD./abs(plsqTD);
+%normsem = SEM3./abs(plsq);
+colset = cool(8);
+for ii = 1:4
+    plot(1:size(normsemTD, 2), normsemTD(ii, :), 'o', 'markersize', 8,...
+        'color', colset(ii*2 - 1, :), 'linewidth', 8, 'linestyle', ':',...
+        'markerfacecolor', colset(ii*2 - 1, :));
+    hold on;
+    plot(1:size(normsem, 2), normsem(ii, :), 's', 'markersize', 8,...
+        'color', colset(ii*2, :), 'linewidth', 8, 'linestyle', ':',...
+        'markerfacecolor', colset(ii*2, :));
+end
+hold off;
+ax = gca;
+set(ax, 'XTick', [1, 2, 3, 4, 5, 6]);
+set(ax, 'XTickLabel', {'M', 'B', 'K', 'K_v', 't_d', 'w'});
+xlabel('Parameter', 'fontsize', 18);
+ylabel('Normalized SEM', 'fontsize', 18);
+l = legend({...
+    'seg 1, time',...
+    'seg 1, freq',...
+    'seg 2, time',...
+    'seg 2, freq',...
+    'seg 3, time',...
+    'seg 3, freq',...
+    'seg 4, time',...
+    'seg 4, freq',...
+});
+set(l, 'fontsize', 14);
+eps_save('segnormsemtf')
+
+%%
+load('DatRec2.mat')
+t2=matrix(1,:)';        % extract vectors from data-matrix
+u2=matrix(3,:)';
+y2=matrix(4,:)';
+u2f = filtfilt(bfil, afil, u2);
+y2f = filtfilt(bfil, afil, y2);
+vaf2_td = zeros(4, 1);
+vaf2_fd = zeros(4, 1);
+
+for ii=1:4
+    tidx=segments(ii,1)*fs:(segments(ii,2)*fs);
+    t=t2(tidx);
+    ut=detrend(u2f(tidx));
+    yt=detrend(y2f(tidx));
+
+    M = plsqTD(ii,1);
+    B = plsqTD(ii,2);
+    K = plsqTD(ii,3);
+    Kv = plsqTD(ii,4);
+    td = plsqTD(ii,5);
+    w = plsqTD(ii,6);
+
+    set_param('modmbkkv/invM', 'gain', num2str(1/M));
+    set_param('modmbkkv/B', 'gain', num2str(B));
+    set_param('modmbkkv/K', 'gain', num2str(K));
+    set_param('modmbkkv/Kv', 'gain', num2str(Kv));
+    set_param('modmbkkv/delay', 'delay', num2str(td));
+    set_param('modmbkkv/Hact',...
+        'numerator', ['[ ' num2str(w.^2) ' ]']);
+    set_param('modmbkkv/Hact',...
+        'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
+
+    [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
+    vaf2_td(ii) = VAF(yt, ysim)
+
+    M = plsq(ii,1);
+    B = plsq(ii,2);
+    K = plsq(ii,3);
+    Kv = plsq(ii,4);
+    td = plsq(ii,5);
+    w = plsq(ii,6);
+    set_param('modmbkkv/invM', 'gain', num2str(1/M));
+    set_param('modmbkkv/B', 'gain', num2str(B));
+    set_param('modmbkkv/K', 'gain', num2str(K));
+    set_param('modmbkkv/Kv', 'gain', num2str(Kv));
+    set_param('modmbkkv/delay', 'delay', num2str(td));
+    set_param('modmbkkv/Hact',...
+        'numerator', ['[ ' num2str(w.^2) ' ]']);
+    set_param('modmbkkv/Hact',...
+        'denominator', ['[ 1 ' num2str(2*0.7*w) ' ' num2str(w.^2) ']']);
+    [~,~,ysim] = sim('modmbkkv', t, [], [t ut]);
+    vaf_fd(ii) = VAF(yt,ysim)
 end

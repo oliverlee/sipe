@@ -1,14 +1,14 @@
 \documentclass[11pt,a4paper]{article}
 % See geometry.pdf to learn the layout options. There are lots.
 \usepackage{geometry}
-\geometry{left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm}
+\geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
 % Activate to begin paragraphs with an empty line rather than an indent
 \usepackage[parfill]{parskip}
 \usepackage[table]{xcolor}
 \usepackage{courier,multirow,fancyhdr}
 \usepackage{float,amsmath,graphicx,framed,subfiles}
 \usepackage{amssymb,subcaption,textcomp,listings}
-\usepackage{booktabs,epstopdf,caption,units}
+\usepackage{booktabs,epstopdf,caption,units,rotating}
 \usepackage[framed,numbered]{matlab-prettifier}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -95,14 +95,14 @@ space.
         \nonumber & \shortstack[c]{estimated\\parameters (a, b)} &
             \shortstack[c]{error\\residual} &
             \shortstack[c]{number of\\iterations} &
-            \shortstack[c]{calculation\\time} \\
+            \shortstack[c]{calculation\\time [s]} \\
         \hline
         Grid Search & $ (5.8,\: 3.5) $ & $ 8.4835 $ & $ 10201 $ &
-            $ 0.9455 $ s \\
+            $ 0.9455 $ \\
         Gradient Search & $ (5.97,\: 3.53) $ & $ 5.3066 \times 10^{-17} $ &
-            $ 8 $ & $ 0.6253 $ s \\
+            $ 8 $ & $ 0.6253 $ \\
         Genetic Algorithm & $ (5.97,\: 3.53) $ & $ 2.2417 \times 10^{-7} $ &
-            $ 100 $ & $ 4.4695 $ s \\
+            $ 100 $ & $ 4.4695 $ \\
         \hline
     \end{tabular}
     \caption{Performance of Optimization Techniques}
@@ -163,7 +163,7 @@ the search grid, that is, increasing the resolution for the candidate solutions
 of $a$ and $b$. While this is simple to implement, a 10x increase in resolution
 for both $a$ and $b$ increases the number of function evaluations by a factor
 of 100. This is expensive computationally, although grid search is easily
-parallized and may be a feasible solution if resources are available.
+parallelized and may be a feasible solution if resources are available.
 
 % 1d
 \subsection{Options of Genetic Algorithms}
@@ -240,10 +240,10 @@ a good initial condition) and GA.
         \nonumber & \shortstack[c]{estimated\\parameters (a, b)} &
             \shortstack[c]{error\\residual} &
             \shortstack[c]{number of\\iterations} &
-            \shortstack[c]{calculation\\time} \\
+            \shortstack[c]{calculation\\time [s]} \\
         \hline
         Combined Search & $ (5.97,\: 3.53) $ & $ 1.8310 \times 10^{-28} $ &
-            $ 1948 $ & $ 4.2724 $ s \\
+            $ 1948 $ & $ 4.2724 $ \\
         \hline
     \end{tabular}
     \caption{Performance of Combined Grid and Gradient Search}
@@ -402,7 +402,7 @@ Substituting the relation betwen $E(s)$ and $Y(s)$, we have:
     Ms Y(s) &= T(s) - (B + K_v e^{-t_d s} H_{act}) Y(s) - KX(s) \\
     (Ms + B + K_v e^{-t_d s} H_{act}) Y(s) &= T(s) - KX(s)
 \end{align*}
-From the block diagram, we relate $Y(x)$ to $X(s)$ by:
+From the block diagram, we relate $Y(s)$ to $X(s)$ by:
 \begin{equation*}
     X(s) = \frac{1}{s} Y(s)
 \end{equation*}
@@ -422,11 +422,13 @@ $(M, B, K, K_v, t_d, w)$ are shown in \autoref{fig:6parfrf}. The improved 3
 parameter estimate is plotted as a dashed line and the 6 parameter estimate
 which includes feedback gain $K_v$ and time delay $t_d$ of velocity feedback
 and cut-off frequency $w$ of the activation filter in addition to the $M$, $B$,
-$K$ parameters of the improved estimate.  Coherence is not shown as it is the
+$K$ parameters of the improved estimate. Coherence is not shown as it is the
 same as \autoref{fig:mckfrf}. A table of the error residual between the models
 and measured data is presented in \autoref{tab:6parerr}, and again uses the sum
 of squares and of the frequency and coherence weighted error in the range of
-perturbed frequencies for calculation of the error residual.
+perturbed frequencies for calculation of the error residual. Fit of the 6
+parameter model is improved, although to less of an extent when implementing
+frequency and coherence weighting in the error function.
 
 \begin{figure}
     \centering
@@ -455,21 +457,39 @@ perturbed frequencies for calculation of the error residual.
 
 % 2i
 \subsection{SEM of Estimated Parameters}
-\textit{Look at the SEM values of your latest estimate. Which of the parameters
-    are estimated less accurately? Give a plot to support your result.}
-
 \begin{table}
     \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|}
         \hline
         \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
-        $M$ [kg] & $0.0001$ & $0.0001$ & $0.0001$ & $0.0000$ \\
-        $B$ [N\,s/m] & $0.0025$ & $0.0025$ & $0.0023$ & $0.0019$ \\
-        $K$ [N/m] & $0.0972$ & $0.1192$ & $0.1316$ & $0.1171$ \\
-        $K_v$ [rad/s] & $0.0056$ & $0.0089$ & $0.0100$ & $0.0110$ \\
-        $t_d$ [s] & $0.0057$ & $0.0059$ & $0.0062$ & $0.0037$ \\
-        $w$ [rad/s] & $4.6994$ & $3.5391$ & $4.0074$ & $2.6950$ \\
+        $\unit[M]{[kg\,m^2]}$ & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
+        $\unit[B]{[\frac{kg\,m^2}{s\,rad}]}$ & $0.0508$ & $0.0489$ &
+            $0.0595$ & $0.0583$ \\
+        $\unit[K]{[N\,m/rad]}$ & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
+        $\unit[K_v]{[rad/s]}$ & $-0.0355$ & $-0.0467$ &
+            $-0.0477$ & $-0.0671$ \\
+        $\unit[t_d]{[s]}$ & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
+        $\unit[w]{[rad/s]}$ & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
+        \hline
+    \end{tabular}
+    \caption{Estimated Parameters from Wrist with Velocity Feedback Model}
+    \label{tab:segparam}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|}
+        \hline
+        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \hline
+        $\unit[M]{[kg\,m^2]}$ & $0.0001$ & $0.0001$ & $0.0001$ & $0.0000$ \\
+        $\unit[B]{[\frac{kg\,m^2}{s\,rad}]}$ & $0.0025$ & $0.0025$ &
+            $0.0023$ & $0.0019$ \\
+        $\unit[K]{[N\,m/rad]}$ & $0.0972$ & $0.1192$ & $0.1316$ & $0.1171$ \\
+        $\unit[K_v]{[rad/s]}$ & $0.0056$ & $0.0089$ & $0.0100$ & $0.0110$ \\
+        $\unit[t_d]{[s]}$ & $0.0057$ & $0.0059$ & $0.0062$ & $0.0037$ \\
+        $\unit[w]{[rad/s]}$ & $4.6994$ & $3.5391$ & $4.0074$ & $2.6950$ \\
         \hline
     \end{tabular}
     \caption{SEM of Estimated Parameters from Wrist with Velocity Feedback
@@ -477,67 +497,68 @@ perturbed frequencies for calculation of the error residual.
     \label{tab:segsem}
 \end{table}
 
-A table with the Standard Error of Mean (SEM) of each estimated parameter using
-the model which includes velocity feedback is given in \autoref{tab:segsem}.
-Precision is given up to 4 places after the decimal in the SEM values. The
-activation filter cut-off frequency parameter $w$ is estimated least accurately
-in all 4 segments.
+A table with the Standard Error of the Mean (SEM) of each estimated parameter
+using the model which includes velocity feedback is given in
+\autoref{tab:segsem}.  Precision is given up to 4 places after the decimal in
+the SEM values. In order to evaluate the fit of the parameter estimates, we
+compare the SEM to the estimated value and plot a ``normalized'' SEM  which is
+defined as:
+\begin{equation*}
+    normalized \: SEM = \frac{SEM}{|estimated \: parameter|}
+\end{equation*}
+and is plotted in \autoref{fig:segnormsem}. Note that the dotted lines in this
+plot do not represent any relation between the parameters and are only used so
+that the normalized SEM values for a single segment can be easily identified.
+We can see that the velocity feedback gain $K_v$ is least accurately estimated
+parameter and that mass $M$, damping constant $B$, and spring constant $K$ are
+fit well to the measured data. The estimated parameters values used in the SEM
+normalization are given in \autoref{tab:segparam}. Note that the units
+displayed \autoref{tab:segparam} and \autoref{tab:segsem} use the units for a
+torsional spring equation since the experiment deals with rotations and not
+linear displacements.
 
-TODO: Add a plot?
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{segnormsem.eps}
+    \caption{Normalized SEM for Estimated Parameters}
+    \label{fig:segnormsem}
+\end{figure}
+
 
 % 2j
 \subsection{Parameters Dependent on Background Torque}
 From \autoref{fig:wristdata}, the mean torque magnitude increases with each
 segment. The estimated parameter values for each segment are shown in
-\autoref{tab:segparam}. We can see that spring constant $K$ increases and that
-the velocity feedback gain $K_v$ decreases with each segment (or equivalently,
-as torque magnitude increases). We expect that $K$ increases with increasing
-torque; if the user is instructed to maintain a larger torque value, the amount
-of torque exerted given the same angle perturbation must be higher. For $K_v$,
-velocity of the wrist becomes a more significant factor as torque magnitude
-increases. Larger torques result in larger accelerations of the wrist,
-resulting in larger wrist velocities. For damping constant $B$, it is hard
-determine if it changes with torque given the measured data. We see little
-change in in mass $M$ and time delay $t_d$. As the mass of the system is not
-changing, nor the reation time of the human subject (at least not significantly
-over the course of the experiment), we expect these parameters to remain
-constant over all segments. As activation cut-off frequency $w$, it is harder
-to determine how this parameters changes with background torque, as the SEM for
-$w$ is higher than for other estimated parameters.
-% TODO: revist (in)dependent parameters
-
-\begin{table}
-    \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
-        \hline
-        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
-        \hline
-        $M$ [kg] & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
-        $B$ [N\,s/m] & $0.0508$ & $0.0489$ & $0.0595$ & $0.0583$ \\
-        $K$ [N/m] & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
-        $K_v$ [rad/s] & $-0.0355$ & $-0.0467$ & $-0.0477$ & $-0.0671$ \\
-        $t_d$ [s] & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
-        $w$ [rad/s] & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
-        \hline
-    \end{tabular}
-    \caption{Estimated Parameters from Wrist with Velocity Feedback Model}
-    \label{tab:segparam}
-\end{table}
+\autoref{tab:segparam}. We can see that spring constant $K$ increases each
+segment (or equivalently, as torque magnitude increases). We expect that $K$
+increases with increasing torque; if the user is instructed to maintain a
+larger torque value, the amount of torque exerted given the same angle
+perturbation must be higher. Larger torques result in larger accelerations of
+the wrist, resulting in larger wrist velocities. For damping constant $B$, it
+is hard determine if it changes with torque given the measured data. We see
+little change in in mass $M$ and time delay $t_d$. As the mass of the system is
+not changing, nor the reation time of the human subject (at least not
+significantly over the course of the experiment), we expect these parameters to
+remain constant over all segments. As velocity feedback $K_v$ and activation
+cut-off frequency $w$ have the highest normalized SEM values, it is hard to
+determine how these parameters change with background torque with the measured
+data.
 
 % 2k
 \subsection{VAF of Segments}
 The Variance Account For (VAF) for each segment is given in
-\autoref{tab:segvaf}. The measured and estimated rotation using a model with
+\autoref{tab:segvaf}.
+The measured and estimated rotation using a model with
 parameters from \autoref{tab:segparam} are displayed in \autoref{fig:segrot}.
 Zooming in on short time segments ($2$ seconds) in \autoref{fig:segrotzoom}
 shows a good fit on signal shape although the magnitude differs by a small
 amount, which matches with the calculated VAF values. Segments 1 and 2 appear
 to have a non-zero offset between the measured and estimated rotations.
-Measured input and output data was detrended before calculation of VAF and
-plotting.
+Measured input and output data were detrended before calculation of VAF and
+plotting. TODO: review this section.
 \begin{table}
     \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|}
         \hline
         \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
         \hline
@@ -564,108 +585,208 @@ plotting.
 
 % 2l
 \subsection{Use of High-Pass Filters}
-We want to use high-pass filters to remove low frequency content. We expect
-human reflexes to by high frequency and changes due to fatigue or distraction
-to low frequency.
+Due to temperature effects, we expect low frequency drift in the torque signal.
+Without using a high-pass filter, the optimization would try and fit the model
+parameters to this drift. However, we know this drift effect to be independent
+of the wrist model and would result in poorer parameter estimates.
 
 % 2m
 \subsection{Estimation of Parameters in Time Domain}
 Simulating the model in the time domain and using the difference in the
-measured and estimated output as the error results in the estimated parameters
-in \autoref{tab:segparamtd}.
-
-\begin{table}
-    \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
-        \hline
-        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
-        \hline
-        $M$ [kg] & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
-        $B$ [N\,s/m] & $0.0508$ & $0.0489$ & $0.0595$ & $0.0583$ \\
-        $K$ [N/m] & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
-        $K_v$ [rad/s] & $-0.0355$ & $-0.0467$ & $-0.0477$ & $-0.0671$ \\
-        $t_d$ [s] & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
-        $w$ [rad/s] & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
-        \hline
-    \end{tabular}
-    \caption{Estimated Parameters from Wrist with Velocity Feedback Model with
-        Time Domain Optimization}
-    \label{tab:segparamtd}
-\end{table}
+measured and simulated output as the error results, we obtain the estimated
+parameters listed in \autoref{tab:segparamhp} in the time domain columns.
+Note that the signal is high-pass filtered for time domain optimization and the
+parameters estimated with frequency domain optimization match the values from
+\autoref{tab:segparam}.
 
 % 2n
 \subsection{Comparison of Frequency and Time Domain Estimates}
-VAF and SEM using time domain optmization in \autoref{tab:segvaftdhp} and
-\autoref{tab:segsemtdhp}.
+SEM and VAF are computed using time domain optmization and values for each
+parameter are presented in the time domain columns of \autoref{tab:segsemhp}
+and \autoref{tab:segvafhp}. While the SEM and VAF were previously calculated
+using frequency domain optimization and are shown in \autoref{tab:segsem} and
+\autoref{tab:segvaf} respectively, the VAF calculations have been recomputed
+using high-pass filtered data in \autoref{tab:segvafhp}. While most of the SEM
+values are lower in time domain optimization, the VAF values are high for each
+segment after high-pass filtering is used. This may be a result of the
+different error functions used in the time domain and frequency domain. A plot
+of the normalized SEM values for parameter estimates in time domain and
+frequency domain are is shown in \autoref{fig:segnormsemtf}. From the plot, we
+can see that time domain results in better parameter estimates in terms of
+normalized SEM.
 
-%\begin{table}
-%    \centering
-%    \begin{tabular}{|l|r|r|r|r|r|r|}
-%        \hline
-%        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
-%        \hline
-%        $M$ [kg] & $0.0027$ & $0.0027$ & $0.0026$ & $0.0026$ \\
-%        $B$ [N\,s/m] & $0.0508$ & $0.0489$ & $0.0595$ & $0.0583$ \\
-%        $K$ [N/m] & $4.2514$ & $4.7312$ & $6.1855$ & $7.5809$ \\
-%        $K_v$ [rad/s] & $-0.0355$ & $-0.0467$ & $-0.0477$ & $-0.0671$ \\
-%        $t_d$ [s] & $0.0600$ & $0.0540$ & $0.0601$ & $0.0543$ \\
-%        $w$ [rad/s] & $35.8176$ & $27.4777$ & $28.0485$ & $25.6516$ \\
-%        \hline
-%    \end{tabular}
-%    \caption{Estimated Parameters from Wrist with Velocity Feedback Model with
-%        Time Domain Optimization}
-%    \label{tab:segparamtd}
-%\end{table}
-\begin{table}
+\begin{sidewaystable}
     \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
         \hline
-        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \nonumber &
+            \multicolumn{2}{c|}{segment 1} &
+            \multicolumn{2}{c|}{segment 2} &
+            \multicolumn{2}{c|}{segment 3} &
+            \multicolumn{2}{c|}{segment 4} \\
         \hline
-        VAF & $93.9951$ & $95.4617$ & $94.8857$ & $97.4736$ \\
+        \nonumber &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} \\
+        \hline
+        $\unit[M]{[kg\,m^2]}$ &
+            $0.0030$ & $0.0027$ & $0.0029$ & $0.0027$ &
+            $0.0026$ & $0.0026$ & $0.0023$ & $0.0026$ \\
+        $\unit[B]{[\frac{kg\,m^2}{s\,rad}]}$ &
+            $0.0371$ & $0.0508$ & $0.0408$ & $0.0489$ &
+            $0.0595$ & $0.0595$ & $0.0670$ & $0.0583$ \\
+        $\unit[K]{[N\,m/rad]}$ &
+            $4.9675$ & $4.2514$ & $5.3029$ & $5.7312$ &
+            $6.1462$ & $6.1855$ & $6.5311$ & $7.5809$ \\
+        $\unit[K_v]{[rad/s]}$ &
+            $-0.0782$ & $-0.0355$ & $-0.0775$ & $-0.0467$ &
+            $-0.0659$ & $-0.0477$ & $-0.0660$ & $-0.0671$ \\
+        $\unit[t_d]{[s]}$ &
+            $0.0400$ & $0.0600$ & $0.0398$ & $0.0540$ &
+            $0.0471$ & $0.0601$ & $0.0507$ & $0.0543$ \\
+        $\unit[w]{[rad/s]}$ &
+            $28.3671$ & $35.8176$ & $28.8176$ & $27.4777$ &
+            $23.1918$ & $28.0485$ & $19.4152$ & $25.6516$ \\
         \hline
     \end{tabular}
-    \caption{VAF for Wrist with Velocity Feedback Model for Time Domain
-        Optimization and High Pass Filtering}
-    \label{tab:segvaftdhp}
-\end{table}
+    \caption{Estimated Parameters from Wrist with Velocity Feedback Model and
+        High Pass Filtering for Time and Frequency Domain Optimization}
+    \label{tab:segparamhp}
+\end{sidewaystable}
 
 \begin{table}
     \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
         \hline
-        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \nonumber &
+            \multicolumn{2}{c|}{segment 1} &
+            \multicolumn{2}{c|}{segment 2} &
+            \multicolumn{2}{c|}{segment 3} &
+            \multicolumn{2}{c|}{segment 4} \\
         \hline
-        $M$ [kg] & $0.0000$ & $0.0000$ & $0.0001$ & $0.0001$ \\
-        $B$ [N\,s/m] & $0.0005$ & $0.0005$ & $0.0006$ & $0.0007$ \\
-        $K$ [N/m] & $0.0123$ & $0.0110$ & $0.0165$ & $0.0188$ \\
-        $K_v$ [rad/s] & $0.0011$ & $0.0012$ & $0.0029$ & $0.0041$ \\
-        $t_d$ [s] & $0.0004$ & $0.0004$ & $0.0007$ & $0.0011$ \\
-        $w$ [rad/s] & $0.2817$ & $0.2771$ & $0.4552$ & $0.6427$ \\
+        \nonumber &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} \\
+        \hline
+        $\unit[M]{[kg\,m^2]}$ &
+            $0.0000$ & $0.0001$ & $0.0000$ & $0.0001$ &
+            $0.0001$ & $0.0001$ & $0.0001$ & $0.0000$ \\
+        $\unit[B]{[\frac{kg\,m^2}{s\,rad}]}$ &
+            $0.0005$ & $0.0025$ & $0.0005$ & $0.0025$ &
+            $0.0006$ & $0.0023$ & $0.0007$ & $0.0019$ \\
+        $\unit[K]{[N\,m/rad]}$ &
+            $0.0123$ & $0.0972$ & $0.0110$ & $0.1192$ &
+            $0.0165$ & $0.1316$ & $0.0188$ & $0.1171$ \\
+        $\unit[K_v]{[rad/s]}$ &
+            $0.0011$ & $0.0056$ & $0.0012$ & $0.0089$ &
+            $0.0029$ & $0.0100$ & $0.0041$ & $0.0110$ \\
+        $\unit[t_d]{[s]}$ &
+            $0.0004$ & $0.0057$ & $0.0004$ & $0.0059$ &
+            $0.0007$ & $0.0062$ & $0.0011$ & $0.0037$ \\
+        $\unit[w]{[rad/s]}$ &
+            $0.2817$ & $4.6994$ & $0.2771$ & $3.5391$ &
+            $0.4552$ & $4.0074$ & $0.6427$ & $2.6950$ \\
         \hline
     \end{tabular}
     \caption{SEM of Estimated Parameters from Wrist with Velocity Feedback
-        Model for Time Domain Estimation and High Pass Filtering}
-    \label{tab:segsemtdhp}
+        Model and High Pass Filtering for Time and Frequency Domain
+        Optimization}
+    \label{tab:segsemhp}
 \end{table}
 
 \begin{table}
     \centering
-    \begin{tabular}{|l|r|r|r|r|r|r|}
+    \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
         \hline
-        \nonumber & segment 1 & segment 2 & segment 3 & segment 4 \\
+        \nonumber &
+            \multicolumn{2}{c|}{segment 1} &
+            \multicolumn{2}{c|}{segment 2} &
+            \multicolumn{2}{c|}{segment 3} &
+            \multicolumn{2}{c|}{segment 4} \\
         \hline
-        $M$ [kg] & $0.0030$ & $0.0029$ & $0.0026$ & $0.0023$ \\
-        $B$ [N\,s/m] & $0.0371$ & $0.0408$ & $0.0595$ & $0.0670$ \\
-        $K$ [N/m] & $4.9675$ & $5.3029$ & $6.1462$ & $6.5311$ \\
-        $K_v$ [rad/s] & $-0.0782$ & $-0.0775$ & $-0.0659$ & $-0.0660$ \\
-        $t_d$ [s] & $0.0400$ & $0.0398$ & $0.0471$ & $0.0507$ \\
-        $w$ [rad/s] & $28.3671$ & $28.8176$ & $23.1918$ & $19.4152$ \\
+        \nonumber &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} \\
+        \hline
+        VAF &
+            $93.9951$ & $94.6912$ & $95.4617$ & $96.2253$ &
+            $94.8857$ & $95.1913$ & $92.4736$ & $95.2300$ \\
         \hline
     \end{tabular}
-    \caption{Estimated Parameters from Wrist with Velocity Feedback Model for
-        Time Domain Estimation and High Pass Filtering}
-    \label{tab:segparamtdhp}
+    \caption{VAF for Wrist with Velocity Feedback Model and High Pass
+        Filtering for Time and Frequency Domain Optimization}
+    \label{tab:segvafhp}
 \end{table}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{segnormsemtf.eps}
+    \caption{Normalized SEM for Estimated Parameters in Time and Frequency
+        Domain}
+    \label{fig:segnormsemtf}
+\end{figure}
+
+% 2o
+\subsection{High Frequency Noise in Time Domain Estimation}
+High frequency noise has a lesser effect on parameter estimation in the time
+domain. A least squares fit of the model parameters will minimize the error
+residual between the simulated model and measured data. As we assume that noise
+has zero mean and is uncorrelated to the input and output signals, the optimal
+parameters will also minimize the effect of noise on the error residual.
+
+% 2p
+\subsection{Validation Using a Second Dataset}
+Validation of model parameters should always be done with a dataset different
+than the one used to estimate the parameters. Since the optimization procedure
+will return parameters that minimize error, using the same dataset for
+parameter estimation and validation can result in overfitting of model
+parameters, or fitting the the data to biases or noise present in the data. Use
+of a separate, independent data set for validation reduces problems of
+overfitting and gives insight on how model will generalize to independent or
+unknown datasets. Calculation of VAF for verification dataset shows shows
+similar values to the training dataset and the values are given in
+\autoref{tab:segvafver}.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|r|r|r|r|r|}
+        \hline
+        \nonumber &
+            \multicolumn{2}{c|}{segment 1} &
+            \multicolumn{2}{c|}{segment 2} &
+            \multicolumn{2}{c|}{segment 3} &
+            \multicolumn{2}{c|}{segment 4} \\
+        \hline
+        \nonumber &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} &
+            \multicolumn{1}{c|}{time} & \multicolumn{1}{c|}{freq.} \\
+        \hline
+        VAF &
+            $94.6432$ & $95.4684$ & $93.7491$ & $94.0920$ &
+            $93.9296$ & $94.4241$ & $92.1357$ & $95.3843$ \\
+        \hline
+    \end{tabular}
+    \caption{VAF for Wrist with Velocity Feedback Model and High Pass
+        Filtering for Time and Frequency Domain Optimization on Validation
+        Dataset}
+    \label{tab:segvafver}
+\end{table}
+
+% 2q
+\subsection{Advantages and Disadvantages of Time Domain Identification}
+From the experimental data, time domain identification produces better
+estimates of the model parameters. However, it requires simulation of the
+system at each iteration which is much slower than frequency domain analysis.
+Furthermore, frequency domain modeling uses transfer functions which represent
+the input and output relation of linear time-invariant systems, resulting in
+poor modeling of nonlinear systems.
 
 \end{document}
