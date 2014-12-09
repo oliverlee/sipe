@@ -197,24 +197,25 @@ optimization.
         generations required for convergence as more time is necessary to span
         the search space through crossover and mutation. If information
         regarding areas where optimal solutions exist, the PopInitRange can be
-        formuated so that the initial population begins in those areas.
+        formulated so that the initial population begins in those areas.
     \item\mcode{Generations}- The maximum number of iterations before the
         algorithm halts. If chosen too small, the algorithm may halt before
-        convergence.  The algorithm stops wonce convergence is reached, however
+        convergence.  The algorithm stops once convergence is reached, however
         poor fomulation for convergence could lead to unnecessary and time
         consuming iterations.
 \end{itemize}
 
 % 1e
 \subsection{Combination of Grid and Gradient Search}
-Grid and gradient search can be combined to robustly by reducing the resolution
-of grid search and using each point as an initial condition for gradient
-search. As gradient search has fast convergence, the increase in function
-evaluations due to gradient search is smaller than the decrease in function
-evaluations due to the reduction in grid resolution. With the number of
-iterations of each gradient search on the order of 10 and the decrease of
-resolution by 10 for each $a$ and $b$, the number of function evaluations of
-the combined search is an order of magnitude smaller than grid search alone.
+Grid and gradient search can be combined to robustly find the global minimum by
+reducing the resolution of grid search and using each point as an initial
+condition for gradient search. As gradient search has fast convergence, the
+increase in function evaluations due to gradient search is smaller than the
+decrease in function evaluations due to the reduction in grid resolution. With
+the number of iterations of each gradient search on the order of 10 and the
+decrease of resolution by 10 for each $a$ and $b$, the number of function
+evaluations of the combined search is an order of magnitude smaller than grid
+search alone.
 
 Using the search function decribed in \autoref{lst:combsearch} to optimize
 parameters $a$ and $b$, we find the performance metrics as described in
@@ -301,14 +302,15 @@ individual segments are:
     \item \textbf{Time variance of the system} - A human response can be viewed
         as a time variant system as humans are subject to things such as
         fatigue, boredom, etc, and cannot be expected to react in an identical
-        fashion to stimuli over the course of a long experiment. Thus if the
-        system varies over the course of the different segments, which result
-        in poor coherence.
+        fashion to stimuli over the course of a long experiment. The resulting
+        time-varying system can then be represented as different time-invariant
+        systems during each segment and analysis as a single time-invariant
+        system will result in poor coherence.
 \end{itemize}
 
 % 2c
 \subsection{Validity of LTI identification}
-If there are indications that the system and nonlinear and time varying, than
+If there are indications that the system is nonlinear and time varying, than
 application of linear time invariant identification techniques will result in
 poor system identification.
 
@@ -321,12 +323,11 @@ function:
 \end{equation*}
 where $M$ is the mass, $B$ is the damping coefficient, and $K$ is the spring
 constant. At low frequencies, the $K$ term dominates the other terms in the
-denominator of the system transfer function, and the spring parameter can be
-estimated by comparing the frequency response to $1/K$. At high frequencies,
-the $Ms^2$ term in the denominator dominates, and the magnitude of the
-frequency response can be used to estimate the mass. Frequencies in between the
-high and low ranges can be used to determine to the damping parameter $B$ after
-estimating $M$ and $K$.
+transfer function denominator and the spring parameter can be estimated by
+comparing the frequency response to $1/K$. At high frequencies, the $Ms^2$ term
+in the denominator dominates and the magnitude of the frequency response can be
+used to estimate the mass. Frequencies in between the high and low ranges can
+be used to determine to the damping parameter $B$ after estimating $M$ and $K$.
 
 % 2e
 \subsection{Estimation of Mass, Spring, Damper Parameters}
@@ -347,15 +348,15 @@ segments can be identified by the plotted color.
 
 % 2f
 \subsection{Parameter Estimation with Frequency and Coherence Weighting}
-Limiting to the error function to the range of perturbed frequencies ($2$ -
-$20$ Hz) and by using frequency and coherence weighing in the error function
-for parameter estimation results in a better parameter estimates; the improved
+Limiting the error function to the range of perturbed frequencies ($2$ -
+$20$ Hz) and using frequency and coherence weighing in the error function
+for parameter estimation results in better parameter estimates; the improved
 model has a better fit with the measured data. The frequency response of the
-model with improved estimates is displayed in \autoref{fig:mckfrf}. Comparison
-of the error residual between the models and measured data is presented in
-\autoref{tab:mckerr}, and uses the sum of squares of the frequency and
-coherence weighted error for perturbed frequencies to compare the fit of the
-two parameter estimates.
+model with improved estimates is displayed in \autoref{fig:mckfrf} and can be
+identified by the plots with solid lines. Comparison of the error residual
+between the models and measured data is presented in \autoref{tab:mckerr} and
+uses the sum of squares of the frequency and coherence weighted error in the
+perturbed frequency range to compare the fit of the two parameter estimates.
 
 \begin{table}
     \centering
@@ -381,8 +382,8 @@ two parameter estimates.
 \end{figure}
 Using the block diagram of the system with velocity feedback, as shown in
 \autoref{fig:clsys}, we can derive the transfer function of the closed loop
-system. Starting with definitions of intermediate signals $Y(s)$, $E_1(s)$, and
-$E_2(s)$:
+system. We define the following intermediate signals $Y(s)$, $E_1(s)$, and
+$E_2(s)$ to be:
 \begin{equation*}
     Y(s) = \frac{1}{Ms}E(s) \qquad E_1(s) = BY(s) + E_2(s) \qquad
     E_2(s) = K_v e^{-t_d s} H_{act} Y(s) + KX(s)
@@ -416,17 +417,19 @@ The resultant transfer function is:
 % 2h
 \subsection{Parameter Estimation of Transfer Function with Velocity Feedback}
 Plots of the improved 3 parameter estimate $(M, B, K)$ and 6 parameter estimate
-$(M, B, K, K_v, t_d, w)$ are shown in \autoref{fig:6parfrf}. The improved 3
-parameter estimate is plotted as a dashed line and the 6 parameter estimate
-which includes feedback gain $K_v$ and time delay $t_d$ of velocity feedback
-and cut-off frequency $w$ of the activation filter in addition to the $M$, $B$,
-$K$ parameters of the improved estimate. Coherence is not shown as it is the
-same as \autoref{fig:mckfrf}. A table of the error residual between the models
-and measured data is presented in \autoref{tab:6parerr}, and again uses the sum
-of squares and of the frequency and coherence weighted error in the range of
-perturbed frequencies for calculation of the error residual. Fit of the 6
-parameter model is improved, although to less of an extent when implementing
-frequency and coherence weighting in the error function.
+$(M, B, K,\allowbreak K_v, t_d, w)$ are shown in \autoref{fig:6parfrf}. The
+improved 3 parameter estimate is plotted as a dashed line and the 6 parameter
+estimate as a solid line; in this figure, as in \autoref{fig:mckfrf}, the
+better estimate is shown with a solid line. The additional parameters used in
+the 6 parameter model are feedback gain $K_v$, time delay $t_d$ of velocity
+feedback, and cut-off frequency $w$ of the activation filter. Coherence is not
+shown as it is the same as \autoref{fig:mckfrf}. A table of the error residual
+between the models and measured data is presented in \autoref{tab:6parerr} and
+again uses the sum of squares and of the frequency and coherence weighted error
+in the range of perturbed frequencies. Fit of the 6 parameter model is
+improved, although to less of an extent in terms of reduced residual when
+compared to implementation of frequency and coherence weighting in the error
+function.
 
 \begin{figure}
     \centering
@@ -496,24 +499,23 @@ frequency and coherence weighting in the error function.
 \end{table}
 
 A table with the Standard Error of the Mean (SEM) of each estimated parameter
-using the model which includes velocity feedback is given in
-\autoref{tab:segsem}.  Precision is given up to 4 places after the decimal in
-the SEM values. In order to evaluate the fit of the parameter estimates, we
-compare the SEM to the estimated value and plot a ``normalized'' SEM  which is
-defined as:
+using the 6 parameter model is given in \autoref{tab:segsem}. Precision is
+given up to 4 places after the decimal in the SEM values. In order to evaluate
+the fit of the parameter estimates, we compare the SEM to the estimated value
+and calculate a ``normalized'' SEM which is defined as:
 \begin{equation*}
     normalized \: SEM = \frac{SEM}{|estimated \: parameter|}
 \end{equation*}
-and is plotted in \autoref{fig:segnormsem}. Note that the dotted lines in this
-plot do not represent any relation between the parameters and are only used so
-that the normalized SEM values for a single segment can be easily identified.
-We can see that the velocity feedback gain $K_v$ is least accurately estimated
-parameter and that mass $M$, damping constant $B$, and spring constant $K$ are
-fit well to the measured data. The estimated parameters values used in the SEM
-normalization are given in \autoref{tab:segparam}. Note that the units
-displayed \autoref{tab:segparam} and \autoref{tab:segsem} use the units for a
-torsional spring equation since the experiment deals with rotations and not
-linear displacements.
+and is plotted in \autoref{fig:segnormsem}. The dotted lines in this plot do
+not represent any relation between the parameters and are only used to easily
+identify normalized SEM values belonging to the same segment. We can see that
+the velocity feedback gain $K_v$ is least accurately estimated parameter and
+that mass $M$, damping constant $B$, and spring constant $K$ are fit well to
+the measured data. The estimated parameters values used in the SEM
+normalization are given in \autoref{tab:segparam}. Units displayed in
+\autoref{tab:segparam} and \autoref{tab:segsem} use units for a torsional
+spring equation since the experiment measures rotations and not linear
+displacements.
 
 \begin{figure}
     \centering
@@ -525,35 +527,33 @@ linear displacements.
 
 % 2j
 \subsection{Parameters Dependent on Background Torque}
-From \autoref{fig:wristdata}, the mean torque magnitude increases with each
+From \autoref{fig:wristdata}, we see that the mean torque magnitude increases with each
 segment. The estimated parameter values for each segment are shown in
 \autoref{tab:segparam}. We can see that spring constant $K$ increases each
 segment (or equivalently, as torque magnitude increases). We expect that $K$
 increases with increasing torque; if the user is instructed to maintain a
 larger torque value, the amount of torque exerted given the same angle
-perturbation must be higher. Larger torques result in larger accelerations of
-the wrist, resulting in larger wrist velocities. For damping constant $B$, it
-is hard determine if it changes with torque given the measured data. We see
-little change in in mass $M$ and time delay $t_d$. As the mass of the system is
-not changing, nor the reation time of the human subject (at least not
-significantly over the course of the experiment), we expect these parameters to
-remain constant over all segments. As velocity feedback $K_v$ and activation
-cut-off frequency $w$ have the highest normalized SEM values, it is hard to
-determine how these parameters change with background torque with the measured
-data.
+perturbation must be higher as the user must stiffen muscles in the wrist.
+Larger torques result in larger accelerations of the wrist, resulting in larger
+wrist velocities. For damping constant $B$, it is hard determine if it changes
+with torque given the measured data. We see little change in in mass $M$ and
+time delay $t_d$. As the mass of the system is not changing, nor the reation
+time of the human subject (at least not significantly over the course of the
+experiment), we expect these parameters to remain constant over all segments.
+As velocity feedback $K_v$ and activation cut-off frequency $w$ have the
+highest normalized SEM values, it is hard to determine how these parameters
+change with background torque given the measured data.
 
 % 2k
 \subsection{VAF of Segments}
 The Variance Account For (VAF) for each segment is given in
-\autoref{tab:segvaf}.
-The measured and estimated rotation using a model with
-parameters from \autoref{tab:segparam} are displayed in \autoref{fig:segrot}.
-Zooming in on short time segments ($2$ seconds) in \autoref{fig:segrotzoom}
-shows a good fit on signal shape although the magnitude differs by a small
-amount, which matches with the calculated VAF values. Segments 1 and 2 appear
-to have a non-zero offset between the measured and estimated rotations.
-Measured input and output data were detrended before calculation of VAF and
-plotting. TODO: review this section.
+\autoref{tab:segvaf} and show a good match between the model and the measured
+data. The measured and estimated rotation using a model with determine how
+these parameters change with background torque with the measured Zooming in on
+short time segments ($2$ seconds) in \autoref{fig:segrotzoom} shows a good fit
+on signal shape although the magnitude differs by a small amount. This small
+error between measured and estimated rotation corresponds with the high VAF
+values.
 \begin{table}
     \centering
     \begin{tabular}{|l|r|r|r|r|}
@@ -584,9 +584,13 @@ plotting. TODO: review this section.
 % 2l
 \subsection{Use of High-Pass Filters}
 Due to temperature effects, we expect low frequency drift in the torque signal.
-Without using a high-pass filter, the optimization would try and fit the model
-parameters to this drift. However, we know this drift effect to be independent
-of the wrist model and would result in poorer parameter estimates.
+Without using a high-pass filter, the optimization will fit the model
+parameters to this drift, resulting in an overfit of the data. As we know this
+effect to be independent of the wrist model, we can minimize the effect of
+drift by using a high-pass filter on the measured data. While the SEM and VAF
+values may be higher with drift left in the data, this results in poorer
+parameter estimates which can be seen when using an independent validation
+dataset without drift.
 
 % 2m
 \subsection{Estimation of Parameters in Time Domain}
@@ -599,19 +603,21 @@ parameters estimated with frequency domain optimization match the values from
 
 % 2n
 \subsection{Comparison of Frequency and Time Domain Estimates}
-SEM and VAF are computed using time domain optmization and values for each
+SEM and VAF are computed using time domain optimization and values for each
 parameter are presented in the time domain columns of \autoref{tab:segsemhp}
 and \autoref{tab:segvafhp}. While the SEM and VAF were previously calculated
 using frequency domain optimization and are shown in \autoref{tab:segsem} and
 \autoref{tab:segvaf} respectively, the VAF calculations have been recomputed
-using high-pass filtered data in \autoref{tab:segvafhp}. While most of the SEM
-values are lower in time domain optimization, the VAF values are high for each
-segment after high-pass filtering is used. This may be a result of the
-different error functions used in the time domain and frequency domain. A plot
-of the normalized SEM values for parameter estimates in time domain and
-frequency domain are is shown in \autoref{fig:segnormsemtf}. From the plot, we
-can see that time domain results in better parameter estimates in terms of
-normalized SEM.
+using high-pass filtered data in \autoref{tab:segvafhp} for comparison with
+time-domain values. While most of the SEM values are lower in time domain
+optimization, the VAF values for frequency domain optimization are higher for
+each segment after high-pass filtering is used. This may be a result of the
+different error functions used in time and frequency domains. A plot of the
+normalized SEM values for parameter estimates in time domain and frequency
+domain are is shown in \autoref{fig:segnormsemtf}. From this plot, we can see
+that time domain results in better parameter estimates in terms of normalized
+SEM, in addition to lower SEM values overall, as the estimated parameters are
+quite close for both optimization domains.
 
 \begin{sidewaystable}
     \centering
@@ -734,7 +740,7 @@ normalized SEM.
 \subsection{High Frequency Noise in Time Domain Estimation}
 High frequency noise has a lesser effect on parameter estimation in the time
 domain. A least squares fit of the model parameters will minimize the error
-residual between the simulated model and measured data. As we assume that noise
+residual between the simulated and measured data. As we assume that noise
 has zero mean and is uncorrelated to the input and output signals, the optimal
 parameters will also minimize the effect of noise on the error residual.
 
@@ -744,12 +750,13 @@ Validation of model parameters should always be done with a dataset different
 than the one used to estimate the parameters. Since the optimization procedure
 will return parameters that minimize error, using the same dataset for
 parameter estimation and validation can result in overfitting of model
-parameters, or fitting the the data to biases or noise present in the data. Use
-of a separate, independent data set for validation reduces problems of
-overfitting and gives insight on how model will generalize to independent or
+parameters; that is, fitting the the data to biases or noise present in the
+data. Use of a separate, independent data set for validation reduces problems
+of overfitting and gives insight on how model will generalize to independent or
 unknown datasets. Calculation of VAF for verification dataset shows shows
 similar values to the training dataset and the values are given in
-\autoref{tab:segvafver}.
+\autoref{tab:segvafver}. As we take noise to be independent in the training and
+validation datasets, it is unlikely that the model has been overfit to noise.
 
 \begin{table}
     \centering
