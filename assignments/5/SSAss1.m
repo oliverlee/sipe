@@ -83,6 +83,8 @@ ylabel('singular value', 'fontsize', axfs);
 l3 = legend(lgnd);
 set(l3, 'fontsize', lgndfs);
 
+eps_save('datamatrix1a', figure(2));
+
 %% C
 figure(3); clf
 figure(4); clf
@@ -129,6 +131,9 @@ zlabel('y(k + 2) [m]', 'fontsize', axfs);
 l2 = legend(lgnd);
 set(l2, 'fontsize', lgndfs);
 
+eps_save('svd1d', figure(3));
+eps_save('datamatrix1c', figure(4));
+
 
 %% D. Retrieve system from SVD
 n = 2;                                 % System order
@@ -169,6 +174,7 @@ l1 = legend('y0', 'yi', 'yi_T');
 set(l1, 'fontsize', lgndfs);
 xlim([-0.1, 2.0])
 ylim([-0.5, 0.5])
+eps_save('output1e', figure(1));
 
 
 %% F. redo 3 plots with noise and compare to original
@@ -221,23 +227,35 @@ xlabel('t [s]', 'fontsize', axfs)
 ylabel('y [m]', 'fontsize', axfs)
 l1 = legend(lgnd);
 set(l1, 'fontsize', lgndfs);
+xlim([-0.1, 2.0])
+ylim([-0.5, 0.5])
 
-%% G. increase N to reduce effect of noise
-Narray = N:100:size(yk, 1) - s;
-Sarray = zeros(length(Narray), s);
-lgnd = cell(length(Narray), 1);
-colset = cool(length(Narray));
+eps_save('output1f', figure(1));
+eps_save('datamatrix1f', figure(2));
+eps_save('svd1f', figure(3));
+
+%% G. increase s to reduce effect of noise
+%Narray = N:100:size(yk, 1) - s;
+%Sarray = zeros(length(Narray), s);
+%lgnd = cell(length(Narray), 1);
+%colset = cool(length(Narray));
+sarray = s:1:10;
+Sarray = cell(length(sarray), 1);
+lgnd = cell(length(sarray), 1);
+colset = cool(length(sarray));
 
 figure(3); clf;
-for i = 1:length(Narray)
-    YsiN = hankelmatrix(yk, ii, s, Narray(i));
+%for i = 1:length(Narray)
+for i = 1:length(sarray)
+    YsiN = hankelmatrix(yk, ii, sarray(i), N);
     [~, Si, ~] = svd(YsiN, 'econ');
-    Sarray(i, :) = diag(Si)';
-    semilogy(1:s, diag(Si), '*', 'color', colset(i, :)); hold on;
-    lgnd{i} = sprintf('N = %d', Narray(i))
+    Sarray{i} = diag(Si)';
+    semilogy(1:sarray(i), diag(Si), '*', 'color', colset(i, :)); hold on;
+    %lgnd{i} = sprintf('N = %d', Narray(i))
+    lgnd{i} = sprintf('s = %d', sarray(i))
 end
 hold off;
-xlim([0, s + 1])
+xlim([0, sarray(end) + 1])
 set(gcf, 'name', 'singular values');
 xlabel('singular value index', 'fontsize', axfs);
 ylabel('singular value', 'fontsize', axfs);
@@ -257,29 +275,29 @@ A1 = [-(c1 + c2)/m1,  c2/m1, -(k1 + k2)/m1,  k2/m1;
                   0,      1,              0,     0];
 
 disp('original system eigenvalues');
-disp(sort(eig(A1)));
+%disp(sort(eig(A1)));
 B1 = [0, 1/m2, 0, 0]';
 %C1 = [0, 0, 1, 0;
 %      0, 0, 0, 1];
 C1 = [0, 0, 1, 0];
 D1 = 0;
 sys4 = c2d(ss(A1, B1, C1, D1), dt);         % discrete system representation
+disp(sort(eig(sys4.a)));
 u40 = zeros(Nt, 1);                         % zero input
 x40 = [1, 1, 1, 1]';
 y40 = lsim(sys4, u40, t, x40);
 s = 5; ii = 0; N = 200; % Hankel matrix starting at yk(ii) size s x N
-n = 4;
 YsN = hankelmatrix(y40, 0, s, N);
 UsN = hankelmatrix(u40, 0, s, N);
 [U,S,V] = svd(YsN, 'econ');           % Singular value decomposition
 
-Un = U(:, 1:n);                        % Reduced output singular vectors
-Vn = V(:, 1:n);                        % Reduced input singular vectors
-Sn = S(1:n, 1:n);                      % Reduced singular value matrix
-SnVtn = Sn*Vn';
-
-l = size(y40, 2);                           % number of outputs
-r = size(u40, 2);                           % number of inputs
+n = 4;
+%l = size(y40, 2);                           % number of outputs
+%r = size(u40, 2);                           % number of inputs
+%Un = U(:, 1:n);                        % Reduced output singular vectors
+%Vn = V(:, 1:n);                        % Reduced input singular vectors
+%Sn = S(1:n, 1:n);                      % Reduced singular value matrix
+%SnVtn = Sn*Vn';
 [A4id, B4id, C4id, D4id] = estimatesystem(YsN, UsN, s, n);
 disp('identified system eigenvalues');
 disp(sort(eig(A4id)));
