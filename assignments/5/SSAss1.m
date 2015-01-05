@@ -235,27 +235,31 @@ eps_save('datamatrix1f', figure(2));
 eps_save('svd1f', figure(3));
 
 %% G. increase s to reduce effect of noise
-%Narray = N:100:size(yk, 1) - s;
-%Sarray = zeros(length(Narray), s);
-%lgnd = cell(length(Narray), 1);
-%colset = cool(length(Narray));
-sarray = s:1:10;
-Sarray = cell(length(sarray), 1);
-lgnd = cell(length(sarray), 1);
-colset = cool(length(sarray));
+Narray = N:-25:25;
+Sarray = zeros(length(Narray), s);
+lgnd = cell(length(Narray), 1);
+colset = cool(length(Narray));
+%sarray = s:1:10;
+%Sarray = cell(length(sarray), 1);
+%lgnd = cell(length(sarray), 1);
+%colset = cool(length(sarray));
 
 figure(3); clf;
-%for i = 1:length(Narray)
-for i = 1:length(sarray)
-    YsiN = hankelmatrix(yk, ii, sarray(i), N);
+for i = 1:length(Narray)
+%for i = 1:length(sarray)
+    YsiN = hankelmatrix(yk, ii, s, Narray(i));
+    %YsiN = hankelmatrix(yk, ii, sarray(i), N);
     [~, Si, ~] = svd(YsiN, 'econ');
-    Sarray{i} = diag(Si)';
-    semilogy(1:sarray(i), diag(Si), '*', 'color', colset(i, :)); hold on;
-    %lgnd{i} = sprintf('N = %d', Narray(i))
-    lgnd{i} = sprintf('s = %d', sarray(i))
+    Sarray(i, :) = diag(Si)';
+    %Sarray{i} = diag(Si)';
+    semilogy(1:s, diag(Si), '*', 'color', colset(i, :)); hold on;
+    %semilogy(1:sarray(i), diag(Si), '*', 'color', colset(i, :)); hold on;
+    lgnd{i} = sprintf('N = %d', Narray(i));
+    %lgnd{i} = sprintf('s = %d', sarray(i))
 end
 hold off;
-xlim([0, sarray(end) + 1])
+xlim([0, s + 1]);
+%xlim([0, sarray(end) + 1])
 set(gcf, 'name', 'singular values');
 xlabel('singular value index', 'fontsize', axfs);
 ylabel('singular value', 'fontsize', axfs);
@@ -287,7 +291,7 @@ u40 = zeros(Nt, 1);                         % zero input
 x40 = [1, 1, 1, 1]';
 y40 = lsim(sys4, u40, t, x40);
 s = 5; ii = 0; N = 200; % Hankel matrix starting at yk(ii) size s x N
-YsN = hankelmatrix(y40, 0, s, N);
+YsN = hankelmatrix(y40 + 1e-2*randn(size(y40)), 0, s, N);
 UsN = hankelmatrix(u40, 0, s, N);
 [U,S,V] = svd(YsN, 'econ');           % Singular value decomposition
 

@@ -91,7 +91,8 @@ Trajectories for various system parameters ($M$, $B$, $K$) are shown in
 \autoref{fig:datmat2}. The trajectory plane differs with system parameters.
 However, if only damping $B$ is changed, the trajectory plane remains the same,
 but the oscillations about the convergence point reduce (increase) with an
-increase (decrease) of damping value. The trajectory plane is related to the
+increase (decrease) of damping value. As this system is linear and stable, the
+trajectories converge at zero. The trajectory plane is related to the
 natural frequency of the system $\omega_n$, which is expressed as:
 \begin{equation*}
     \omega_n^2 = \frac{k}{m}
@@ -142,22 +143,38 @@ matrices and calculate the eigenvalues, which are shown in
 of $\epsilon$), the dynamics of the original and identified system are
 identical.
 
+%\begin{table}
+%    \centering
+%    \begin{tabular}{|l|r|r|}
+%        \hline
+%        \nonumber & $\lambda_1$ & $\lambda_2$ \\
+%        \hline
+%        original &
+%            \shortstack[r]{$ 0.764254358051321 + $ \\
+%                $ 0.605924665862248i $} &
+%            \shortstack[r]{$ 0.764254358051321 - $ \\
+%                $ 0.605924665862248i $} \\
+%        identified &
+%            \shortstack[r]{$ 0.764254358051322 + $ \\
+%                $ 0.605924665862246i $} &
+%            \shortstack[r]{$ 0.764254358051322 - $ \\
+%                $ 0.605924665862246i $} \\
+%        \hline
+%    \end{tabular}
+%    \caption{Eigenvalues for Original and Identified Systems}
+%    \label{tab:syseig}
+%\end{table}
 \begin{table}
     \centering
     \begin{tabular}{|l|r|r|}
         \hline
-        \nonumber & $\lambda_1$ & $\lambda_2$ \\
+        \nonumber & original & identified \\
         \hline
-        original &
-            \shortstack[r]{$ 0.764254358051321 $ \\
-                $+ 0.605924665862248i $} &
-            \shortstack[r]{$ 0.764254358051321 $ \\
-                $ - 0.605924665862248i $} \\
-        identified &
-            \shortstack[r]{$ 0.764254358051322 $ \\
-                $+ 0.605924665862246i $} &
-            \shortstack[r]{$ 0.764254358051322 $ \\
-                $ - 0.605924665862246i $} \\
+        $\lambda_1, \lambda_2 $ &
+            $ 0.764254358051321 \pm
+                0.605924665862248i $ &
+            $ 0.764254358051322 \pm
+                0.605924665862246i $ \\
         \hline
     \end{tabular}
     \caption{Eigenvalues for Original and Identified Systems}
@@ -173,21 +190,37 @@ identical.
     \label{fig:output}
 \end{figure}
 The response of the autonomous system is shown in \autoref{fig:output} for the
-initial condition of $ x_0 = \begin{pmatrix}1 1\end{pmatrix}^T $. The data
+initial condition of $ x_0 = \begin{pmatrix}1 & 1\end{pmatrix}^T $. The data
 equation for an autonomous system is given by:
 \begin{equation}
     \label{eq:dataeq}
-    Y_{0, s, N} = \mathcal{O}_s X_{0, N}
+    Y_{i, s, N} = \mathcal{O}_s X_{i, N}
 \end{equation}
-where $Y_{0, s, N}$ is the Hankel matrix of the output data, $\mathcal{O}_s$ is
-the extended observability matrix, and $X_{0, N}$ is the state matrix. Setting
-this equal to \autoref{eq:svd}, and because the column space of $\mathcal{O}_s$
-equals that of $Y_{0, s, N}$, we can choose the following relation:
+where $Y_{i, s, N}$ is the Hankel matrix of the output data, $\mathcal{O}_s$ is
+the extended observability matrix, and $X_{i, N}$ is the state matrix and are
+defined as:
+\begin{align}
+    Y_{i, s, N} &=
+        \begin{bmatrix}
+            y(i) & y(i + 1) & \cdots & y(i + N - 1) \\
+            y(i + 1) & y(i + 2) & \cdots & y(i + N) \\
+            \vdots & \vdots & \ddots & \vdots \\
+            y(i + s - 1) & y(i + s) & \cdots & y(i + N + s - 2) \\
+        \end{bmatrix} \label{eq:yhankel} \\
+    \mathcal{O}_s &= \begin{bmatrix}
+        C \\ CA \\ CA^2 \\ \vdots \\ CA^{s - 1}
+        \end{bmatrix} \label{eq:extobs} \\
+    X_{i, N} &= \begin{bmatrix} x(i) & x(i + 1) &
+        \cdots & x(i + N - 1) \end{bmatrix} \label{eq:xhankel}
+\end{align}
+Setting this equal to \autoref{eq:svd}, and because the column space of
+$\mathcal{O}_s$ equals that of $Y_{i, s, N}$, we can choose the following
+relation:
 \begin{equation}
     \label{eq:uo}
     U = \mathcal{O}_s T
 \end{equation}
-as $U$ spans the same space as $Y_{0, s, N}$ from the properties of the SVD and
+as $U$ spans the same space as $Y_{i, s, N}$ from the properties of the SVD and
 T is a similarity transformation.
 
 As the identified system is similar (but not equal) to the original system, the
@@ -196,10 +229,10 @@ the system given the same initial condition (plots $y0$ and $yi$) in
 \autoref{fig:output}.
 
 Given our choice of relation between the SVD and data equation in
-\autoref{eq:uo}, this can be extended to the $V$ and $X_{0, N}$ matrices:
+\autoref{eq:uo}, this can be extended to the $V$ and $X_{i, N}$ matrices:
 \begin{equation}
     \label{eq:vx}
-    \Sigma V^T = T^{-1} X_{0, N}
+    \Sigma V^T = T^{-1} X_{i, N}
 \end{equation}
 If we want to use the same initial condition, the first column of
 \autoref{eq:vx} gives the transformed state, and results in an identical
@@ -238,62 +271,137 @@ and the output is reproduced with little error. This is shown in
 systems, overlap the $y0$.
 
 %1g
-\subsection{data matrix size singular value}
-I think it's supposed to get better.
-Well increasing s does increase the different between the 2nd and 3rd singular
-values.
+\subsection{Improving Estimates with Noisy Data}
+FIXME: Increasing s does increase the difference the 2nd and 3rd singular
+values. Decreasing N increases the gap between 2nd and 3rd singular values
+since the output data is less affected by noise the closer the further is it
+from 0.
 
 %1h
 \subsection{Identification of a 4th Order System}
 Deriving the equations of motion for a standard double mass-spring-damper
 system results in the following continuous state space:
 \begin{align}
-    \dot{x} &= \begin{bmatrix}
-    -\frac{c_1+c_2}{m_1} & \frac{c_2}{m_1} & -\frac{k_1+k_2}{m_1} & \frac{k_2}{m_1} \\
-    \frac{c_2}{m_2} & -\frac{c_2}{m_2} & \frac{k_2}{m_2} & -\frac{k_2}{m_2} \\
-                    1 &      0 &             0 &      0 \\
-                    0 &      1 &             0 &      0 \\
+    \dot{x} &=
+        \begin{bmatrix}
+            -\frac{c_1+c_2}{m_1} & \frac{c_2}{m_1} &
+                -\frac{k_1+k_2}{m_1} & \frac{k_2}{m_1} \\
+            \frac{c_2}{m_2} & -\frac{c_2}{m_2} &
+                \frac{k_2}{m_2} & -\frac{k_2}{m_2} \\
+            1 & 0 & 0 & 0 \\
+            0 & 1 & 0 & 0 \\
         \end{bmatrix} x  \\
     y &= \begin{bmatrix} 0 & 0 & 1 & 0 \end{bmatrix} x
 \end{align}
 
 After conversion to a discrete system, and using paramter values
-$ m_1 = m_2 = 0.1, c_1 = c_2 = 0.5, k_1 = k_2 = 0.1 $, the four eigenvalues of
-are calculated and displayed in \autoref{tab:sys4eig}.
+\mbox{$ m_1 = m_2 = 0.1 $}, \mbox{$ c_1 = c_2 = 0.5 $},
+\mbox{$ k_1 = k_2 = 0.1 $}, the four eigenvalues of
+are calculated and displayed in \autoref{tab:sys4eig}. Adding white noise with
+variance $\sigma_n = 1.0 \times 10^{-2}$ to the system output and repeating the
+identification steps with $s = 5$ and $N = 100$ results in a good estimate of
+the original system. The discrete eigenvalues for the identified system are
+also displayed in \autoref{tab:sys4eig}. FIXME: The values aren't that close
 
 \begin{table}
     \centering
     \begin{tabular}{|l|r|r|}
         \hline
-        \nonumber & $\lambda_1$ & $\lambda_2$ \\
+        \nonumber & original & identified \\
         \hline
-        original &
-            \shortstack[r]{$ 0.764254358051321 $ \\
-                $+ 0.605924665862248i $} &
-            \shortstack[r]{$ 0.764254358051321 $ \\
-                $ - 0.605924665862248i $} \\
-        identified &
-            \shortstack[r]{$ 0.764254358051322 $ \\
-                $+ 0.605924665862246i $} &
-            \shortstack[r]{$ 0.764254358051322 $ \\
-                $ - 0.605924665862246i $} \\
+        $ \lambda_1, \lambda_2 $ &
+            \shortstack[r]{$ 0.438627174339038 \pm
+                 0.827593022905266i $} &
+            \shortstack[r]{$ 0.422457129755468 \pm
+                 0.799601319875711i $} \\
+
+        $ \lambda_3, \lambda_4 $ &
+            \shortstack[r]{$ 0.906626944382392 \pm
+                0.398886575632521i $} &
+            \shortstack[r]{$ 0.907374428491475 \pm
+                0.401684694233408i $} \\
+
         \hline
     \end{tabular}
     \caption{Eigenvalues for Original and Identified 4th Order System}
     \label{tab:sys4eig}
 \end{table}
 
-original system eigenvalues
-  0.438627174339038 - 0.827593022905266i
-  0.438627174339038 + 0.827593022905266i
-  0.906626944382392 - 0.398886575632521i
-  0.906626944382392 + 0.398886575632521i
+\section{Identification with general inputs}
 
-identified system eigenvalues
-  0.438627174339034 - 0.827593022905263i
-  0.438627174339034 + 0.827593022905263i
-  0.906626944382391 - 0.398886575632525i
-  0.906626944382391 + 0.398886575632525i
+% 2a
+\subsection{Identification using Impulse Input}
+The full form of the data equation is:
+\begin{equation}
+    \label{eq:fulldataeq}
+    Y_{i, s, N} = \mathcal{O}_s X_{i, N} + \mathcal{T}_s U_{i, s, N}
+\end{equation}
+where $U_{i, s, N}$ is a Hankel matrix of the input data and is expressed as:
+\begin{equation}
+    \label{eq:uhankel}
+    U_{i, s, N} =
+        \begin{bmatrix}
+            u(i) & u(i + 1) & \cdots & u(i + N - 1) \\
+            u(i + 1) & u(i + 2) & \cdots & u(i + N) \\
+            \vdots & \vdots & \ddots & \vdots \\
+            u(i + s - 1) & u(i + s) & \cdots & u(i + N + s - 2) \\
+        \end{bmatrix}
+\end{equation}
+for $i = 0$  and $\mathcal{T}_s$ is the impulse reponse matrix.
+If the first column of $Y_{0, s, N}$ is ignored, the data equation simplifies
+to
+\begin{equation}
+    \label{eq:simpdataeq}
+    Y_{1, s, N} = \mathcal{O}_s X_{1, N}
+\end{equation}
+as $U_{1, s, N} = 0$ with an impulse input ($u(0) = 1, \quad u(i) = 0 \quad
+\forall i \neq 0$).
+As the simplified data equation is equivalent to the autonomous system response
+(\autoref{eq:dataeq}), the same process can be used to determine system
+matrices $A$ and $C$.
+
+% 2b
+\subsection{Estimation of B, D}
+With zero initial state and impulse input and use of the difference equation:
+\begin{equation}
+    \label{eq:diffeq}
+    x(i + 1) = Ax(i) + Bu(i)
+\end{equation}
+
+$X_{1, N}$ can be written as:
+\begin{equation}
+    \label{eq:simpxhankel}
+    X_{1, N} = \begin{bmatrix}
+        B & AB & A^2B & \cdots & A^{N-1}B
+    \end{bmatrix}
+\end{equation}
+
+Using \autoref{eq:vx}, we find:
+\begin{align}
+    \Sigma V^T &= T^{-1} \begin{bmatrix}
+        B & AB & A^2B & \cdots & A^{N-1}B \end{bmatrix} \\
+    &= \begin{bmatrix}
+        B_T & A_TB_T & {A_T}^2B_T & \cdots & {A_T}^{N-1}B_T \end{bmatrix}
+\end{align}
+Thus, $B_T$ is the first column of $\Sigma V^T$.
+
+For $i > 1$, the first element of $X_{i, N} = A^{i - 1}B$ instead of simply
+$B$, and we have the equation:
+\begin{equation}
+    (\Sigma V^T)(:, 1) = {A_T}^{i - 1}B_T
+\end{equation}
+We can solve the linear system for $B_T$ after computing ${A_T}^{i-1}$.
+
+% 2c
+\subsection{Effect of noise on estimate of D}
+$D$ is estimated by the following Matlab code:
+\begin{lstlisting}
+Did = yk(1);
+\end{lstlisting}
+As $D$ is simply a single element of the output, any noise in the output
+propagates directly to the estimate.
+
+
 
 
 \end{document}
