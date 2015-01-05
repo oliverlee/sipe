@@ -63,8 +63,8 @@ end
 
 figure(1);
 set(fig1, 'name', 'Output time domain')
-xlabel('t', 'fontsize', axfs)
-ylabel('y', 'fontsize', axfs)
+xlabel('t [s]', 'fontsize', axfs)
+ylabel('y [m]', 'fontsize', axfs)
 l1 = legend(lgnd);
 set(l1, 'fontsize', lgndfs);
 
@@ -78,8 +78,13 @@ set(l2, 'fontsize', lgndfs);
 
 figure(3)
 xlim([0 s+1])
+xlabel('singular value index', 'fontsize', axfs);
+ylabel('singular value', 'fontsize', axfs);
+l3 = legend(lgnd);
+set(l3, 'fontsize', lgndfs);
 
 %% C
+figure(3); clf
 figure(4); clf
 % System parameters
 M = [0.1, 0.5, 0.1];
@@ -99,7 +104,22 @@ for i = 1:numel(M) % loop for different system parameters
     figure(4);
     plot3(YsN(1,:), YsN(2,:), YsN(3,:), 'color', colset(i, :),...
         'linewidth', 2); hold on;
+
+    figure(3);
+    [~, S_c, ~] = svd(YsN, 'econ');           % Singular value decomposition
+    semilogy(1:length(S_c), diag(S_c), '*', 'color', colset(i, :));, hold on;
+    disp(['singular values for ', lgnd{i}])
+    S_c(1)
+    S_c(5)
+    S_c(end)
 end
+
+figure(3)
+xlim([0 s+1])
+xlabel('singular value index', 'fontsize', axfs);
+ylabel('singular value', 'fontsize', axfs);
+l3 = legend(lgnd);
+set(l3, 'fontsize', lgndfs);
 
 figure(4)
 set(gcf,'name', sprintf('Data Space with x0 = [%d, %d]', x0_c(1), x0_c(2)));
@@ -118,10 +138,10 @@ Sn = S(1:n, 1:n);                      % Reduced singular value matrix
 SnVtn = Sn*Vn';
 
 Aid = Un(1:(s - 1)*l, :)\Un(l + 1:s*l, :);
-%Bid = SnVtn(:, 1:r);
-%Cid = Un(1:l, :);
-%Did = y0(1);
-%sysid = ss(Aid, Bid, Cid, Did, dt);       % Identified system out of SVD
+Bid = SnVtn(:, 1:r);
+Cid = Un(1:l, :);
+Did = y0(1);
+sysid = ss(Aid, Bid, Cid, Did, dt);       % Identified system out of SVD
 eig0 = eig(A0);
 eigid = eig(Aid);
 disp('original system eigenvalues');
@@ -143,10 +163,12 @@ set(fig1, 'name', 'Output time domain')
 plot(t, y0, 'color', colset(1, :), 'linewidth', 2); hold on;
 plot(t, yi, '--', 'color', colset(2, :), 'linewidth', 2);
 plot(t, yiT, '--', 'color', colset(3, :), 'linewidth', 2); hold off;
-xlabel('t', 'fontsize', axfs)
-ylabel('y', 'fontsize', axfs)
+xlabel('t [s]', 'fontsize', axfs)
+ylabel('y [m]', 'fontsize', axfs)
 l1 = legend('y0', 'yi', 'yi_T');
 set(l1, 'fontsize', lgndfs);
+xlim([-0.1, 2.0])
+ylim([-0.5, 0.5])
 
 
 %% F. redo 3 plots with noise and compare to original
@@ -195,8 +217,8 @@ plot(t, y0, 'color', colset(1, :), 'linewidth', 2); hold on;
 plot(t, yk, 'color', colset(3, :), 'linewidth', 2);
 plot(t, yid, 'color', colset(2, :), 'linewidth', 2);
 plot(t, ykid, 'color', colset(4, :), 'linewidth', 2); hold off;
-xlabel('t', 'fontsize', axfs)
-ylabel('y', 'fontsize', axfs)
+xlabel('t [s]', 'fontsize', axfs)
+ylabel('y [m]', 'fontsize', axfs)
 l1 = legend(lgnd);
 set(l1, 'fontsize', lgndfs);
 
@@ -211,7 +233,7 @@ for i = 1:length(Narray)
     YsiN = hankelmatrix(yk, ii, s, Narray(i));
     [~, Si, ~] = svd(YsiN, 'econ');
     Sarray(i, :) = diag(Si)';
-    semilogy(1:s, diag(Si), '*', 'color', colset(i, :));, hold on;
+    semilogy(1:s, diag(Si), '*', 'color', colset(i, :)); hold on;
     lgnd{i} = sprintf('N = %d', Narray(i))
 end
 hold off;
@@ -237,19 +259,20 @@ A1 = [-(c1 + c2)/m1,  c2/m1, -(k1 + k2)/m1,  k2/m1;
 disp('original system eigenvalues');
 disp(sort(eig(A1)));
 B1 = [0, 1/m2, 0, 0]';
-C1 = [0, 0, 1, 0;
-      0, 0, 0, 1];
+%C1 = [0, 0, 1, 0;
+%      0, 0, 0, 1];
+C1 = [0, 0, 1, 0];
 D1 = 0;
 sys4 = c2d(ss(A1, B1, C1, D1), dt);         % discrete system representation
 u40 = zeros(Nt, 1);                         % zero input
 x40 = [1, 1, 1, 1]';
 y40 = lsim(sys4, u40, t, x40);
 s = 5; ii = 0; N = 200; % Hankel matrix starting at yk(ii) size s x N
-YsN = hankel(y40(ii+1:ii+1+s-1, :), y40(ii+s:ii+N+s-1, :)); % Output Hankel matrix
-UsN = hankel(u40(ii+1:ii+1+s-1), u40(ii+s:ii+N+s-1)); % Input Hankel matrix
+n = 4;
+YsN = hankelmatrix(y40, 0, s, N);
+UsN = hankelmatrix(u40, 0, s, N);
 [U,S,V] = svd(YsN, 'econ');           % Singular value decomposition
 
-n = 4;
 Un = U(:, 1:n);                        % Reduced output singular vectors
 Vn = V(:, 1:n);                        % Reduced input singular vectors
 Sn = S(1:n, 1:n);                      % Reduced singular value matrix
@@ -257,10 +280,7 @@ SnVtn = Sn*Vn';
 
 l = size(y40, 2);                           % number of outputs
 r = size(u40, 2);                           % number of inputs
-A4id = Un(1:(s - 1)*l, :)\Un(l + 1:s*l, :);
-B4id = SnVtn(:, 1:r);
-C4id = Un(1:l, :);
-D4id = y40(1, :)';
+[A4id, B4id, C4id, D4id] = estimatesystem(YsN, UsN, s, n);
 disp('identified system eigenvalues');
 disp(sort(eig(A4id)));
 sysid = ss(A4id, B4id, C4id, D4id, dt);       % Identified system out of SVD

@@ -1,0 +1,208 @@
+\documentclass[11pt,a4paper]{article}
+% See geometry.pdf to learn the layout options. There are lots.
+\usepackage{geometry}
+\geometry{left = 3cm, right = 3cm, top = 3cm, bottom = 3cm}
+% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage[parfill]{parskip}
+\usepackage[table]{xcolor}
+\usepackage{courier,multirow,fancyhdr}
+\usepackage{float,amsmath,graphicx,framed,subfiles}
+\usepackage{amssymb,subcaption,textcomp,listings}
+\usepackage{booktabs,epstopdf,caption,units,rotating}
+\usepackage[framed,numbered]{matlab-prettifier}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+% hyperref should be loaded last
+\usepackage[
+    colorlinks=true,
+    pdfencoding=auto,
+    pdfauthor={Oliver Lee},
+    pdftitle={WB2301-5 System Identification and Parameter Estimation:
+    Assignment 5 - Subspace Identification},
+    pdftex
+]{hyperref}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\mcode}[1]{
+    \lstinline[
+        style=Matlab-editor,
+        basicstyle=\mlttfamily,
+    ]{#1}
+}
+
+\frenchspacing
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{Lee}
+\fancyhead[L]{Assignment 5}
+
+
+\title{WB2301-5 System Identification and Parameter Estimation \\
+Assignment 5 - Subspace Identification}
+\author{Oliver Lee}
+\date{\today}
+\graphicspath{ {images/} }
+
+\begin{document}
+\maketitle
+
+\section{Identification of autonomous systems}
+
+% 1a
+\subsection{System Trajectories}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{datamatrix1a.eps}
+    \caption{Output Data Matrix for Varying Initial Conditions}
+    \label{fig:datmat}
+\end{figure}
+The Hankel matrix of output data, $Y_{0,s,N}$ of a system is shown in
+\autoref{fig:datmat} for three different initial conditions. We see that a
+change in initial condition changes the initial position in the data space, but
+all three trajectories converge to a unique data space trajectory for the
+system.  Although the data space is 3-dimensional, the output of the system
+spans only a 2-dimensional space, which is illustrated as the trajectories lie
+in a plane.
+
+% 1b
+\subsection{Singular Value Decomposition}
+The broken lines shown in \autoref{fig:datmat} come from the singular value
+decomposition (SVD) of the Hankel matrix of the output data. The SVD of
+$Y_{0, s, N}$ is written as:
+\begin{equation}
+    \label{eq:svd}
+    Y_{0, s, N} = U \Sigma V^T
+\end{equation}
+Plotted are the columns of $U$, which form a basis for the output vector space,
+scaled by the singular values of $\Sigma$. In all three initial conditions, the
+third singular value is on the order of machine precision, and these scaled
+basis vectors span two dimensions, the system output subspace.
+
+% 1c
+\subsection{Varying System Parameters}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{datamatrix1c.eps}
+    \caption{Output Data Matrix for Varying System Parameters}
+    \label{fig:datmat2}
+\end{figure}
+Trajectories for various system parameters ($M$, $B$, $K$) are shown in
+\autoref{fig:datmat2}. The trajectory plane differs with system parameters.
+However, if only damping $B$ is changed, the trajectory plane remains the same,
+but the oscillations about the convergence point reduce (increase) with an
+increase (decrease) of damping value. The trajectory plane is related to the
+natural frequency of the system $\omega_n$, which is expressed as:
+\begin{equation*}
+    \omega_n^2 = \frac{k}{m}
+\end{equation*}
+As changing damping does not affect the natural frequency, the trajectory plane
+will also remain unchanged.
+
+% 1d
+\subsection{Comparison of Original and Identified Systems}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{svd1d.eps}
+    \caption{System Singular Values}
+    \label{fig:svd}
+\end{figure}
+The singular values for the three sets of system parameters (and associated
+trajectories as seen in \autoref{fig:datmat2}) are displayed in
+\autoref{fig:svd}. For all three configurations, the last singular value is
+small (\autoref{tab:sv}) and close to machine precision $\epsilon$. Running
+\mcode{eps} returns:
+\begin{lstlisting}
+>> eps
+ans =
+    2.220446049250313e-16
+\end{lstlisting}
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|r|}
+        \hline
+        $(M, B, K)$ & $\sigma_1$ & $\sigma_2$ & $\sigma_3$ \\
+        \hline
+        $(0.1, 0.5, 450)$ & $ 2.087734061246928 $ &
+            $ 1.186284234703669 $ & $ 1.494061250544577 \times 10^{-15} $ \\
+        $(0.5, 1, 150)$ & $ 6.095624673944504 $ &
+            $ 0.816372776568143 $ & $ 1.176216626686808 \times 10^{-15} $ \\
+        $(0.1, 5, 450)$ & $ 0.897841350466776 $ &
+            $ 0.302086412052466 $ & $ 5.202183291262978 \times 10^{-17} $ \\
+        \hline
+    \end{tabular}
+    \caption{Singular Values for Varying System Parameters}
+    \label{tab:sv}
+\end{table}
+
+Using a system dimension of $n = 2$, we extract the system matrices and
+calculate the eigenvalues, which are shown in \autoref{tab:syseig}. As the
+eigenvalues vary by a small amount (on the order of $\epsilon$), the dynamics
+of the original and identified system are identical.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|}
+        \hline
+        \nonumber & $\lambda_1$ & $\lambda_2$ \\
+        \hline
+        original & $ 0.764254358051321 + 0.605924665862248i $ &
+            $ 0.764254358051321 - 0.605924665862248i $ \\
+        identified & $ 0.764254358051322 + 0.605924665862246i $ &
+            $ 0.764254358051322 - 0.605924665862246i $ \\
+        \hline
+    \end{tabular}
+    \caption{Eigenvalues for Original and Identified Systems}
+    \label{tab:sv}
+\end{table}
+
+%1e
+\subsection{Differences in Response of Orignal and Identified Systems}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{output1e.eps}
+    \caption{System Output}
+    \label{fig:output}
+\end{figure}
+The response of the autonomous system is shown in \autoref{fig:output} for the
+initial condition of $ x_0 = \begin{pmatrix}1 1\end{pmatrix}^T $. The data
+equation for an autonomous system is given by:
+\begin{equation}
+    \label{eq:dataeq}
+    Y_{0, s, N} = \mathcal{O}_s X_{0, N}
+\end{equation}
+where $Y_{0, s, N}$ is the Hankel matrix of the output data, $\mathcal{O}_s$ is
+the extended observability matrix, and $X_{0, N}$ is the state matrix. Setting
+this equal to \autoref{eq:svd}, and because the column space of $\mathcal{O}_s$
+equals that of $Y_{0, s, N}$, we can choose the following relation:
+\begin{equation}
+    \label{eq:uo}
+    U = \mathcal{O}_s T
+\end{equation}
+as $U$ spans the same space as $Y_{0, s, N}$ from the properties of the SVD and
+T is a similarity transformation.
+
+As the identified system is similar (but not equal) to the original system, the
+state representation differs. This can be seen by the output of the simulated
+the system given the same initial condition (plots $y0$ and $yi$) in
+\autoref{fig:output}.
+
+Given our choice of relation between the SVD and data equation in
+\autoref{eq:uo}, this can be extended to the $V$ and $X_{0, N}$ matrices:
+\begin{equation}
+    \label{eq:vx}
+    \Sigma V^T = T^{-1} X_{0, N}
+\end{equation}
+If we want to use the same initial condition, the first column of
+\autoref{eq:vx} gives the transformed state, and results in an identical
+outputs of the original and identified systems as seen (plots $y0$ and $yi_T$)
+in \autoref{fig:output}.
+
+%1g
+\subsection{data matrix size singular value}
+i think it's supposed to get better
+
+
+
+\end{document}
