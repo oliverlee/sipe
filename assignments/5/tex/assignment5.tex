@@ -273,13 +273,28 @@ systems, overlap the $y0$.
 
 %1g
 \subsection{Improving estimates with noisy data}
-TODO: Increasing s does increase the difference the 2nd and 3rd singular
-values. Decreasing N increases the gap between 2nd and 3rd singular values
-since the output data is less affected by noise the closer the further is it
-from 0.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{svd1g.eps}
+    \caption{Singular Values for varying s, N}
+    \label{fig:svd1g}
+\end{figure}
+Increasing $s$ increases the magnitude of the singular values, including those
+that are of higher order than the system. Increasing $N$ has the effect of
+reducing the differences between the higher order singular values, resulting in
+better grouping into two distinct clusters. The calculated singular values for
+varying $s$ and $N$ values are plotted in \autoref{fig:svd1g}. The lines in
+these plots do not represent any relation between the singular values and are
+only used to easily identify values corresponding to the same $s$, $N$ values.
 
 %1h
 \subsection{Identification of a 4th order system}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{output1h.eps}
+    \caption{Output of 4th Order System}
+    \label{fig:output1h}
+\end{figure}
 Deriving the equations of motion for a standard double mass-spring-damper
 system results in the following continuous state space:
 \begin{align}
@@ -300,9 +315,12 @@ After conversion to a discrete system, and using paramter values
 \mbox{$ k_1 = k_2 = 450 $}, the four eigenvalues of
 are calculated and displayed in \autoref{tab:sys4eig}. Adding white noise with
 variance $\sigma_n = 1.0 \times 10^{-2}$ to the system output and repeating the
-identification steps with $s = 5$ and $N = 100$ results in a good estimate of
-the original system. The discrete eigenvalues for the identified system are
-also displayed in \autoref{tab:sys4eig}. TODO: The values aren't that close
+identification steps with $s = 10$ and $N = 500$ results in a good estimate of
+the original system. The output for the original system $yo$, with noise $yk$,
+and identified system $yi$ are plotted in \autoref{fig:output1h} for a short
+time segment, and show that the identified system is a good estimate of the
+original. The discrete eigenvalues for the original and identified system are
+also displayed in \autoref{tab:sys4eig} are equal at 2 significant figures.
 
 \begin{table}
     \centering
@@ -311,17 +329,9 @@ also displayed in \autoref{tab:sys4eig}. TODO: The values aren't that close
         \nonumber & original & identified \\
         \hline
         $ \lambda_1, \lambda_2 $ &
-            \shortstack[r]{$ 0.438627174339038 \pm
-                 0.827593022905266i $} &
-            \shortstack[r]{$ 0.422457129755468 \pm
-                 0.799601319875711i $} \\
-
+            $ 0.4386 \pm 0.8276i $ & $ 0.4412 \pm 0.8272i $ \\
         $ \lambda_3, \lambda_4 $ &
-            \shortstack[r]{$ 0.906626944382392 \pm
-                0.398886575632521i $} &
-            \shortstack[r]{$ 0.907374428491475 \pm
-                0.401684694233408i $} \\
-
+            $ 0.9066 \pm 0.3989i $ & $ 0.9068 \pm 0.3988i $ \\
         \hline
     \end{tabular}
     \caption{Eigenvalues for Original and Identified 4th Order System}

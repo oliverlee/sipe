@@ -235,36 +235,61 @@ eps_save('datamatrix1f', figure(2));
 eps_save('svd1f', figure(3));
 
 %% G. increase s to reduce effect of noise
-Narray = N:-25:25;
-Sarray = zeros(length(Narray), s);
-lgnd = cell(length(Narray), 1);
-colset = cool(length(Narray));
-%sarray = s:1:10;
-%Sarray = cell(length(sarray), 1);
-%lgnd = cell(length(sarray), 1);
-%colset = cool(length(sarray));
+%Narray = N:100:800;
+%Sarray = zeros(length(Narray), s);
+%lgnd = cell(length(Narray), 1);
+%colset = cool(length(Narray));
+%%sarray = s:1:10;
+%%Sarray = cell(length(sarray), 1);
+%%lgnd = cell(length(sarray), 1);
+%%colset = cool(length(sarray));
+%
+%figure(3); clf;
+%for i = 1:length(Narray)
+%%for i = 1:length(sarray)
+%    YsiN = hankelmatrix(yk, ii, s, Narray(i));
+%    %YsiN = hankelmatrix(yk, ii, sarray(i), N);
+%    [~, Si, ~] = svd(YsiN, 'econ');
+%    Sarray(i, :) = diag(Si)';
+%    %Sarray{i} = diag(Si)';
+%    semilogy(1:s, diag(Si), '*', 'color', colset(i, :)); hold on;
+%    %semilogy(1:sarray(i), diag(Si), '*', 'color', colset(i, :)); hold on;
+%    lgnd{i} = sprintf('N = %d', Narray(i));
+%    %lgnd{i} = sprintf('s = %d', sarray(i))
+%end
+%hold off;
+%xlim([0, s + 1]);
+%%xlim([0, sarray(end) + 1])
+%set(gcf, 'name', 'singular values');
+%xlabel('singular value index', 'fontsize', axfs);
+%ylabel('singular value', 'fontsize', axfs);
+%l3 = legend(lgnd);
+%set(l3, 'fontsize', lgndfs);
+
+%%
+Narray = N:100:500;
+sarray = s:2:10;
+markers = {'<-', '>-', '^-', '*-'};
 
 figure(3); clf;
-for i = 1:length(Narray)
-%for i = 1:length(sarray)
-    YsiN = hankelmatrix(yk, ii, s, Narray(i));
-    %YsiN = hankelmatrix(yk, ii, sarray(i), N);
-    [~, Si, ~] = svd(YsiN, 'econ');
-    Sarray(i, :) = diag(Si)';
-    %Sarray{i} = diag(Si)';
-    semilogy(1:s, diag(Si), '*', 'color', colset(i, :)); hold on;
-    %semilogy(1:sarray(i), diag(Si), '*', 'color', colset(i, :)); hold on;
-    lgnd{i} = sprintf('N = %d', Narray(i));
-    %lgnd{i} = sprintf('s = %d', sarray(i))
+num = numel(Narray) * numel(sarray);
+colset = cool(num);
+lgnd = cell(num, 1);
+for si = 1:length(sarray)
+    for Ni = 1:length(Narray)
+        YsiN = hankelmatrix(yk, ii, sarray(si), Narray(Ni));
+        [~, Si, ~] = svd(YsiN, 'econ');
+        i = (si - 1)*length(Narray) + Ni;
+        semilogy(1:length(Si), diag(Si), markers{Ni}, 'color', colset(i, :)); hold on;
+        lgnd{i} = sprintf('s = %d, N = %d', sarray(si), Narray(Ni));
+    end
 end
-hold off;
-xlim([0, s + 1]);
-%xlim([0, sarray(end) + 1])
-set(gcf, 'name', 'singular values');
 xlabel('singular value index', 'fontsize', axfs);
 ylabel('singular value', 'fontsize', axfs);
 l3 = legend(lgnd);
 set(l3, 'fontsize', lgndfs);
+eps_save('svd1g', figure(3));
+
 
 %% H. fourth order system
 % m1*x1dd = k2*(x2 - x1) - k1*x1 + c2*(x2d - x1d) - c1*x1d
@@ -290,8 +315,9 @@ disp(sort(eig(sys4.a)));
 u40 = zeros(Nt, 1);                         % zero input
 x40 = [1, 1, 1, 1]';
 y40 = lsim(sys4, u40, t, x40);
-s = 5; ii = 0; N = 200; % Hankel matrix starting at yk(ii) size s x N
-YsN = hankelmatrix(y40 + 1e-2*randn(size(y40)), 0, s, N);
+s = 10; ii = 0; N = 500; % Hankel matrix starting at yk(ii) size s x N
+y4k = y40 + 1e-2*randn(size(y40));
+YsN = hankelmatrix(y4k, 0, s, N);
 UsN = hankelmatrix(u40, 0, s, N);
 [U,S,V] = svd(YsN, 'econ');           % Singular value decomposition
 
@@ -302,7 +328,21 @@ n = 4;
 %Vn = V(:, 1:n);                        % Reduced input singular vectors
 %Sn = S(1:n, 1:n);                      % Reduced singular value matrix
 %SnVtn = Sn*Vn';
-[A4id, B4id, C4id, D4id] = estimatesystem(YsN, UsN, s, n);
+[A4id, B4id, C4id, D4id, xid] = estimatesystem(YsN, UsN, s, n);
 disp('identified system eigenvalues');
 disp(sort(eig(A4id)));
 sysid = ss(A4id, B4id, C4id, D4id, dt);       % Identified system out of SVD
+y4i=lsim(sysid,u40,t,xid);
+
+colset = cool(4);
+figure(1)
+plot(t,y40, 'color', colset(2, :), 'linewidth', 2); hold on;
+plot(t,y4k, 'color', colset(3, :), 'linewidth', 2);
+plot(t,y4i, '--', 'color', colset(4, :), 'linewidth', 2); hold off;
+xlabel('time [s]', 'fontsize', axfs)
+ylabel('output [m]', 'fontsize', axfs)
+l2 = legend('y0','yk','yi');
+set(l2, 'fontsize', lgndfs);
+xlim([3, 5])
+%ylim([-0.1, 0.1])
+eps_save('output1h', figure(1));
