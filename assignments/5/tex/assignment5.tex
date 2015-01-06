@@ -50,7 +50,7 @@ Assignment 5 - Subspace Identification}
 \section{Identification of autonomous systems}
 
 % 1a
-\subsection{System Trajectories}
+\subsection{System trajectories}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{datamatrix1a.eps}
@@ -66,7 +66,7 @@ spans only a 2-dimensional space, which is illustrated as the trajectories lie
 in a plane.
 
 % 1b
-\subsection{Singular Value Decomposition}
+\subsection{Singular value decomposition}
 The broken lines shown in \autoref{fig:datmat} come from the singular value
 decomposition (SVD) of the Hankel matrix of the output data. The SVD of
 $Y_{0, s, N}$ is written as:
@@ -80,7 +80,7 @@ third singular value is on the order of machine precision, and these scaled
 basis vectors span two dimensions: the system output subspace.
 
 % 1c
-\subsection{Varying System Parameters}
+\subsection{Varying system parameters}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{datamatrix1c.eps}
@@ -94,14 +94,15 @@ but the oscillations about the convergence point reduce (increase) with an
 increase (decrease) of damping value. As this system is linear and stable, the
 trajectories converge at zero. The trajectory plane is related to the
 natural frequency of the system $\omega_n$, which is expressed as:
-\begin{equation*}
+\begin{equation}
+    \label{eq:natfreq}
     \omega_n^2 = \frac{k}{m}
-\end{equation*}
+\end{equation}
 As changing damping does not affect the natural frequency, the trajectory plane
 will also remain unchanged.
 
 % 1d
-\subsection{Comparison of Original and Identified Systems}
+\subsection{Comparison of original and identified systems}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{svd1d.eps}
@@ -182,7 +183,7 @@ identical.
 \end{table}
 
 %1e
-\subsection{Differences in Response of Orignal and Identified Systems}
+\subsection{Differences in response of orignal and identified systems}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{output1e.eps}
@@ -240,7 +241,7 @@ outputs of the original and identified systems as seen (plots $y0$ and $yi_T$)
 in \autoref{fig:output}.
 
 %1f
-\subsection{Effect of Noise}
+\subsection{Effect of noise}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{output1f.eps}
@@ -271,14 +272,14 @@ and the output is reproduced with little error. This is shown in
 systems, overlap the $y0$.
 
 %1g
-\subsection{Improving Estimates with Noisy Data}
-FIXME: Increasing s does increase the difference the 2nd and 3rd singular
+\subsection{Improving estimates with noisy data}
+TODO: Increasing s does increase the difference the 2nd and 3rd singular
 values. Decreasing N increases the gap between 2nd and 3rd singular values
 since the output data is less affected by noise the closer the further is it
 from 0.
 
 %1h
-\subsection{Identification of a 4th Order System}
+\subsection{Identification of a 4th order system}
 Deriving the equations of motion for a standard double mass-spring-damper
 system results in the following continuous state space:
 \begin{align}
@@ -301,7 +302,7 @@ are calculated and displayed in \autoref{tab:sys4eig}. Adding white noise with
 variance $\sigma_n = 1.0 \times 10^{-2}$ to the system output and repeating the
 identification steps with $s = 5$ and $N = 100$ results in a good estimate of
 the original system. The discrete eigenvalues for the identified system are
-also displayed in \autoref{tab:sys4eig}. FIXME: The values aren't that close
+also displayed in \autoref{tab:sys4eig}. TODO: The values aren't that close
 
 \begin{table}
     \centering
@@ -330,7 +331,7 @@ also displayed in \autoref{tab:sys4eig}. FIXME: The values aren't that close
 \section{Identification with general inputs}
 
 % 2a
-\subsection{Identification using Impulse Input}
+\subsection{Identification using impulse input}
 The full form of the data equation is:
 \begin{equation}
     \label{eq:fulldataeq}
@@ -401,7 +402,199 @@ Did = yk(1);
 As $D$ is simply a single element of the output, any noise in the output
 propagates directly to the estimate.
 
+% 2d
+\subsection{Effect of White Noise Excitation on Data Space}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{dataspace2d.eps}
+    \caption{Data Space for White Noise Input}
+    \label{fig:dataspace2d}
+\end{figure}
+With a white noise input, the system is persistently excited and the trajectory
+does not converge to zero. This can be seen in plot $YsN$ of
+\autoref{fig:dataspace2d}.
 
+% 2e
+\subsection{Estimation of B, D with white noise input}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{output2e.eps}
+    \caption{System Output for White Noise Input}
+    \label{fig:output2e}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{outputzoom2e.eps}
+    \caption{Zoomed System Output for White Noise Input}
+    \label{fig:outputzoom2e}
+\end{figure}
+$YsNP$ is plotted in \autoref{fig:dataspace2d}. The least squares routine is used
+to estimate B and D and the output for the identified system is plotted in
+\autoref{fig:output2e} and a section is zoomed in \autoref{fig:outputzoom2e}.
+The original system output is labeled $y0$ and the identified system $y_{id}$.
+The plots show that the identified system is a good estimate of the original.
 
+% 2f
+\subsection{Removing influence of input on output data matrix}
+In identification of autonomous systems, the column space of $\mathcal{O}_s$ is
+equal to the column space of $Y_{i, s, N}$, which then allows for matrices $A$
+and $C$ to be estimated. When using general inputs, the influence of the input
+on the column space of $Y_{i, s, N}$ for obtain a matrix with column space
+equal to $\mathcal{O}_s$. With a right multiplication of the data equation
+(\autoref{eq:fulldataeq}) by the orthogonal projection onto the column space of
+$U_{0, s, N}$, $\Pi^\perp_{U_{0,s,N}}$:
+\begin{equation}
+    \label{eq:yuperp}
+    Y_{0, s, N} \Pi^\perp_{U_{0,s,N}} =
+        \mathcal{O}_s X_{0, N} \Pi^\perp_{U_{0,s,N}} 
+\end{equation}
+where 
+\begin{equation}
+    \label{eq:uoperp}
+    \Pi^\perp_{U_{0,s,N}} =
+        I_N - U^T_{0,s N}(U_{0, s, N}U^T_{0,s,N})^{-1} U_{0,s,N}
+\end{equation}
+and
+\begin{equation*}
+    U_{0,s,N} \Pi^\perp_{U_{0,s,N}} = 0
+\end{equation*}
+It can then be shown with the use of Sylvester's inequality that
+\begin{equation*}
+    \text{range}(Y_{0,s,N} \Pi^\perp_{U_{0,s,N}}) =
+        \text{range}(\mathcal{O}_s)
+\end{equation*}
+As we have a matrix with column space equal to the extended observability
+matrix, the same process for identification of autonomous systems can be used.
+
+% 2g
+\subsection{Identification with white noise excitation and output noise}
+Adding white noise ($\sigma_n = 10^{-3}$) to the output data and using/fr
+\mbox{$s = 25$}, \mbox{$N = 400$} still yields a good estimate of the system
+matrices. The output with noise and output for the identified system (plots
+$yk$ and $yk_{id}$ respectively) are shown in \autoref{fig:output2e} and
+\autoref{fig:outputzoom2e}.
+
+% 2h
+\subsection{Identification with white noise for MIMO systems}
+TODO
+
+\section{Time varying systems}
+
+% 3i
+\subsection{Determination of system order}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{svd3i.eps}
+    \caption{Singular Values of Time Varying System}
+    \label{fig:svd3i}
+\end{figure}
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|}
+        \hline
+        $i$ & $ |\ln \sigma_i - \ln \sigma_{i + 1}|$ \\
+        \hline
+        $ 1 $ & $ 0.8587 $ \\
+        $ 2 $ & $ 2.3992 $ \\
+        $ 3 $ & $ 0.6530 $ \\
+        $ 4 $ & $ 0.2108 $ \\
+        $ 5 $ & $ 0.4087 $ \\
+        $ 6 $ & $ 0.3631 $ \\
+        $ 7 $ & $ 0.0994 $ \\
+        $ 8 $ & $ 0.1510 $ \\
+        $ 9 $ & $ 1.1882 $ \\
+        \hline
+    \end{tabular}
+    \caption{Differnce in log of singular values}
+    \label{tab:svdiff}
+\end{table}
+The singular values of a time varying system with $s = 10$ are shown in
+\autoref{fig:svd3i}. The difference of the logarithm of the singular values is
+computed in \autoref{tab:svdiff}. We see two large gaps in singular values, one
+between $\sigma_2$ and $\sigma_3$, and the other between $\sigma_9$ and
+$\sigma_{10}$ when looking at the values on a log scale. As the difference is
+larger between $\sigma_2$ and $\sigma_3$ and we have some prior knowledge of
+the human wrist system, it is more likely that the order of the system is 2
+instead of 9.
+
+% 3j
+\subsection{Moving VAF}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{vaf3j.eps}
+    \caption{Input, Output, and VAF of Time Varying System}
+    \label{fig:vaf3j}
+\end{figure}
+The moving VAF for the identified system with input $uk$ is plotted as $yi$ in
+subplot 3 of \autoref{fig:vaf3j}. We see that the VAF changes over time and
+that there are periods with very low VAF.
+
+% 3k
+\subsection{Use of EMG signals for estimation}
+The input torque $uk$ and EMG signals $ek1$, $ek2$, $ek3$ are shown in the
+first subplot of \autoref{fig:vaf3j}. The measured wrist rotations $yk$, as
+well as two outputs from identified systems $yi1$, $yi2$ are shown in the
+second subplot. The first identified system output $yi1$ is obtained from the
+system after performing identification with input $uk$. The second identified
+system output $yi2$ is obtained from after performing identification with input
+$\begin{bmatrix} uk & ek1 & ek2 & ek3 \end{bmatrix}$. The moving VAF is
+calculated for both identified systems and plotted in the third subplot. We see
+that including the EMG signals in the input have little effect on either the
+output of the identified system or the moving VAF.
+
+% 3l
+\subsection{Use of EMG signals for LPV estimation}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{vaf3l.eps}
+    \caption{VAF for LPV System}
+    \label{fig:vaf3l}
+\end{figure}
+As we are working with a time varying system, a Linear Parameter Varying (LPV)
+apporach may provide a better estimate of the system. We redefine the system
+difference equations to be:
+\begin{align}
+    x_{k + 1} &= \sum_{i = 1}^m \mu_k^{(i)} (A^{(i)} x_k + B^{(i)} u_k) \\
+    y_k &= C x_k + D u_k
+\end{align}
+where $\mu_k^{(i)}$ is the $i$th scheduling variable.
+
+Using the different EMG signals as scheduling variables, the moving VAF is
+recomputed and plotted \autoref{fig:vaf3l}. We see that using an LPV structure
+with signal $ek2$ results in higher VAF values than assuming an LTI structure
+for the system, implying that the $ek2$ signal is related to the task
+performed.
+
+% 3m
+\subsection{Use of multiple EMG signals for LPV estimation}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{mesh3m.eps}
+    \caption{Magnitude for LPV $A$ matrix}
+    \label{fig:mesh3m}
+\end{figure}
+All three EMG signals can be used as scheduling variables. \autoref{fig:mesh3m}
+shows the computed LPV $A$ matrix, where x indices $1, 2$ correspond with the
+LTI component of the systems. Indices $3, 4$ correspond to the $A$ matrix
+associated with EMG signal $ek1$, $5, 6$ with $ek2$, and $7, 8$ with $ek3$. As
+the $A$ matrices associated with $ek1$ and $ek3$ are small relative to the
+others, they have little effect on the system and only EMG signal $ek2$ is
+useful in system estimation.
+
+% 3n
+\subsection{Effect of EMG signal on system stiffness}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{frf3n.eps}
+    \caption{Frequency Response with EMG Scheduling Variable}
+    \label{fig:frf3j}
+\end{figure}
+The system frequency response is plotted in \autoref{fig:frf3j} for different
+values of scheduling variable EMG signal 2. Given a standard MBK system, the
+peak seen in subplot 1 of \autoref{fig:frf3j} is the natural frequency
+$\omega_n$ of the system and is related to stiffness $k$ by
+\autoref{eq:natfreq}. With the human wrist system, we take the mass $m$ to be
+constant. As scheduling variable $ek2$ increases, $\omega_n$ decreases and
+stiffness $k$ decreases.
 
 \end{document}

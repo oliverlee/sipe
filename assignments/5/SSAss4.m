@@ -5,9 +5,9 @@ clc
 Nt=1000;
 dt=0.1;
 t=(0:Nt-1).'*dt;
-n=[];        % system order
-l=[];        % no. of outputs
-r=[];        % no. of inputs
+n = 6;        % system order
+l = 3;        % no. of outputs
+r = 3;        % no. of inputs
  
 %% Generate random system
 % Create your mimo system here!

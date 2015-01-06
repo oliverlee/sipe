@@ -2,6 +2,9 @@ close all
 clear all
 clc
 
+axfs = 18;
+lgndfs = 16;
+
 %% A. create system & data
 Nt=1000;                            % No. Samples
 dt=0.01;                            % Sample time
@@ -15,7 +18,7 @@ A0=sys0.a;B0=sys0.B;C0=sys0.c;D0=sys0.d;
 
 uk=[randn(Nt,1)];                   % white noise input
 y0=lsim(sys0,uk,t);                 % clean output
-yk=y0;%+1e-3*randn(size(y0));       % output noise added
+yk=y0;% + 1e-3*randn(size(y0));       % output noise added
 
 l=size(yk,2);                       % number of outputs
 r=size(uk,2);                       % number of inputs
@@ -40,26 +43,33 @@ end
 [U,S,V]=svd(YsN,'econ');                % Singular value decomposition
 
 figure(2)
+colset = cool(4);
 set(gcf,'name','Data Space')
-plot3(YsN(1,:),YsN(2,:),YsN(3,:),plotcol,'linewidth',2), hold on
+plot3(YsN(1,:),YsN(2,:),YsN(3,:),'color', colset(2, :),'linewidth',2), hold on
 
 PsN=eye(N)-UsN'*inv(UsN*UsN')*UsN;     % Orthogonal projection on UsN
 YsNP=YsN*PsN;                          
-plot3(YsNP(1,:),YsNP(2,:),YsNP(3,:),'g','linewidth',2), hold on
+plot3(YsNP(1,:),YsNP(2,:),YsNP(3,:), 'color', colset(4, :),'linewidth',2), hold on
 [U,S,V]=svd(YsNP,'econ');              % Singular value decomposition
+xlabel('y(k) [m]', 'fontsize', axfs);
+ylabel('y(k + 1) [m]', 'fontsize', axfs);
+zlabel('y(k + 2) [m]', 'fontsize', axfs);
+l2 = legend({'YsN', 'YsNP'});
+set(l2, 'fontsize', lgndfs);
+eps_save('dataspace2d', figure(2));
 
 %plot colums of U
-Us=U*S;
-figure(2)
-for jj=1:s
-    line([0 Us(1,jj)],[0 Us(2,jj)],[0 Us(3,jj)],'color',plotcol,'linestyle','--','linewidth',2)
-end
+%Us=U*S;
+%figure(2)
+%for jj=1:s
+%    line([0 Us(1,jj)],[0 Us(2,jj)],[0 Us(3,jj)],'color',plotcol,'linestyle','--','linewidth',2)
+%end
 
 figure(3)
 semilogy(S,plotcol,'marker','*'), hold on
 
 %% D. Retrieve system from SVD
-n=[];
+n = 2;
 Un=U(:,1:n);                        % Reduced output singular vectors
 Vn=V(:,1:n);                        % Reduced input singular vectors
 Sn=S(1:n,1:n);                      % Reduced singular value matrix
@@ -83,7 +93,6 @@ for kk=1:N-1
     end
     Phik(kk*l+1:(kk+1)*l,:)=[Cid*Aid^kk dummyprod*dummykron kron(uk(kk+1,:),eye(l))];
 end
-
 % Least squares solution min(yk-Phik*theta)
 theta=((1/N)*(Phik'*Phik))\(1/N*Phik')*reshape(yk(1:N,:),l*N,1);
 
@@ -98,4 +107,19 @@ yi=lsim(sysid,uk,t);
 figure(1)
 plot(t,yi,'r--')
 legend('y0','yk','yi')
+
+%%
+ykid = yi;
+yid = lsim(sysid_noiseless, uk, t);
+figure(1); clf
+colset = cool(4);
+plot(t, y0, 'color', colset(1, :), 'linewidth', 2); hold on;
+plot(t, yk, 'color', colset(2, :), 'linewidth', 2);
+plot(t, yid, '--', 'color', colset(3, :), 'linewidth', 2);
+plot(t, ykid, '--', 'color', colset(4, :), 'linewidth', 2); hold off;
+l1 = legend('y0', 'yk', 'y_{id}', 'yk_{id}');
+set(l1, 'fontsize', lgndfs);
+xlabel('t [s]', 'fontsize', axfs);
+ylabel('y [m]', 'fontsize', axfs);
+eps_save('output2e', figure(1));
 
