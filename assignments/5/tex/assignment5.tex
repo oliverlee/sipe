@@ -297,7 +297,7 @@ system results in the following continuous state space:
 
 After conversion to a discrete system, and using paramter values
 \mbox{$ m_1 = m_2 = 0.1 $}, \mbox{$ c_1 = c_2 = 0.5 $},
-\mbox{$ k_1 = k_2 = 0.1 $}, the four eigenvalues of
+\mbox{$ k_1 = k_2 = 450 $}, the four eigenvalues of
 are calculated and displayed in \autoref{tab:sys4eig}. Adding white noise with
 variance $\sigma_n = 1.0 \times 10^{-2}$ to the system output and repeating the
 identification steps with $s = 5$ and $N = 100$ results in a good estimate of
@@ -476,7 +476,117 @@ $yk$ and $yk_{id}$ respectively) are shown in \autoref{fig:output2e} and
 
 % 2h
 \subsection{Identification with white noise for MIMO systems}
-TODO
+Using a standard triple mass-spring-damper system, with input forces at each
+mass, we have the following continuous state space representation:
+\begin{align}
+    \dot{x} &=
+        \begin{bmatrix}
+            -\frac{c_1+c_2}{m_1} & \frac{c_2}{m_1} & 0 &
+                -\frac{k_1+k_2}{m_1} & \frac{k_2}{m_1} & 0 \\
+            \frac{c_1}{m_2} & -\frac{c_2 + c_3}{m_2} & \frac{c_3}{m_2} &
+                \frac{k_1}{m_2} & -\frac{k_2 + k_3}{m_2} & \frac{k_3}{m_2} \\
+            0 & \frac{c_3}{m_3} & -\frac{c_3}{m_3} &
+                0 & \frac{k_3}{m_3} & -\frac{k_3}{m_3} \\
+            1 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 1 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 1 & 0 & 0 & 0
+        \end{bmatrix} x
+        +
+         \begin{bmatrix}
+             \frac{1}{m_1} & 0 & 0 \\
+             0 & \frac{1}{m_2} & 0 \\
+             0 & 0 & \frac{1}{m_3} \\
+             0 & 0 & 0 \\
+             0 & 0 & 0 \\
+             0 & 0 & 0
+         \end{bmatrix} u \\
+        u \\
+    y &= \begin{bmatrix}
+        0 & 0 & 0 & 1 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1
+        \end{bmatrix} x
+\end{align}
+where
+\begin{equation*}
+    x =
+        \begin{bmatrix}
+            \dot{x_1} \\ \dot{x_2} \\ \dot{x_3} \\ x_1 \\ x_2 \\ x_3
+        \end{bmatrix} \\
+        \qquad
+    u =
+        \begin{bmatrix}
+            u_1 \\ u_2 \\ u_3
+        \end{bmatrix} \\
+        \qquad
+    y =
+        \begin{bmatrix}
+            y_1 \\ y_2 \\ y_3
+        \end{bmatrix}
+\end{equation*}
+With
+\mbox{$ m_1 = m_2 = m_3 = 0.1 $},
+\mbox{$ c_1 = c_2 = c_3 = 0.5 $},
+\mbox{$ k_1 = k_2 = k_3 = 450 $},
+we find the eigenvalues of the continuous system all lie in the right half
+plane and the system is stable. The system eigenvalues are tabulated in
+\autoref{tab:sys6eig}.
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|}
+        \hline
+        $ \lambda_1, \lambda_2 $ & $ -0.4952 \pm 29.8502i $ \\
+        $ \lambda_3, \lambda_4 $ & $ -3.8874 \pm 83.5596i $ \\
+        $ \lambda_5, \lambda_6 $ & $ -8.1174 \pm 120.6048i $ \\
+        \hline
+    \end{tabular}
+    \caption{Eigenvalues for Continuous Time 6th Order System}
+    \label{tab:sys6eig}
+\end{table}
+After converting the continuous time system to a discrete time system, Matlab
+function \mcode{getshp.p} can be used for system identification. Input and
+output time series, with and without noise, as well as bode plots of the
+original and identified systems are shown in \autoref{fig:input2h},
+\autoref{fig:output2h}, \autoref{fig:bode2h} using parameter values \mbox{$s =
+20$}, \mbox{$N = 1000$} and noisy inputs/outputs.
+Although system eigenvalues differ (see \autoref{sys6deig}), the output of the
+identified system closely matches the clean output of the original system as
+seen in \autoref{fig:output2h}.
+\begin{table}
+    \centering
+    \begin{tabular}{|l|r|r|}
+        \hline
+        \nonumber & original & identified \\
+        \hline
+        $ \lambda_1 $ & $ -0.9400 - 0.1484i $ & $ -0.3715 - 0.7552i $ \\
+        $ \lambda_2 $ & $ -0.9400 + 0.1484i $ & $ -0.3715 + 0.7552i $ \\
+        $ \lambda_3 $ & $ -0.3263 - 0.5943i $ & $ -0.3333 $ \\
+        $ \lambda_4 $ & $ -0.3263 + 0.5943i $ & $  0.6162 $ \\
+        $ \lambda_5 $ & $ 0.3885 - 0.2152i $ & $ 0.7874 - 0.3892i $ \\
+        $ \lambda_6 $ & $ 0.3885 + 0.2152i $ & $ 0.7874 + 0.3892i $ \\
+        \hline
+    \end{tabular}
+    \caption{Eigenvalues for Discrete Time 6th Order Systems}
+    \label{tab:sys6deig}
+\end{table}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{input2h.eps}
+    \caption{Input of 6th Order System}
+    \label{fig:input2h}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{output2h.eps}
+    \caption{Output of 6th Order System}
+    \label{fig:output2h}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{bode2h.eps}
+    \caption{Bode Plots of 6th Order System}
+    \label{fig:bode2h}
+\end{figure}
 
 \section{Time varying systems}
 
